@@ -1,1 +1,76 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 380" role="img" font-family="Arial, 'Malgun Gothic', sans-serif"><title>반전 증폭기</title><desc>Vin이 R1을 지나 반전 입력으로, Rf가 출력을 반전 입력으로 되돌려요. 비반전 입력은 GND.</desc><rect width="860" height="380" fill="#fff"/><path d="M420,130 L420,290 L560,210 Z" fill="#e8f1ff" stroke="#2674df" stroke-width="3" stroke-linejoin="round"/><text x="434" y="179" font-size="28" text-anchor="start" fill="#18212e" font-weight="bold">−</text><text x="434" y="259" font-size="28" text-anchor="start" fill="#18212e" font-weight="bold">+</text><text x="478.8" y="218" font-size="18" text-anchor="middle" fill="#6b7585">Op-Amp</text><circle cx="120" cy="170" r="6" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="108" y="177" font-size="22" text-anchor="end" fill="#18212e" font-weight="bold">Vin</text><polyline points="126,170 198,170" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M198,170 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="258,170 330,170" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="228" y="154" font-size="18" text-anchor="middle" fill="#18212e">R1</text><polyline points="330,170 420,170" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="360" cy="170" r="5.5" fill="#18212e"/><polyline points="360,170 360,80 440,80" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="440,80 490,80" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M490,80 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="550,80 600,80" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="520" y="64" font-size="18" text-anchor="middle" fill="#18212e">Rf</text><polyline points="600,80 640,80 640,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="640" cy="210" r="5.5" fill="#18212e"/><polyline points="560,210 720,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="726" cy="210" r="6" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="738" y="217" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold">Vout</text><polyline points="420,250 370,250 370,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="370,300 370,310" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="355,310 385,310" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="361,317 379,317" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="367,324 373,324" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="350" y="204" font-size="20" text-anchor="end" fill="#c0392b">V− ≈ 0V</text><text x="420" y="360" font-size="22" text-anchor="middle" fill="#2674df" font-weight="bold">Vout = −(Rf/R1)·Vin</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 793 346" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,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) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>반전 증폭기</title>
+  <desc>입력은 R1을 거쳐 반전 입력에 연결되고, Rf가 출력을 반전 입력으로 되돌린다. 비반전 입력은 접지한다.</desc>
+  <rect width="793" height="346" fill="#fff" data-fill="paper" />
+  <path d="M405,123 L405,283 L545,203 Z" fill="#e8f1ff" stroke="#2674df" stroke-width="3" stroke-linejoin="round" data-stroke="blue" data-fill="panel" />
+  <text x="425" y="172" font-size="28" text-anchor="start" fill="#18212e" font-weight="bold" data-fill="ink">−</text>
+  <text x="425" y="252" font-size="28" text-anchor="start" fill="#18212e" font-weight="bold" data-fill="ink">+</text>
+  <text x="463.8" y="211" font-size="18" text-anchor="middle" fill="#6b7585" data-fill="muted">Op-Amp</text>
+  <circle class="fig-dot" cx="98" cy="163" r="5" data-node="vin" data-node-color="blue" />
+  <text class="fig-text" x="73" y="171" font-size="26" text-anchor="end" data-node="vin" data-node-color="blue">V<tspan baseline-shift="sub" font-size="78%">in</tspan>
+  </text>
+  <polyline points="98,163 174,163" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M174,163 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="234,163 310,163" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="204" y="133" font-size="24" text-anchor="middle">R<tspan baseline-shift="sub" font-size="78%">1</tspan>
+  </text>
+  <polyline points="310,163 405,163" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="328" cy="163" r="5" data-node="minus" data-node-color="red" />
+  <text class="fig-text" x="305" y="210" font-size="26" text-anchor="end" data-node="minus" data-node-color="red">V<tspan baseline-shift="sub" font-size="78%">−</tspan> ≈ 0 V</text>
+  <polyline points="328,163 328,83 410,83" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="410,83 467.5,83" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M467.5,83 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="527.5,83 585,83" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="497.5" y="53" font-size="24" text-anchor="middle">R<tspan baseline-shift="sub" font-size="78%">f</tspan>
+  </text>
+  <polyline points="585,83 620,83 620,203" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="620" cy="203" r="5" data-node="out" data-node-color="blue" />
+  <polyline points="545,203 699,203" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="699" cy="203" r="5" data-node="out" data-node-color="blue" />
+  <text class="fig-text" x="724" y="211" font-size="26" text-anchor="start" data-node="out" data-node-color="blue">V<tspan baseline-shift="sub" font-size="78%">out</tspan>
+  </text>
+  <polyline points="405,243 340,243 340,299" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="340,299 340,309" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="325,309 355,309" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="331,316 349,316" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="337,323 343,323" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+</svg>

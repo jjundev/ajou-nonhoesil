@@ -1,1 +1,64 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" role="img" font-family="Arial, 'Malgun Gothic', sans-serif"><title>NOT 두 개로 만든 고리</title><desc>NOT1의 출력 Q가 NOT2로, NOT2의 출력 Q′이 NOT1로 돌아가는 고리</desc><rect width="760" height="380" fill="#fff"/><path d="M330,72 L330,128 L376,100 Z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><circle cx="383" cy="100" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><path d="M330,232 L330,288 L376,260 Z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><circle cx="383" cy="260" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><polyline points="390,100 640,100" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="390,260 640,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="652" y="108" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold">Q</text><text x="652" y="268" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold">Q′</text><circle cx="500" cy="100" r="5.5" fill="#18212e"/><polyline points="500,100 500,200 260,200 260,260 330,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="540" cy="260" r="5.5" fill="#18212e"/><polyline points="540,260 540,165 220,165 220,100 330,100" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="353" y="60" font-size="18" text-anchor="middle" fill="#6b7585">NOT1</text><text x="353" y="312" font-size="18" text-anchor="middle" fill="#6b7585">NOT2</text><text x="580" y="88" font-size="22" text-anchor="middle" fill="#2674df" font-weight="bold">1</text><text x="580" y="248" font-size="22" text-anchor="middle" fill="#2674df" font-weight="bold">0</text><text x="20" y="345" font-size="18" text-anchor="start" fill="#2674df">Q=1이면 NOT2가 0을, NOT1이 다시 1을 내서 그대로예요.</text><text x="20" y="372" font-size="18" text-anchor="start" fill="#6b7585">선이 만나는 곳의 점은 연결, 점 없는 교차는 연결되지 않아요</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 335" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,d09GMgABAAAAAAWcAA0AAAAAC8QAAAVKAAFPGgAAAAAAAAAAAAAAAAAAAAAAAAAAGjQbgy4cgTAGYABUCocwhhMBNgIkA0gLJgAEIAWFZAcgGx4KM6PCxgFA0p9P8V8k8ETE/qgIVriCV6sNTVddINypomk6YagRXi5cDT7AeD7r8JEmHPHBCANsPqtvcfC35nj4Wvvec293z8yDXVafWNGrlR8DAI4VkWZQYcsy5dcninQqLuwS+edibnjTSvojz8Gbe9/8mXlsWEnUwPH+6aXksDRbYb38AuZkTZIu5jbR/3le64TilokTq9DrVK5zHcYBizPcYWptVcQbQySJlsYQkoZGKXuILd5ELBTTRskkKo0hiaU3CUVD+yF9N08/lPQl5bdAz0eE+gJgWbojgTkghDVhoSst6I7wdIGpQ7bkZVdcd5vlh+99+lHLKtwp/6sfevDJRw1IhNT5QRqEQXpcxUs+1Bl42xYGTac3MbNi1ZrQ9EIqqGhCWtXppKpooK9NpebJWD7mkBikm1Tc41nVAOMYafPkR2d8v+iYA0gpVMwtq1JZGZhp5rJm2I6aejw37YkpGpbnmBsw5ZZSeeDRxx6x+U8NRXY8Gj7ypH3pndYfXbf1uNOu0SEMirAuXIFAkcLEMgJhEA6YIvFNPbVTzWWdFtfuizTSaIu6jE++BPJ732ZaSl8I6M8ROBMvve32W207uW/Rl180CNxxJ+eRqGdbE/aZI1GwqQg9bXUec4NULdzoZrftW4wjTroBbXb8Zewde8auX1PhQVl3zENYwe/E4ziJLUBY31wKoZ2jFMy11c3NITqngaUCaZJgOmADJzloIS//8wP4jCUZVRN+h4IY0xTyxTERJkkyy0hnwV1R0vCZyS+fb2AZlx7jMJMGSZSG1ENlqKRfmMeQVaJXcw6GM3nD1Ss9tIA0K4hK7hbH8zOh0hzcw5CmZORBCBBjDREmeII5uUIOVre0DihxLvO5bqCFZZ1RuGA/3qPZq9Cabthr9+j2Eu7G37dinD0jI2/xVq2TUzACOyWttjvpDwgMZPDVW1MjG4f+cBZSLS2nMBdXk/EeiKAp3CNhc3paz+L+kiI/7pT69wUk9k0xW8PLJMvbsM/80RGHrq/iCJ8d7W1fHWq7uoYgZVKH6WZMgPJVW4vyTWyQqekbUFtLmwK9vmYwSdZCob1+Z3/+JXDg//asY+LC4yQhL2PrJaSi7iEu4QYqH5AQvnjgmZVz4Bo2HKwnW1o6mJGA+4e4rTugtG968cd3QVMtM9ftjQjX7S4zc3crNRNbeIQUlJq7aeYapOmD324MIhiGh4QZRhLgVZtsILBpJrKNqAcW0UKvcsJCsqw8SFhSUk1CsAUhnxQpU9NkGXV3RcwmxgcLN6ewyXEAEnITMKZmUPwUP2NMyJ/xU8xsgpVtFqP8O01buQuiKZmcZlt2QJBKyklS60m5QmprpFxB+DiBuHHHd3Q/ZVk9/Z9QBvDbI8d31PG+u2Z7+6DE26SXIOg/v2gwsLBoOeKwTRnAh63HK+2F0P5/+6iWXdF2ua9864H6oyfiXw+UPRbJaitPnAYXILDumLRLCmmPDg8gBGbeUESd4DTECUec5uQDVAicvD5HuMApanhyStp+nHLAn1PR7jprrfzNqKv1JmyOlAepNAHwAjgMTgvYQAawlApZVKQHZNmyqZAIbPEE4EKkkZl4ASQ6k6lCBp5XEklRwZ+IxmwGyZ3M40M2C2BRWhiDelVWPUs0ybjSoBvMGQbtgm+0AuPeemWQDxo1HUVm8ckkIGSRyDwgoJUYd7GyBQ4c6lJ/97YeFFF3TKo3CP2r27q2T05epEChMWJopLtj2Bskj6p198gJgBTUULWyzoAjv+c0mk/kQY6Aj+JDBorNo6IdzG1L1pxpt7yHonGXLwA=) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>NOT 두 개로 만든 고리</title>
+  <desc>NOT1의 출력 Q가 NOT2로, NOT2의 출력 Q′이 NOT1로 돌아가는 고리</desc>
+  <rect width="720" height="335" fill="#fff" data-fill="paper" />
+  <path d="M330,72 L330,128 L376,100 Z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <circle cx="383" cy="100" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <path d="M330,232 L330,288 L376,260 Z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <circle cx="383" cy="260" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <polyline points="390,100 640,100" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="390,260 640,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="662" y="108" font-size="26" text-anchor="start" data-node="q" data-node-color="blue">Q</text>
+  <text class="fig-text" x="662" y="268" font-size="26" text-anchor="start" data-node="q-bar" data-node-color="red">Q′</text>
+  <circle class="fig-dot" cx="640" cy="100" r="5" data-node="q" data-node-color="blue" />
+  <circle class="fig-dot" cx="640" cy="260" r="5" data-node="q-bar" data-node-color="red" />
+  <circle class="fig-dot" cx="500" cy="100" r="5" data-node="q" data-node-color="blue" />
+  <polyline points="500,100 500,200 260,200 260,260 330,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="540" cy="260" r="5" data-node="q-bar" data-node-color="red" />
+  <polyline points="540,260 540,165 220,165 220,100 330,100" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text x="353" y="60" font-size="18" text-anchor="middle" fill="#6b7585" data-fill="muted">NOT1</text>
+  <text x="353" y="312" font-size="18" text-anchor="middle" fill="#6b7585" data-fill="muted">NOT2</text>
+  <path class="fig-crossing" d="M500,156v18" stroke-width="12" />
+  <polyline points="500,156 500,174" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="590" y="80" font-size="26" text-anchor="middle" data-node="q" data-node-color="blue">1</text>
+  <text class="fig-text" x="590" y="240" font-size="26" text-anchor="middle" data-node="q-bar" data-node-color="red">0</text>
+</svg>

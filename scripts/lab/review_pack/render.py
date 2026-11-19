@@ -16,6 +16,7 @@ from .equation_cards import separate_equations
 from .table_cards import separate_tables
 from .table_layout import load_note_layouts, layout_note_tables, TableLayoutError
 from .note_summary import SUMMARY_FILE, load_note_summaries, check_topic_ids, replace_summary
+from .note_schematic import add_schematic_viewports
 
 KINDS={'past':'실제 기출','unknown':'출처 미확인','predicted':'기존 예상문제','practice':'새 연습'}
 ANSWERS={'verified':'풀이 검토됨','disputed':'답안 충돌','unresolved':'정답 미확정'}
@@ -116,6 +117,8 @@ def assemble(manifest,run,out,assets):
         for key,val in values.items():
             text=text.replace('{{'+key+'}}',val)
         text=replace_vendor_urls(text)
+        if kind=='note':
+            text=add_schematic_viewports(text, data_out/'figures')
         if '{{' in text: raise ValueError('Unreplaced placeholder')
         path=out/names[kind+'_html'];path.write_text(text,encoding='utf-8');paths[kind+'_html']=path
     if workbook:

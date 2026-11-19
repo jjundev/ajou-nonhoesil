@@ -1,1 +1,81 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 340" role="img" font-family="Arial, 'Malgun Gothic', sans-serif"><title>7490을 BCD 카운터로 연결한 블록도</title><rect width="860" height="340" fill="#fff"/><rect x="190" y="30" width="470" height="240" rx="4" fill="#fff" stroke="#18212e" stroke-width="3"/><rect x="220" y="60" width="140" height="170" rx="8" fill="#e8f1ff" stroke="#18212e" stroke-width="3"/><text x="290" y="130" font-size="24" text-anchor="middle" fill="#18212e" font-weight="bold">2진 단</text><text x="290" y="170" font-size="24" text-anchor="middle" fill="#18212e">QA</text><rect x="430" y="100" width="200" height="140" rx="8" fill="#e8f1ff" stroke="#18212e" stroke-width="3"/><text x="530" y="160" font-size="24" text-anchor="middle" fill="#18212e" font-weight="bold">5진 단</text><text x="530" y="200" font-size="24" text-anchor="middle" fill="#18212e">QB QC QD</text><text x="15" y="138" font-size="24" text-anchor="start" fill="#18212e">Clock</text><polyline points="95,150 220,150" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="150" y="138" font-size="20" text-anchor="middle" fill="#6b7585">14번</text><polyline points="360,80 760,80" fill="none" stroke="#2674df" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="690" y="68" font-size="20" text-anchor="start" fill="#2674df">12 → A</text><polyline points="395,80 395,170 430,170" fill="none" stroke="#2674df" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="395" cy="80" r="5.5" fill="#2674df"/><text x="412" y="196" font-size="20" text-anchor="middle" fill="#6b7585">1</text><text x="395" y="310" font-size="22" text-anchor="middle" fill="#2674df" font-weight="bold">QA(12번)를 INPUT B(1번)에 연결</text><polyline points="630,130 760,130" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="690" y="124" font-size="20" text-anchor="start" fill="#18212e">9 → B</text><polyline points="630,170 760,170" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="690" y="164" font-size="20" text-anchor="start" fill="#18212e">8 → C</text><polyline points="630,210 760,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="690" y="204" font-size="20" text-anchor="start" fill="#18212e">11 → D</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 845 383" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,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) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>7490의 QA를 CLKB에 연결한 BCD 카운터</title>
+  <rect width="845" height="383" fill="#fff" data-fill="paper" />
+  <rect x="178" y="54" width="474" height="286" rx="4" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <rect x="210" y="117" width="150" height="120" rx="8" fill="#e8f1ff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="panel" />
+  <text class="fig-text" x="285" y="145" font-size="26" text-anchor="middle">2진 단</text>
+  <text class="fig-text" x="335" y="201" font-size="26" text-anchor="end" data-node="qa" data-node-color="blue">Q<tspan baseline-shift="sub" font-size="78%">A</tspan>
+  </text>
+  <rect x="465" y="142" width="158" height="171" rx="8" fill="#e8f1ff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="panel" />
+  <text class="fig-text" x="544" y="128" font-size="26" text-anchor="middle">5진 단</text>
+  <text class="fig-text" x="487" y="269" font-size="22" text-anchor="start">CLKB</text>
+  <text class="fig-text" x="134" y="202" font-size="26" text-anchor="end" data-node="clka" data-node-color="red">CLK</text>
+  <polyline points="156,194 210,194" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="156" cy="194" r="5" data-node="clka" data-node-color="red" />
+  <text class="fig-text" x="161" y="172" font-size="22" text-anchor="middle" data-node="clka" data-node-color="red">14</text>
+  <polyline points="360,194 397,194 397,89 718,89" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="397,194 397,260 465,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="397" cy="194" r="5" data-node="qa" data-node-color="blue" />
+  <circle class="fig-dot" cx="718" cy="89" r="5" data-node="qa" data-node-color="blue" />
+  <text class="fig-text" x="745" y="97" font-size="26" text-anchor="start" data-node="qa" data-node-color="blue">A</text>
+  <text class="fig-text" x="677" y="70" font-size="22" text-anchor="start" data-node="qa" data-node-color="blue">12</text>
+  <text class="fig-text" x="442" y="242" font-size="22" text-anchor="start" data-node="qa" data-node-color="blue">1</text>
+  <text class="fig-text" x="601" y="178" font-size="22" text-anchor="end">Q<tspan baseline-shift="sub" font-size="78%">B</tspan>
+  </text>
+  <polyline points="623,170 718,170" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="718" cy="170" r="5" />
+  <text class="fig-text" x="745" y="178" font-size="26" text-anchor="start">B</text>
+  <text class="fig-text" x="677" y="152" font-size="22" text-anchor="start">9</text>
+  <text class="fig-text" x="601" y="227" font-size="22" text-anchor="end">Q<tspan baseline-shift="sub" font-size="78%">C</tspan>
+  </text>
+  <polyline points="623,219 718,219" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="718" cy="219" r="5" />
+  <text class="fig-text" x="745" y="227" font-size="26" text-anchor="start">C</text>
+  <text class="fig-text" x="677" y="201" font-size="22" text-anchor="start">8</text>
+  <text class="fig-text" x="601" y="276" font-size="22" text-anchor="end">Q<tspan baseline-shift="sub" font-size="78%">D</tspan>
+  </text>
+  <polyline points="623,268 718,268" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="718" cy="268" r="5" />
+  <text class="fig-text" x="745" y="276" font-size="26" text-anchor="start">D</text>
+  <text class="fig-text" x="677" y="250" font-size="22" text-anchor="start">11</text>
+  <text class="fig-text" x="432" y="376" font-size="26" text-anchor="middle">7490</text>
+</svg>

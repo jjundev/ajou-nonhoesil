@@ -1,1 +1,77 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 300" role="img" font-family="Arial, 'Malgun Gothic', sans-serif"><title>동기 3진 카운터 블록도</title><rect width="780" height="300" fill="#fff"/><rect x="190" y="70" width="170" height="130" rx="8" fill="#e8f1ff" stroke="#18212e" stroke-width="3"/><text x="202" y="106" font-size="22" text-anchor="start" fill="#18212e">J</text><text x="202" y="142" font-size="18" text-anchor="start" fill="#18212e">CLK</text><text x="202" y="186" font-size="20" text-anchor="start" fill="#18212e">K=1</text><text x="340" y="106" font-size="22" text-anchor="end" fill="#18212e">A</text><text x="340" y="186" font-size="22" text-anchor="end" fill="#18212e">A'</text><text x="280" y="146" font-size="22" text-anchor="middle" fill="#18212e">FFA</text><rect x="490" y="70" width="170" height="130" rx="8" fill="#e8f1ff" stroke="#18212e" stroke-width="3"/><text x="502" y="106" font-size="22" text-anchor="start" fill="#18212e">J</text><text x="502" y="142" font-size="18" text-anchor="start" fill="#18212e">CLK</text><text x="502" y="186" font-size="20" text-anchor="start" fill="#18212e">K=1</text><text x="640" y="106" font-size="22" text-anchor="end" fill="#18212e">B</text><text x="640" y="186" font-size="22" text-anchor="end" fill="#18212e">B'</text><text x="580" y="146" font-size="22" text-anchor="middle" fill="#18212e">FFB</text><text x="20" y="268" font-size="26" text-anchor="start" fill="#18212e" font-weight="bold">CLK</text><polyline points="90,260 450,260 450,136 490,136" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="150,260 150,136 190,136" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="150" cy="260" r="5.5" fill="#18212e"/><polyline points="360,100 490,100" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="425" y="88" font-size="20" text-anchor="middle" fill="#2674df" font-weight="bold">A → J2</text><polyline points="660,180 720,180 720,36 120,36 120,100 190,100" fill="none" stroke="#2674df" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="420" y="26" font-size="20" text-anchor="middle" fill="#2674df" font-weight="bold">B' → J1</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 805 319" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,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) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>동기 3진 카운터 블록도</title>
+  <rect width="805" height="319" fill="#fff" data-fill="paper" />
+  <rect x="185" y="85" width="176" height="152" rx="8" fill="#e8f1ff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="panel" />
+  <text class="fig-text" x="205" y="126" font-size="26" text-anchor="start">J</text>
+  <text class="fig-text" x="216" y="175" font-size="22" text-anchor="start">CLK</text>
+  <text class="fig-text" x="205" y="216" font-size="22" text-anchor="start">K = 1</text>
+  <text class="fig-text" x="340" y="126" font-size="26" text-anchor="end" data-node="A" data-node-color="blue">A</text>
+  <text class="fig-text" x="340" y="216" font-size="26" text-anchor="end" data-node="A-bar" data-node-color="red">A′</text>
+  <text class="fig-text" x="313" y="175" font-size="22" text-anchor="middle">FF<tspan baseline-shift="sub" font-size="78%">A</tspan>
+  </text>
+  <path d="M185,156 l14,10 l-14,10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <circle cx="179" cy="166" r="6" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <rect x="475" y="85" width="176" height="152" rx="8" fill="#e8f1ff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="panel" />
+  <text class="fig-text" x="495" y="126" font-size="26" text-anchor="start">J</text>
+  <text class="fig-text" x="506" y="175" font-size="22" text-anchor="start">CLK</text>
+  <text class="fig-text" x="495" y="216" font-size="22" text-anchor="start">K = 1</text>
+  <text class="fig-text" x="630" y="126" font-size="26" text-anchor="end" data-node="B" data-node-color="blue">B</text>
+  <text class="fig-text" x="630" y="216" font-size="26" text-anchor="end" data-node="B-bar" data-node-color="red">B′</text>
+  <text class="fig-text" x="603" y="175" font-size="22" text-anchor="middle">FF<tspan baseline-shift="sub" font-size="78%">B</tspan>
+  </text>
+  <path d="M475,156 l14,10 l-14,10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <circle cx="469" cy="166" r="6" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <text class="fig-text" x="81" y="291" font-size="26" text-anchor="end" data-node="clock" data-node-color="blue">CLK</text>
+  <circle class="fig-dot" cx="104" cy="283" r="5" data-node="clock" data-node-color="blue" />
+  <polyline points="104,283 428,283 428,166 463,166" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="151,283 151,166 173,166" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="151" cy="283" r="5" data-node="clock" data-node-color="blue" />
+  <polyline points="361,118 475,118" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="417" y="100" font-size="26" text-anchor="middle" data-node="A" data-node-color="blue">A</text>
+  <polyline points="651,118 727,118" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="727" cy="118" r="5" data-node="B" data-node-color="blue" />
+  <text class="fig-text" x="750" y="126" font-size="26" text-anchor="start" data-node="B" data-node-color="blue">B</text>
+  <polyline points="651,208 702,208 702,53 123,53 123,118 185,118" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path class="fig-crossing" d="M702,109v18" stroke-width="12" />
+  <polyline points="702,109 702,127" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="405" y="34" font-size="26" text-anchor="middle" data-node="B-bar" data-node-color="red">B′</text>
+</svg>

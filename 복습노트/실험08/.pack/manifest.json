@@ -176,14 +176,14 @@
     {
       "id": "s-spec08",
       "path": "보고서/실험08/체크리스트/명세.md",
-      "sha256": "3263543f9db6b1bea09adf09ba31bfd4f3fa5f13f1b8ea651929187b81005332",
+      "sha256": "02914ade1661ee93a5f80ba3a6e611f0381291791c1e5695b13f39b95043a077",
       "kind": "record",
       "edition": "current"
     },
     {
       "id": "s-netlist08",
       "path": "보고서/실험08/결선도/netlist.md",
-      "sha256": "663accd42cb41d422a7ff1dbd81efe126907a01c8b383199b5506f05a272b0fb",
+      "sha256": "0bcee4f80b470483cc866f5dd70ec0b3b64ad4e9fd979ecff3cb94481a47c712",
       "kind": "record",
       "edition": "current"
     }

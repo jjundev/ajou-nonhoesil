@@ -1,1 +1,98 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 570" role="img" font-family="Arial, 'Malgun Gothic', sans-serif"><title>Enable이 있는 SR 래치 (실험 1)</title><rect width="900" height="570" fill="#fff"/><path d="M520,70 h26 a50,50 0 0 1 0,100 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="556" y="128" font-size="22" text-anchor="middle" fill="#6b7585">&amp;</text><circle cx="603" cy="120" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><path d="M520,350 h26 a50,50 0 0 1 0,100 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="556" y="408" font-size="22" text-anchor="middle" fill="#6b7585">&amp;</text><circle cx="603" cy="400" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><polyline points="610,120 820,120" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="610,400 820,400" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="832" y="128" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold">Q</text><text x="832" y="408" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold">Q′</text><circle cx="650" cy="120" r="5.5" fill="#18212e"/><polyline points="650,120 650,300 470,300 470,383.333 520,383.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="680" cy="400" r="5.5" fill="#18212e"/><polyline points="680,400 680,240 490,240 490,136.667 520,136.667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="560" y="196" font-size="18" text-anchor="middle" fill="#6b7585">74HC00</text><text x="560" y="476" font-size="18" text-anchor="middle" fill="#6b7585">74HC00</text><text x="514" y="96.3333" font-size="18" text-anchor="end" fill="#6b7585">9</text><text x="514" y="129.667" font-size="18" text-anchor="end" fill="#6b7585">10</text><text x="614" y="110" font-size="18" text-anchor="start" fill="#6b7585">8</text><text x="514" y="376.333" font-size="18" text-anchor="end" fill="#6b7585">12</text><text x="514" y="409.667" font-size="18" text-anchor="end" fill="#6b7585">13</text><text x="614" y="390" font-size="18" text-anchor="start" fill="#6b7585">11</text><path d="M240,63.3333 h26 a40,40 0 0 1 0,80 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="271" y="111.333" font-size="22" text-anchor="middle" fill="#6b7585">&amp;</text><circle cx="313" cy="103.333" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><path d="M240,376.667 h26 a40,40 0 0 1 0,80 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="271" y="424.667" font-size="22" text-anchor="middle" fill="#6b7585">&amp;</text><circle cx="313" cy="416.667" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><polyline points="320,103.333 520,103.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="320,416.667 520,416.667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="285" y="169.333" font-size="18" text-anchor="middle" fill="#6b7585">74HC00</text><text x="285" y="482.667" font-size="18" text-anchor="middle" fill="#6b7585">74HC00</text><text x="20" y="268" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold">E</text><polyline points="60,260 170,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="170" cy="260" r="5.5" fill="#18212e"/><polyline points="170,116.667 170,403.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="170,116.667 240,116.667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="170,403.333 240,403.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="20" y="98" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold">S</text><polyline points="60,90 240,90" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="20" y="438" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold">R</text><polyline points="60,430 240,430" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="234" y="83" font-size="18" text-anchor="end" fill="#6b7585">1</text><text x="234" y="109.667" font-size="18" text-anchor="end" fill="#6b7585">2</text><text x="234" y="396.333" font-size="18" text-anchor="end" fill="#6b7585">4</text><text x="234" y="423" font-size="18" text-anchor="end" fill="#6b7585">5</text><text x="324" y="93.3333" font-size="18" text-anchor="start" fill="#6b7585">3</text><text x="324" y="406.667" font-size="18" text-anchor="start" fill="#6b7585">6</text><text x="20" y="556" font-size="18" text-anchor="start" fill="#6b7585">선이 만나는 곳의 점은 연결, 점 없는 교차는 연결되지 않아요</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 570" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,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) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>Enable이 있는 SR 래치 (실험 1)</title>
+  <rect width="900" height="570" fill="#fff" data-fill="paper" />
+  <path d="M520,70 h26 a50,50 0 0 1 0,100 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="556" y="128" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="603" cy="120" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <path d="M520,350 h26 a50,50 0 0 1 0,100 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="556" y="408" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="603" cy="400" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <polyline points="610,120 820,120" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="610,400 820,400" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="842" y="128" font-size="26" text-anchor="start" data-node="q" data-node-color="blue">Q</text>
+  <text class="fig-text" x="842" y="408" font-size="26" text-anchor="start" data-node="q-bar" data-node-color="red">Q′</text>
+  <circle class="fig-dot" cx="820" cy="120" r="5" data-node="q" data-node-color="blue" />
+  <circle class="fig-dot" cx="820" cy="400" r="5" data-node="q-bar" data-node-color="red" />
+  <circle class="fig-dot" cx="650" cy="120" r="5" data-node="q" data-node-color="blue" />
+  <polyline points="650,120 650,300 470,300 470,383.333 520,383.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="680" cy="400" r="5" data-node="q-bar" data-node-color="red" />
+  <polyline points="680,400 680,240 490,240 490,136.667 520,136.667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text x="560" y="196" font-size="18" text-anchor="middle" fill="#6b7585" data-fill="muted">74HC00</text>
+  <text x="560" y="476" font-size="18" text-anchor="middle" fill="#6b7585" data-fill="muted">74HC00</text>
+  <text class="fig-text" x="536" y="109.333" font-size="18" text-anchor="start">9</text>
+  <text class="fig-text" x="536" y="142.667" font-size="18" text-anchor="start">10</text>
+  <text class="fig-text" x="614" y="104" font-size="18" text-anchor="start">8</text>
+  <text class="fig-text" x="536" y="389.333" font-size="18" text-anchor="start">12</text>
+  <text class="fig-text" x="536" y="422.667" font-size="18" text-anchor="start">13</text>
+  <text class="fig-text" x="614" y="384" font-size="18" text-anchor="start">11</text>
+  <path d="M240,63.3333 h26 a40,40 0 0 1 0,80 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="271" y="111.333" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="313" cy="103.333" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <path d="M240,376.667 h26 a40,40 0 0 1 0,80 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="271" y="424.667" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="313" cy="416.667" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <polyline points="320,103.333 520,103.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="320,416.667 520,416.667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text x="285" y="169.333" font-size="18" text-anchor="middle" fill="#6b7585" data-fill="muted">74HC00</text>
+  <text x="285" y="482.667" font-size="18" text-anchor="middle" fill="#6b7585" data-fill="muted">74HC00</text>
+  <text x="20" y="268" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold" data-fill="ink">E</text>
+  <polyline points="60,260 170,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle cx="170" cy="260" r="5.5" fill="#18212e" data-fill="ink" />
+  <polyline points="170,116.667 170,403.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="170,116.667 240,116.667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="170,403.333 240,403.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text x="20" y="98" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold" data-fill="ink">S</text>
+  <polyline points="60,90 240,90" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text x="20" y="438" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold" data-fill="ink">R</text>
+  <polyline points="60,430 240,430" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="256" y="96" font-size="18" text-anchor="start">1</text>
+  <text class="fig-text" x="256" y="122.667" font-size="18" text-anchor="start">2</text>
+  <text class="fig-text" x="256" y="409.333" font-size="18" text-anchor="start">4</text>
+  <text class="fig-text" x="256" y="436" font-size="18" text-anchor="start">5</text>
+  <text class="fig-text" x="324" y="87.3333" font-size="18" text-anchor="start">3</text>
+  <text class="fig-text" x="324" y="400.667" font-size="18" text-anchor="start">6</text>
+  <circle class="fig-dot" cx="60" cy="260" r="5" />
+  <circle class="fig-dot" cx="60" cy="90" r="5" />
+  <circle class="fig-dot" cx="60" cy="430" r="5" />
+  <path class="fig-crossing" d="M650,231v18" stroke-width="12" />
+  <polyline points="650,231 650,249" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+</svg>

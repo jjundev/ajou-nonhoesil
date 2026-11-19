@@ -1,1 +1,104 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 290" role="img" font-family="Arial, 'Malgun Gothic', sans-serif"><title>공통 클록의 D 시프트 레지스터</title><rect width="1000" height="290" fill="#fff"/><rect x="110" y="55" width="140" height="125" rx="8" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="122" y="87" font-size="22" text-anchor="start" fill="#18212e">D</text><text x="215" y="87" font-size="22" text-anchor="start" fill="#18212e">Q</text><text x="155" y="125" font-size="22" text-anchor="start" fill="#18212e">FF0</text><path d="M110,145 l18,10 l-18,10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="110,155 85,155 85,230" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="85" cy="230" r="5.5" fill="#18212e"/><polyline points="250,80 285,80" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="260" y="55" font-size="20" text-anchor="start" fill="#18212e">Q0</text><polyline points="270,80 270,25" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="270" y="20" font-size="18" text-anchor="middle" fill="#18212e">P0</text><polyline points="285,80 320,80" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="320" y="55" width="140" height="125" rx="8" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="332" y="87" font-size="22" text-anchor="start" fill="#18212e">D</text><text x="425" y="87" font-size="22" text-anchor="start" fill="#18212e">Q</text><text x="365" y="125" font-size="22" text-anchor="start" fill="#18212e">FF1</text><path d="M320,145 l18,10 l-18,10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="320,155 295,155 295,230" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="295" cy="230" r="5.5" fill="#18212e"/><polyline points="460,80 495,80" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="470" y="55" font-size="20" text-anchor="start" fill="#18212e">Q1</text><polyline points="480,80 480,25" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="480" y="20" font-size="18" text-anchor="middle" fill="#18212e">P1</text><polyline points="495,80 530,80" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="530" y="55" width="140" height="125" rx="8" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="542" y="87" font-size="22" text-anchor="start" fill="#18212e">D</text><text x="635" y="87" font-size="22" text-anchor="start" fill="#18212e">Q</text><text x="575" y="125" font-size="22" text-anchor="start" fill="#18212e">FF2</text><path d="M530,145 l18,10 l-18,10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="530,155 505,155 505,230" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="505" cy="230" r="5.5" fill="#18212e"/><polyline points="670,80 705,80" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="680" y="55" font-size="20" text-anchor="start" fill="#18212e">Q2</text><polyline points="690,80 690,25" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="690" y="20" font-size="18" text-anchor="middle" fill="#18212e">P2</text><polyline points="705,80 740,80" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="740" y="55" width="140" height="125" rx="8" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="752" y="87" font-size="22" text-anchor="start" fill="#18212e">D</text><text x="845" y="87" font-size="22" text-anchor="start" fill="#18212e">Q</text><text x="785" y="125" font-size="22" text-anchor="start" fill="#18212e">FF3</text><path d="M740,145 l18,10 l-18,10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="740,155 715,155 715,230" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="715" cy="230" r="5.5" fill="#18212e"/><polyline points="880,80 915,80" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="890" y="55" font-size="20" text-anchor="start" fill="#18212e">Q3</text><polyline points="900,80 900,25" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="900" y="20" font-size="18" text-anchor="middle" fill="#18212e">P3</text><text x="15" y="87" font-size="22" text-anchor="start" fill="#18212e">S</text><polyline points="40,80 110,80" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="45,230 715,230" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="10" y="270" font-size="23" text-anchor="start" fill="#18212e">CLK: common rising edge / P0...P3: parallel outputs</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 890 285" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,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) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>공통 클록을 사용하는 4단 D 시프트 레지스터</title>
+  <rect width="890" height="285" fill="#fff" data-fill="paper" />
+  <polyline points="82,120 125,120" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="82" cy="120" r="5" />
+  <text class="fig-text" x="60" y="129" font-size="26" text-anchor="end">S</text>
+  <polyline points="74,247 684,247" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="74" cy="247" r="5" data-node="clk" data-node-color="red" />
+  <text class="fig-text" x="52" y="255" font-size="26" text-anchor="end" data-node="clk" data-node-color="red">CLK</text>
+  <rect x="125" y="82" width="122" height="126" rx="8" fill="#e8f1ff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="panel" />
+  <text class="fig-text" x="145" y="128" font-size="26" text-anchor="start">D</text>
+  <text class="fig-text" x="227" y="128" font-size="26" text-anchor="end">Q</text>
+  <text class="fig-text" x="189" y="169" font-size="26" text-anchor="middle">FF<tspan baseline-shift="sub" font-size="78%">0</tspan>
+  </text>
+  <path d="M125,176 l16,10 l-16,10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="125,186 99,186 99,247" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="99" cy="247" r="5" data-node="clk" data-node-color="red" />
+  <polyline points="247,120 320,120" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="279,120 279,62" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="279" cy="120" r="5" data-node="q0" data-node-color="blue" />
+  <circle class="fig-dot" cx="279" cy="54" r="5" data-node="q0" data-node-color="blue" />
+  <text class="fig-text" x="279" y="26" font-size="26" text-anchor="middle" data-node="q0" data-node-color="blue">P<tspan baseline-shift="sub" font-size="78%">0</tspan>
+  </text>
+  <rect x="320" y="82" width="122" height="126" rx="8" fill="#e8f1ff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="panel" />
+  <text class="fig-text" x="340" y="128" font-size="26" text-anchor="start">D</text>
+  <text class="fig-text" x="422" y="128" font-size="26" text-anchor="end">Q</text>
+  <text class="fig-text" x="384" y="169" font-size="26" text-anchor="middle">FF<tspan baseline-shift="sub" font-size="78%">1</tspan>
+  </text>
+  <path d="M320,176 l16,10 l-16,10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="320,186 294,186 294,247" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="294" cy="247" r="5" data-node="clk" data-node-color="red" />
+  <polyline points="442,120 515,120" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="474,120 474,62" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="474" cy="120" r="5" data-node="q1" data-node-color="blue" />
+  <circle class="fig-dot" cx="474" cy="54" r="5" data-node="q1" data-node-color="blue" />
+  <text class="fig-text" x="474" y="26" font-size="26" text-anchor="middle" data-node="q1" data-node-color="blue">P<tspan baseline-shift="sub" font-size="78%">1</tspan>
+  </text>
+  <rect x="515" y="82" width="122" height="126" rx="8" fill="#e8f1ff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="panel" />
+  <text class="fig-text" x="535" y="128" font-size="26" text-anchor="start">D</text>
+  <text class="fig-text" x="617" y="128" font-size="26" text-anchor="end">Q</text>
+  <text class="fig-text" x="579" y="169" font-size="26" text-anchor="middle">FF<tspan baseline-shift="sub" font-size="78%">2</tspan>
+  </text>
+  <path d="M515,176 l16,10 l-16,10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="515,186 489,186 489,247" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="489" cy="247" r="5" data-node="clk" data-node-color="red" />
+  <polyline points="637,120 710,120" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="669,120 669,62" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="669" cy="120" r="5" data-node="q2" data-node-color="blue" />
+  <circle class="fig-dot" cx="669" cy="54" r="5" data-node="q2" data-node-color="blue" />
+  <text class="fig-text" x="669" y="26" font-size="26" text-anchor="middle" data-node="q2" data-node-color="blue">P<tspan baseline-shift="sub" font-size="78%">2</tspan>
+  </text>
+  <rect x="710" y="82" width="122" height="126" rx="8" fill="#e8f1ff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="panel" />
+  <text class="fig-text" x="730" y="128" font-size="26" text-anchor="start">D</text>
+  <text class="fig-text" x="812" y="128" font-size="26" text-anchor="end">Q</text>
+  <text class="fig-text" x="774" y="169" font-size="26" text-anchor="middle">FF<tspan baseline-shift="sub" font-size="78%">3</tspan>
+  </text>
+  <path d="M710,176 l16,10 l-16,10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="710,186 684,186 684,247" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="684" cy="247" r="5" data-node="clk" data-node-color="red" />
+  <polyline points="832,120 864,120" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="864,120 864,62" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="864" cy="54" r="5" data-node="q3" data-node-color="blue" />
+  <text class="fig-text" x="864" y="26" font-size="26" text-anchor="middle" data-node="q3" data-node-color="blue">P<tspan baseline-shift="sub" font-size="78%">3</tspan>
+  </text>
+</svg>

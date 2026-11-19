@@ -115,3 +115,87 @@ def test_dac_note_schematic_inventory_and_summing_node(tmp_path):
     label = tree.find(".//s:text[@data-node='summing']", SVG_NS)
     assert len(dots) == 4
     assert {dot.get('data-node-color') for dot in dots} == {label.get('data-node-color')} == {'red'}
+
+
+@pytest.mark.parametrize('experiment', range(6, 11))
+@pytest.mark.parametrize('width', (375, 1280))
+@pytest.mark.parametrize('theme', ('light', 'dark'))
+def test_published_note_schematic_sources_and_theme(chromium, experiment, width, theme):
+    from os import environ
+
+    name = f'실험{experiment:02}'
+    folder = Path(environ.get('LAB_NOTE_STAGE_PARENT', ROOT / '복습노트')).resolve() / name
+    note = folder / f'{name}_실험설명.html'
+    md = folder / '.pack' / f'{name}_실험설명.md'
+    if experiment == 6:
+        assert 'figures/tff-from-jk-note.svg' in note.read_text()
+        assert 'figures/tff-from-jk-note.svg' in md.read_text()
+        for path in (folder / f'{name}_문제설명.html', folder / '.pack' / f'{name}_문제설명.md'):
+            assert 'figures/tff-from-jk.svg' in path.read_text()
+            assert 'figures/tff-from-jk-note.svg' not in path.read_text()
+
+    with chromium.new_page(viewport={'width': width, 'height': 880}, color_scheme='light',
+                           reduced_motion='reduce') as page:
+        page.route(re.compile('^https?://'), lambda route: route.abort())
+        page.goto(note.as_uri())
+        if theme == 'dark':
+            page.locator('#theme-toggle').click()
+        assert page.locator('html').evaluate('(el) => getComputedStyle(el).colorScheme') == theme
+        for figure in INVENTORY[experiment].split():
+            images = page.locator(f'img[src=".pack/figures/{figure}.svg"]')
+            assert images.count() > 0, figure
+            for image in images.all():
+                topic_id = image.evaluate("img => img.closest('article.topic').id")
+                page.evaluate('(id) => location.hash = id', topic_id)
+                image.wait_for(state='visible')
+                image.evaluate('img => img.decode()')
+                sizes = image.evaluate('''img => {
+                    const viewport = img.closest('.schematic-viewport');
+                    const outer = viewport.getBoundingClientRect();
+                    const figure = img.closest('.figure').getBoundingClientRect();
+                    viewport.scrollLeft = viewport.scrollWidth;
+                    return {left: outer.left, right: outer.right, min: figure.left,
+                        max: figure.right, natural: img.naturalWidth,
+                        imageWidth: img.clientWidth, viewportWidth: viewport.clientWidth,
+                        scrollLeft: viewport.scrollLeft,
+                        maxScroll: viewport.scrollWidth - viewport.clientWidth};
+                }''')
+                assert sizes['natural'] > 0
+                assert sizes['min'] - 1 <= sizes['left'] <= sizes['right'] <= sizes['max'] + 1
+                assert 0 <= sizes['left'] and sizes['right'] <= width
+                assert abs(sizes['maxScroll'] - sizes['scrollLeft']) <= 1
+                if width == 375 and figure in ('internal', 'ram2bit', 'dac-block'):
+                    assert sizes['imageWidth'] > sizes['viewportWidth']
+
+
+@pytest.mark.parametrize('experiment', range(6, 11))
+def test_published_note_viewboxes_contain_geometry(chromium, experiment):
+    from os import environ
+
+    name = f'실험{experiment:02}'
+    folder = Path(environ.get('LAB_NOTE_STAGE_PARENT', ROOT / '복습노트')).resolve() / name
+    with chromium.new_page() as page:
+        for figure in INVENTORY[experiment].split():
+            path = folder / '.pack' / 'figures' / f'{figure}.svg'
+            page.goto(path.as_uri())
+            result = page.evaluate('''async () => {
+                await document.fonts.ready;
+                const root = document.documentElement;
+                const bounds = root.viewBox.baseVal;
+                const toViewBox = root.getCTM().inverse();
+                const clipped = [];
+                for (const item of root.querySelectorAll('text, circle, polyline, path, rect')) {
+                    if (item.matches('.fig-paper')) continue;
+                    const box = item.getBBox();
+                    const transform = toViewBox.multiply(item.getCTM());
+                    const a = new DOMPoint(box.x, box.y).matrixTransform(transform);
+                    const b = new DOMPoint(box.x + box.width, box.y + box.height).matrixTransform(transform);
+                    if (a.x < bounds.x - 0.1 || a.y < bounds.y - 0.1 ||
+                        b.x > bounds.x + bounds.width + 0.1 || b.y > bounds.y + bounds.height + 0.1) {
+                        clipped.push(item.outerHTML);
+                    }
+                }
+                return {clipped, fonts: Array.from(document.fonts, font => [font.weight, font.status])};
+            }''')
+            assert result['fonts'] == [['600', 'loaded']], figure
+            assert not result['clipped'], (figure, result['clipped'])

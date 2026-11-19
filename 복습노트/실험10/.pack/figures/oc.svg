@@ -1,1 +1,72 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 330" role="img" font-family="Arial, 'Malgun Gothic', sans-serif"><title>7404와 7405, 1.5kΩ 풀업</title><desc>7405 출력과 풀업, 가중 저항이 한 접점에서 만나요. +5V 전원은 풀업 위에 있어요.</desc><rect width="1100" height="330" fill="#fff"/><circle cx="140" cy="210" r="6" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="128" y="217" font-size="22" text-anchor="end" fill="#18212e" font-weight="bold">Q (7490)</text><path d="M200,188 L200,232 L246,210 Z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><circle cx="253" cy="210" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><polyline points="146,210 200,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M400,188 L400,232 L446,210 Z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><circle cx="453" cy="210" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><polyline points="260,210 400,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="223" y="262" font-size="20" text-anchor="middle" fill="#6b7585">7404</text><text x="423" y="262" font-size="20" text-anchor="middle" fill="#6b7585">7405</text><text x="423" y="288" font-size="18" text-anchor="middle" fill="#6b7585">(오픈 컬렉터)</text><polyline points="460,210 640,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="600" cy="210" r="5.5" fill="#18212e"/><polyline points="600,70 600,110" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M600,110 l-10,5 l20,10 l-20,10 l20,10 l-20,10 l20,10 l-10,5" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="600,170 600,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="584" y="136" font-size="18" text-anchor="end" fill="#18212e">1.5kΩ</text><text x="584" y="156" font-size="18" text-anchor="end" fill="#18212e">풀업</text><polyline points="560,60 640,60" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="600,60 600,70" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="600" y="46" font-size="22" text-anchor="middle" fill="#c0392b" font-weight="bold">+5V</text><polyline points="640,210 720,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M720,210 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="780,210 860,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="750" y="194" font-size="18" text-anchor="middle" fill="#18212e">가중 저항 (예: 22.6kΩ)</text><polyline points="860,210 900,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="910" y="217" font-size="20" text-anchor="start" fill="#2674df" font-weight="bold">가산 노드로</text><polyline points="600,217 600,245" fill="none" stroke="#6b7585" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><text x="600" y="268" font-size="20" text-anchor="middle" fill="#2674df" font-weight="bold">가중 저항 앞 접점</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 970 325" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,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) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>7404, 7405와 1.5kΩ 풀업</title>
+  <desc>7405의 출력, 1.5kΩ 풀업, 가중 저항이 한 접점에서 만난다.</desc>
+  <rect width="970" height="325" fill="#fff" data-fill="paper" />
+  <circle class="fig-dot" cx="167" cy="210" r="5" data-node="bit" data-node-color="blue" />
+  <text class="fig-text" x="142" y="218" font-size="26" text-anchor="end" data-node="bit" data-node-color="blue">Q (7490)</text>
+  <path d="M185,188 L185,232 L231,210 Z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <circle cx="238" cy="210" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <polyline points="167,210 185,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M369,188 L369,232 L415,210 Z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <circle cx="422" cy="210" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <polyline points="245,210 369,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="208" y="264" font-size="26" text-anchor="middle">7404</text>
+  <text class="fig-text" x="392" y="264" font-size="26" text-anchor="middle">7405</text>
+  <text class="fig-text" x="392" y="295" font-size="22" text-anchor="middle">오픈 컬렉터</text>
+  <polyline points="429,210 606,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="563" cy="210" r="5" data-node="pulled" data-node-color="red" />
+  <text class="fig-text" x="533" y="176" font-size="26" text-anchor="end" data-node="pulled" data-node-color="red">V<tspan baseline-shift="sub" font-size="78%">bit</tspan>
+  </text>
+  <polyline points="563,115.5 553,120.5 573,130.5 553,140.5 573,150.5 553,160.5 573,170.5 563,175.5" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="563,81 563,115.5" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="563,175.5 563,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="595" y="153.5" font-size="24" text-anchor="start">1.5 kΩ</text>
+  <circle class="fig-dot" cx="563" cy="81" r="5" />
+  <text class="fig-text" x="563" y="58" font-size="26" text-anchor="middle">+5 V</text>
+  <polyline points="606,210 666,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M666,210 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="726,210 786,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="696" y="180" font-size="24" text-anchor="middle">가중 저항</text>
+  <polyline points="786,210 815,210" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="815" cy="210" r="5" />
+  <text class="fig-text" x="840" y="218" font-size="26" text-anchor="start">가산점으로</text>
+</svg>

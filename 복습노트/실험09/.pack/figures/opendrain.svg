@@ -1,1 +1,82 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 360" role="img" font-family="Arial, 'Malgun Gothic', sans-serif"><title>열린 드레인 출력과 10kΩ 풀업</title><desc>NAND 출력이 0이면 스위치가 닫혀 GND로, 1이면 열려 풀업이 +5V로 끌어올려요</desc><rect width="940" height="360" fill="#fff"/><text x="210" y="36" font-size="22" text-anchor="middle" fill="#18212e" font-weight="bold">내부 결과 0 → 스위치 닫힘</text><text x="240" y="76" font-size="20" text-anchor="middle" fill="#c0392b" font-weight="bold">+5V</text><polyline points="240,84 240,100" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M240,100 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-linejoin="round"/><text x="260" y="140" font-size="18" text-anchor="start" fill="#c0392b">10k</text><polyline points="240,160 240,190" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="240" cy="190" r="5.5" fill="#18212e"/><polyline points="240,190 370,190" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="380" y="198" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold">출력</text><polyline points="240,190 240,220" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="240" cy="225" r="5" fill="#fff" stroke="#18212e" stroke-width="3"/><polyline points="240,230 240,270" fill="none" stroke="#18212e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="240" cy="275" r="5" fill="#fff" stroke="#18212e" stroke-width="3"/><polyline points="240,280 240,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="220,300 260,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="228,308 252,308" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="120" y="255" font-size="18" text-anchor="start" fill="#6b7585">칩 안</text><text x="380" y="240" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold">= 0V (0)</text><text x="630" y="36" font-size="22" text-anchor="middle" fill="#2674df" font-weight="bold">내부 결과 1 → 스위치 열림</text><text x="660" y="76" font-size="20" text-anchor="middle" fill="#c0392b" font-weight="bold">+5V</text><polyline points="660,84 660,100" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M660,100 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-linejoin="round"/><text x="680" y="140" font-size="18" text-anchor="start" fill="#c0392b">10k</text><polyline points="660,160 660,190" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="660" cy="190" r="5.5" fill="#18212e"/><polyline points="660,190 790,190" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="800" y="198" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold">출력</text><polyline points="660,190 660,220" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="660" cy="225" r="5" fill="#fff" stroke="#18212e" stroke-width="3"/><polyline points="660,230 690,262" fill="none" stroke="#18212e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="660" cy="275" r="5" fill="#fff" stroke="#18212e" stroke-width="3"/><polyline points="660,280 660,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="640,300 680,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="648,308 672,308" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="540" y="255" font-size="18" text-anchor="start" fill="#6b7585">칩 안</text><text x="800" y="240" font-size="22" text-anchor="start" fill="#2674df" font-weight="bold">= +5V (1)</text><text x="470" y="345" font-size="20" text-anchor="middle" fill="#6b7585">풀업이 없으면 오른쪽 경우 출력이 떠서 값이 정해지지 않아요</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 790 355" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,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) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>열린 드레인 출력과 10kΩ 풀업</title>
+  <desc>스위치가 닫히면 OUT은 0V, 열리면 저항이 OUT을 5V로 끌어올린다.</desc>
+  <rect width="790" height="355" fill="#fff" data-fill="paper" />
+  <text class="fig-text" x="114" y="34" font-size="26" text-anchor="middle">닫힌 스위치</text>
+  <text class="fig-text" x="114" y="81" font-size="26" text-anchor="middle">+5 V</text>
+  <circle class="fig-dot" cx="114" cy="100" r="5" />
+  <polyline points="114,100 114,120" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M114,120 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="143" y="153" font-size="22" text-anchor="start">10 kΩ</text>
+  <polyline points="114,180 114,244" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="114" cy="203" r="5" data-node="low" data-node-color="red" />
+  <polyline points="114,203 233,203" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="233" cy="203" r="5" data-node="low" data-node-color="red" />
+  <text class="fig-text" x="258" y="212" font-size="26" text-anchor="start" data-node="low" data-node-color="red">OUT</text>
+  <text class="fig-text" x="258" y="246" font-size="26" text-anchor="start" data-node="low" data-node-color="red">0 V</text>
+  <circle cx="114" cy="248" r="4" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <polyline points="114,252 114,285" fill="none" stroke="#18212e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle cx="114" cy="289" r="4" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <polyline points="114,293 114,319" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="98,319 130,319" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="104,327 124,327" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="110,335 118,335" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="488" y="34" font-size="26" text-anchor="middle">열린 스위치</text>
+  <text class="fig-text" x="488" y="81" font-size="26" text-anchor="middle">+5 V</text>
+  <circle class="fig-dot" cx="488" cy="100" r="5" />
+  <polyline points="488,100 488,120" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M488,120 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="517" y="153" font-size="22" text-anchor="start">10 kΩ</text>
+  <polyline points="488,180 488,244" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="488" cy="203" r="5" data-node="high" data-node-color="blue" />
+  <polyline points="488,203 607,203" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="607" cy="203" r="5" data-node="high" data-node-color="blue" />
+  <text class="fig-text" x="632" y="212" font-size="26" text-anchor="start" data-node="high" data-node-color="blue">OUT</text>
+  <text class="fig-text" x="632" y="246" font-size="26" text-anchor="start" data-node="high" data-node-color="blue">5 V</text>
+  <circle cx="488" cy="248" r="4" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <polyline points="488,252 512,285" fill="none" stroke="#18212e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle cx="488" cy="289" r="4" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <polyline points="488,293 488,319" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="472,319 504,319" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="478,327 498,327" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="484,335 492,335" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+</svg>

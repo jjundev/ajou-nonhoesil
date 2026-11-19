@@ -1,1 +1,87 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" role="img" font-family="Arial, 'Malgun Gothic', sans-serif"><title>네 AND 게이트로 만든 상태 디코더</title><rect width="640" height="470" fill="#fff"/><path d="M210,20 h26 a40,40 0 0 1 0,80 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="241" y="68" font-size="22" text-anchor="middle" fill="#6b7585">&amp;</text><text x="70" y="54.6667" font-size="24" text-anchor="start" fill="#18212e">A'</text><text x="70" y="81.3333" font-size="24" text-anchor="start" fill="#18212e">B'</text><polyline points="115,46.6667 210,46.6667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="115,73.3333 210,73.3333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="276,60 400,60" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="420" y="68" font-size="24" text-anchor="start" fill="#2674df" font-weight="bold">출력 0</text><path d="M210,132 h26 a40,40 0 0 1 0,80 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="241" y="180" font-size="22" text-anchor="middle" fill="#6b7585">&amp;</text><text x="70" y="166.667" font-size="24" text-anchor="start" fill="#18212e">A</text><text x="70" y="193.333" font-size="24" text-anchor="start" fill="#18212e">B'</text><polyline points="115,158.667 210,158.667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="115,185.333 210,185.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="276,172 400,172" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="420" y="180" font-size="24" text-anchor="start" fill="#2674df" font-weight="bold">출력 1</text><path d="M210,244 h26 a40,40 0 0 1 0,80 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="241" y="292" font-size="22" text-anchor="middle" fill="#6b7585">&amp;</text><text x="70" y="278.667" font-size="24" text-anchor="start" fill="#18212e">A'</text><text x="70" y="305.333" font-size="24" text-anchor="start" fill="#18212e">B</text><polyline points="115,270.667 210,270.667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="115,297.333 210,297.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="276,284 400,284" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="420" y="292" font-size="24" text-anchor="start" fill="#2674df" font-weight="bold">출력 2</text><path d="M210,356 h26 a40,40 0 0 1 0,80 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="241" y="404" font-size="22" text-anchor="middle" fill="#6b7585">&amp;</text><text x="70" y="390.667" font-size="24" text-anchor="start" fill="#18212e">A</text><text x="70" y="417.333" font-size="24" text-anchor="start" fill="#18212e">B</text><polyline points="115,382.667 210,382.667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="115,409.333 210,409.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="276,396 400,396" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="420" y="404" font-size="24" text-anchor="start" fill="#2674df" font-weight="bold">출력 3</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 550 470" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,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) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>네 AND 게이트로 만든 상태 디코더</title>
+  <rect width="550" height="470" fill="#fff" data-fill="paper" />
+  <path d="M190,20 h26 a40,40 0 0 1 0,80 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="221" y="68" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted">&amp;</text>
+  <text class="fig-text" x="99" y="54.6667" font-size="26" text-anchor="end" data-node="A-bar" data-node-color="red">A′</text>
+  <polyline points="123,46.6667 190,46.6667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="123" cy="46.6667" r="5" data-node="A-bar" data-node-color="red" />
+  <text class="fig-text" x="99" y="81.3333" font-size="26" text-anchor="end" data-node="B-bar" data-node-color="red">B′</text>
+  <polyline points="123,73.3333 190,73.3333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="123" cy="73.3333" r="5" data-node="B-bar" data-node-color="red" />
+  <polyline points="256,60 368,60" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="368" cy="60" r="5" />
+  <text class="fig-text" x="391" y="68" font-size="26" text-anchor="start">출력 0</text>
+  <path d="M190,132 h26 a40,40 0 0 1 0,80 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="221" y="180" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted">&amp;</text>
+  <text class="fig-text" x="99" y="166.667" font-size="26" text-anchor="end" data-node="A" data-node-color="blue">A</text>
+  <polyline points="123,158.667 190,158.667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="123" cy="158.667" r="5" data-node="A" data-node-color="blue" />
+  <text class="fig-text" x="99" y="193.333" font-size="26" text-anchor="end" data-node="B-bar" data-node-color="red">B′</text>
+  <polyline points="123,185.333 190,185.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="123" cy="185.333" r="5" data-node="B-bar" data-node-color="red" />
+  <polyline points="256,172 368,172" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="368" cy="172" r="5" />
+  <text class="fig-text" x="391" y="180" font-size="26" text-anchor="start">출력 1</text>
+  <path d="M190,244 h26 a40,40 0 0 1 0,80 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="221" y="292" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted">&amp;</text>
+  <text class="fig-text" x="99" y="278.667" font-size="26" text-anchor="end" data-node="A-bar" data-node-color="red">A′</text>
+  <polyline points="123,270.667 190,270.667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="123" cy="270.667" r="5" data-node="A-bar" data-node-color="red" />
+  <text class="fig-text" x="99" y="305.333" font-size="26" text-anchor="end" data-node="B" data-node-color="blue">B</text>
+  <polyline points="123,297.333 190,297.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="123" cy="297.333" r="5" data-node="B" data-node-color="blue" />
+  <polyline points="256,284 368,284" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="368" cy="284" r="5" />
+  <text class="fig-text" x="391" y="292" font-size="26" text-anchor="start">출력 2</text>
+  <path d="M190,356 h26 a40,40 0 0 1 0,80 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="221" y="404" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted">&amp;</text>
+  <text class="fig-text" x="99" y="390.667" font-size="26" text-anchor="end" data-node="A" data-node-color="blue">A</text>
+  <polyline points="123,382.667 190,382.667" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="123" cy="382.667" r="5" data-node="A" data-node-color="blue" />
+  <text class="fig-text" x="99" y="417.333" font-size="26" text-anchor="end" data-node="B" data-node-color="blue">B</text>
+  <polyline points="123,409.333 190,409.333" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="123" cy="409.333" r="5" data-node="B" data-node-color="blue" />
+  <polyline points="256,396 368,396" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="368" cy="396" r="5" />
+  <text class="fig-text" x="391" y="404" font-size="26" text-anchor="start">출력 3</text>
+</svg>

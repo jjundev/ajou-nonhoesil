@@ -1,1 +1,80 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" role="img" font-family="Arial, 'Malgun Gothic', sans-serif"><title>실험 2 비교기 (교안 p22를 다시 그림)</title><desc>DAC OUTPUT → 2번(−), R13 가운데 단자 → 3번(+), 7번 +15V, 4번 GND</desc><rect width="900" height="420" fill="#fff"/><path d="M470,145 L470,295 L620,220 Z" fill="#e8f1ff" stroke="#2674df" stroke-width="3" stroke-linejoin="round"/><text x="484" y="191.5" font-size="28" text-anchor="start" fill="#18212e" font-weight="bold">−</text><text x="484" y="266.5" font-size="28" text-anchor="start" fill="#18212e" font-weight="bold">+</text><text x="533" y="228" font-size="18" text-anchor="middle" fill="#6b7585">LM741 (U5)</text><text x="462" y="174.5" font-size="18" text-anchor="end" fill="#6b7585">2</text><text x="462" y="249.5" font-size="18" text-anchor="end" fill="#6b7585">3</text><text x="628" y="210" font-size="18" text-anchor="start" fill="#6b7585">6</text><circle cx="90" cy="182.5" r="6" fill="#fff" stroke="#c0392b" stroke-width="3"/><text x="90" y="166.5" font-size="20" text-anchor="start" fill="#c0392b" font-weight="bold">DAC OUTPUT</text><polyline points="96,182.5 470,182.5" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="218" y="212" font-size="20" text-anchor="end" fill="#c0392b" font-weight="bold">+15V</text><circle cx="230" cy="205" r="5" fill="#fff" stroke="#c0392b" stroke-width="3"/><polyline points="230,210 230,235" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M230,235 l-10,5 l20,10 l-20,10 l20,10 l-20,10 l20,10 l-10,5" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="230,295 230,320" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="214" y="261" font-size="18" text-anchor="end" fill="#18212e">R13</text><text x="214" y="281" font-size="18" text-anchor="end" fill="#18212e">330Ω</text><polyline points="230,320 230,330" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="215,330 245,330" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="221,337 239,337" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="227,344 233,344" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M246,257.5 l12,-7 l0,14 z" fill="#18212e" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="258,257.5 470,257.5" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="545,182.5 545,90" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="553" y="120" font-size="18" text-anchor="start" fill="#6b7585">4</text><text x="545" y="80" font-size="18" text-anchor="middle" fill="#18212e">0 (GND)</text><polyline points="545,257.5 545,330" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="553" y="310" font-size="18" text-anchor="start" fill="#6b7585">7</text><text x="545" y="356" font-size="20" text-anchor="middle" fill="#c0392b" font-weight="bold">+15V</text><polyline points="620,220 780,220" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="790" y="227" font-size="20" text-anchor="start" fill="#c0392b" font-weight="bold">OUTPUT</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,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) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>실험 2 비교기 (교안 p22를 다시 그림)</title>
+  <desc>DAC OUTPUT → 2번(−), R13 가운데 단자 → 3번(+), 7번 +15V, 4번 GND</desc>
+  <rect width="900" height="420" fill="#fff" data-fill="paper" />
+  <path d="M470,145 L470,295 L620,220 Z" fill="#e8f1ff" stroke="#2674df" stroke-width="3" stroke-linejoin="round" data-stroke="blue" data-fill="panel" />
+  <text x="490" y="191.5" font-size="28" text-anchor="start" fill="#18212e" font-weight="bold" data-fill="ink">−</text>
+  <text x="490" y="266.5" font-size="28" text-anchor="start" fill="#18212e" font-weight="bold" data-fill="ink">+</text>
+  <text x="533" y="228" font-size="18" text-anchor="middle" fill="#6b7585" data-fill="muted">LM741 (U5)</text>
+  <text x="462" y="163.5" font-size="18" text-anchor="end" fill="#6b7585" data-fill="muted">2</text>
+  <text x="462" y="238.5" font-size="18" text-anchor="end" fill="#6b7585" data-fill="muted">3</text>
+  <text x="628" y="199" font-size="18" text-anchor="start" fill="#6b7585" data-fill="muted">6</text>
+  <circle class="fig-dot" cx="105" cy="182.5" r="5" data-node="in" data-node-color="red" />
+  <text class="fig-text" x="105" y="147.5" font-size="26" text-anchor="middle" data-node="in" data-node-color="red">DAC OUT</text>
+  <polyline points="105,182.5 470,182.5" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="230" cy="211" r="5" />
+  <text class="fig-text" x="205" y="219" font-size="26" text-anchor="end">+15 V</text>
+  <polyline points="230,256.5 220,261.5 240,271.5 220,281.5 240,291.5 220,301.5 240,311.5 230,316.5" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="230,211 230,256.5" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="230,316.5 230,362" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="198" y="294.5" font-size="24" text-anchor="end">R<tspan baseline-shift="sub" font-size="78%">13</tspan>  330 Ω</text>
+  <polyline points="230,362 230,372" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="215,372 245,372" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="221,379 239,379" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="227,386 233,386" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M230,257.5 l26,-7 v14 z" fill="#18212e" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="ink" />
+  <polyline points="256,257.5 470,257.5" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="310" y="222.5" font-size="26" text-anchor="start">V<tspan baseline-shift="sub" font-size="78%">ref</tspan>
+  </text>
+  <polyline points="545,182.5 545,90" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="545,257.5 545,330" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="530,90 560,90" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="536,83 554,83" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="542,76 548,76" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="566" y="124" font-size="22" text-anchor="start">4</text>
+  <text class="fig-text" x="566" y="312" font-size="22" text-anchor="start">7</text>
+  <circle class="fig-dot" cx="545" cy="330" r="5" data-node="supply" data-node-color="red" />
+  <text class="fig-text" x="545" y="369" font-size="26" text-anchor="middle" data-node="supply" data-node-color="red">+15 V</text>
+  <polyline points="620,220 780,220" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="780" cy="220" r="5" data-node="out" data-node-color="blue" />
+  <text class="fig-text" x="805" y="228" font-size="26" text-anchor="start" data-node="out" data-node-color="blue">OUT</text>
+</svg>

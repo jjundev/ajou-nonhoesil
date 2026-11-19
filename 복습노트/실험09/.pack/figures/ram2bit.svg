@@ -1,1 +1,242 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1020" role="img" font-family="Arial, 'Malgun Gothic', sans-serif"><title>2 bit RAM 회로 (74HC00 두 개, 74HC03 하나)</title><desc>OE0·IN0·WR0·OE1·IN1·WR1 입력, 비트마다 NAND SR 래치와 74HC03 출력단, OUT0·OUT1 LED</desc><rect width="1600" height="1020" fill="#fff"/><path d="M440,110 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="472" y="160" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="515" cy="152" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><path d="M440,330 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="472" y="380" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="515" cy="372" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><path d="M700,124 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="732" y="174" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="775" cy="166" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><path d="M700,316 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="732" y="366" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="775" cy="358" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="434" y="132" font-size="18" text-anchor="end" fill="#6b7585">1</text><text x="434" y="160" font-size="18" text-anchor="end" fill="#6b7585">2</text><text x="526" y="144" font-size="18" text-anchor="start" fill="#6b7585">3</text><text x="474" y="206" font-size="18" text-anchor="middle" fill="#6b7585">74HC00</text><text x="434" y="352" font-size="18" text-anchor="end" fill="#6b7585">4</text><text x="434" y="380" font-size="18" text-anchor="end" fill="#6b7585">5</text><text x="526" y="364" font-size="18" text-anchor="start" fill="#6b7585">6</text><text x="474" y="426" font-size="18" text-anchor="middle" fill="#6b7585">74HC00</text><text x="694" y="146" font-size="18" text-anchor="end" fill="#6b7585">12</text><text x="694" y="174" font-size="18" text-anchor="end" fill="#6b7585">13</text><text x="786" y="158" font-size="18" text-anchor="start" fill="#6b7585">11</text><text x="734" y="220" font-size="18" text-anchor="middle" fill="#6b7585">74HC00</text><text x="694" y="338" font-size="18" text-anchor="end" fill="#6b7585">9</text><text x="694" y="366" font-size="18" text-anchor="end" fill="#6b7585">10</text><text x="786" y="350" font-size="18" text-anchor="start" fill="#6b7585">8</text><text x="734" y="412" font-size="18" text-anchor="middle" fill="#6b7585">74HC00</text><polyline points="522,152 700,152" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="522,372 700,372" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="782,166 820,166 820,285 660,285 660,344 700,344" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="820" cy="166" r="5.5" fill="#18212e"/><polyline points="782,358 850,358 850,245 630,245 630,180 700,180" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M1010,110 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="1042" y="160" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="1085" cy="152" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><path d="M1270,124 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="1302" y="174" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="1345" cy="166" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="1004" y="132" font-size="18" text-anchor="end" fill="#6b7585">1</text><text x="1004" y="188" font-size="18" text-anchor="end" fill="#6b7585">2</text><text x="1096" y="144" font-size="18" text-anchor="start" fill="#6b7585">3</text><text x="1044" y="214" font-size="18" text-anchor="middle" fill="#6b7585">74HC03</text><text x="1264" y="146" font-size="18" text-anchor="end" fill="#6b7585">12</text><text x="1264" y="202" font-size="18" text-anchor="end" fill="#6b7585">13</text><text x="1356" y="158" font-size="18" text-anchor="start" fill="#6b7585">11</text><text x="1304" y="228" font-size="18" text-anchor="middle" fill="#6b7585">74HC03</text><polyline points="820,166 1010,166" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="1092,152 1200,152" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="1200" cy="152" r="5.5" fill="#18212e"/><polyline points="1200,152 1270,152" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="1200,152 1200,180 1270,180" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="1200,152 1200,152" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="1200,40 1200,60" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M1200,60 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-linejoin="round"/><text x="1216" y="94" font-size="18" text-anchor="start" fill="#c0392b">10k</text><polyline points="1440,40 1440,60" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M1440,60 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-linejoin="round"/><text x="1456" y="94" font-size="18" text-anchor="start" fill="#c0392b">10k</text><polyline points="1200,120 1200,152" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="1200,40 1440,40" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="1190" y="30" font-size="20" text-anchor="end" fill="#c0392b" font-weight="bold">+5V</text><polyline points="1352,166 1440,166" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="1440" cy="166" r="5.5" fill="#18212e"/><polyline points="1440,120 1440,166" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="1440,166 1490,166" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="1500" y="174" font-size="24" text-anchor="start" fill="#2674df" font-weight="bold">OUT0</text><text x="1500" y="204" font-size="20" text-anchor="start" fill="#6b7585">→ LED</text><text x="1080" y="330" font-size="90" text-anchor="middle" fill="#cbd5e1" font-weight="bold">A</text><path d="M150,59 h28 l12,11 l-12,11 h-28 z" fill="#fff" stroke="#18212e" stroke-width="2.5" stroke-linejoin="round"/><text x="140" y="78" font-size="22" text-anchor="end" fill="#18212e" font-weight="bold">OE0</text><polyline points="190,70 960,70 960,138 1010,138" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M150,127.0 h28 l12,11 l-12,11 h-28 z" fill="#fff" stroke="#18212e" stroke-width="2.5" stroke-linejoin="round"/><text x="140" y="146" font-size="22" text-anchor="end" fill="#18212e" font-weight="bold">IN0</text><polyline points="190,138 440,138" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="300" cy="138" r="5.5" fill="#18212e"/><polyline points="300,138 300,358 440,358" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M440,600 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="472" y="650" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="515" cy="642" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><path d="M440,820 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="472" y="870" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="515" cy="862" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><path d="M700,614 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="732" y="664" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="775" cy="656" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><path d="M700,806 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="732" y="856" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="775" cy="848" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="434" y="622" font-size="18" text-anchor="end" fill="#6b7585">1</text><text x="434" y="650" font-size="18" text-anchor="end" fill="#6b7585">2</text><text x="526" y="634" font-size="18" text-anchor="start" fill="#6b7585">3</text><text x="474" y="696" font-size="18" text-anchor="middle" fill="#6b7585">74HC00</text><text x="434" y="842" font-size="18" text-anchor="end" fill="#6b7585">4</text><text x="434" y="870" font-size="18" text-anchor="end" fill="#6b7585">5</text><text x="526" y="854" font-size="18" text-anchor="start" fill="#6b7585">6</text><text x="474" y="916" font-size="18" text-anchor="middle" fill="#6b7585">74HC00</text><text x="694" y="636" font-size="18" text-anchor="end" fill="#6b7585">12</text><text x="694" y="664" font-size="18" text-anchor="end" fill="#6b7585">13</text><text x="786" y="648" font-size="18" text-anchor="start" fill="#6b7585">11</text><text x="734" y="710" font-size="18" text-anchor="middle" fill="#6b7585">74HC00</text><text x="694" y="828" font-size="18" text-anchor="end" fill="#6b7585">9</text><text x="694" y="856" font-size="18" text-anchor="end" fill="#6b7585">10</text><text x="786" y="840" font-size="18" text-anchor="start" fill="#6b7585">8</text><text x="734" y="902" font-size="18" text-anchor="middle" fill="#6b7585">74HC00</text><polyline points="522,642 700,642" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="522,862 700,862" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="782,656 820,656 820,775 660,775 660,834 700,834" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="820" cy="656" r="5.5" fill="#18212e"/><polyline points="782,848 850,848 850,735 630,735 630,670 700,670" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M1010,600 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="1042" y="650" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="1085" cy="642" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><path d="M1270,614 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="1302" y="664" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="1345" cy="656" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="1004" y="622" font-size="18" text-anchor="end" fill="#6b7585">4</text><text x="1004" y="678" font-size="18" text-anchor="end" fill="#6b7585">5</text><text x="1096" y="634" font-size="18" text-anchor="start" fill="#6b7585">6</text><text x="1044" y="704" font-size="18" text-anchor="middle" fill="#6b7585">74HC03</text><text x="1264" y="636" font-size="18" text-anchor="end" fill="#6b7585">9</text><text x="1264" y="692" font-size="18" text-anchor="end" fill="#6b7585">10</text><text x="1356" y="648" font-size="18" text-anchor="start" fill="#6b7585">8</text><text x="1304" y="718" font-size="18" text-anchor="middle" fill="#6b7585">74HC03</text><polyline points="820,656 1010,656" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="1092,642 1200,642" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="1200" cy="642" r="5.5" fill="#18212e"/><polyline points="1200,642 1270,642" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="1200,642 1200,670 1270,670" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="1200,642 1200,642" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="1200,530 1200,550" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M1200,550 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-linejoin="round"/><text x="1216" y="584" font-size="18" text-anchor="start" fill="#c0392b">10k</text><polyline points="1440,530 1440,550" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M1440,550 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-linejoin="round"/><text x="1456" y="584" font-size="18" text-anchor="start" fill="#c0392b">10k</text><polyline points="1200,610 1200,642" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="1200,530 1440,530" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="1190" y="520" font-size="20" text-anchor="end" fill="#c0392b" font-weight="bold">+5V</text><polyline points="1352,656 1440,656" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="1440" cy="656" r="5.5" fill="#18212e"/><polyline points="1440,610 1440,656" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="1440,656 1490,656" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="1500" y="664" font-size="24" text-anchor="start" fill="#2674df" font-weight="bold">OUT1</text><text x="1500" y="694" font-size="20" text-anchor="start" fill="#6b7585">→ LED</text><text x="1080" y="820" font-size="90" text-anchor="middle" fill="#cbd5e1" font-weight="bold">B</text><path d="M150,549 h28 l12,11 l-12,11 h-28 z" fill="#fff" stroke="#18212e" stroke-width="2.5" stroke-linejoin="round"/><text x="140" y="568" font-size="22" text-anchor="end" fill="#18212e" font-weight="bold">OE1</text><polyline points="190,560 960,560 960,628 1010,628" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M150,617.0 h28 l12,11 l-12,11 h-28 z" fill="#fff" stroke="#18212e" stroke-width="2.5" stroke-linejoin="round"/><text x="140" y="636" font-size="22" text-anchor="end" fill="#18212e" font-weight="bold">IN1</text><polyline points="190,628 440,628" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="300" cy="628" r="5.5" fill="#18212e"/><polyline points="300,628 300,848 440,848" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M150,375.0 h28 l12,11 l-12,11 h-28 z" fill="#fff" stroke="#1e7d4f" stroke-width="2.5" stroke-linejoin="round"/><text x="140" y="394" font-size="22" text-anchor="end" fill="#1e7d4f" font-weight="bold">WR0</text><polyline points="190,386 440,386" fill="none" stroke="#1e7d4f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="380" cy="386" r="5.5" fill="#1e7d4f"/><polyline points="380,386 380,876 440,876" fill="none" stroke="#1e7d4f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M150,949 h28 l12,11 l-12,11 h-28 z" fill="#fff" stroke="#2674df" stroke-width="2.5" stroke-linejoin="round"/><text x="140" y="968" font-size="22" text-anchor="end" fill="#2674df" font-weight="bold">WR1</text><polyline points="190,960 340,960 340,166 440,166" fill="none" stroke="#2674df" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="340" cy="656" r="5.5" fill="#2674df"/><polyline points="340,656 440,656" fill="none" stroke="#2674df" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="30" y="1005" font-size="20" text-anchor="start" fill="#6b7585">입력 스위치는 단자로 줄여 그렸어요. 선이 엇갈리기만 하는 곳(점 없음)은 연결이 아니에요.</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1630 1030" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,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) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>2 bit RAM 회로 (74HC00 두 개, 74HC03 하나)</title>
+  <desc>OE0·IN0·WR0·OE1·IN1·WR1 입력, 비트마다 NAND SR 래치와 74HC03 출력단, OUT0·OUT1 LED</desc>
+  <rect width="1630" height="1030" fill="#fff" data-fill="paper" />
+  <path d="M440,130 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="472" y="180" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="515" cy="172" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <path d="M440,350 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="472" y="400" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="515" cy="392" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <path d="M700,144 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="732" y="194" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="775" cy="186" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <path d="M700,336 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="732" y="386" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="775" cy="378" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <text class="fig-text" x="457" y="164" font-size="18" text-anchor="start">1</text>
+  <text class="fig-text" x="457" y="192" font-size="18" text-anchor="start">2</text>
+  <text class="fig-text" x="534" y="156" font-size="18" text-anchor="start">3</text>
+  <text class="fig-text" x="473" y="244" font-size="18" text-anchor="middle">74HC00</text>
+  <text class="fig-text" x="457" y="384" font-size="18" text-anchor="start">4</text>
+  <text class="fig-text" x="457" y="412" font-size="18" text-anchor="start">5</text>
+  <text class="fig-text" x="534" y="376" font-size="18" text-anchor="start">6</text>
+  <text class="fig-text" x="473" y="464" font-size="18" text-anchor="middle">74HC00</text>
+  <text class="fig-text" x="717" y="178" font-size="18" text-anchor="start">12</text>
+  <text class="fig-text" x="717" y="206" font-size="18" text-anchor="start">13</text>
+  <text class="fig-text" x="794" y="170" font-size="18" text-anchor="start">11</text>
+  <text class="fig-text" x="733" y="251" font-size="18" text-anchor="middle">74HC00</text>
+  <text class="fig-text" x="717" y="370" font-size="18" text-anchor="start">9</text>
+  <text class="fig-text" x="717" y="398" font-size="18" text-anchor="start">10</text>
+  <text class="fig-text" x="794" y="362" font-size="18" text-anchor="start">8</text>
+  <text class="fig-text" x="733" y="450" font-size="18" text-anchor="middle">74HC00</text>
+  <polyline points="522,172 700,172" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="522,392 700,392" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="782,186 820,186 820,305 660,305 660,364 700,364" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="820" cy="186" r="5" data-node="qA" data-node-color="blue" />
+  <text class="fig-text" x="887" y="155" font-size="26" text-anchor="middle" data-node="qA" data-node-color="blue">Q<tspan baseline-shift="sub" font-size="78%">A</tspan>
+  </text>
+  <polyline points="782,378 850,378 850,265 630,265 630,200 700,200" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M1010,130 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="1042" y="180" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="1085" cy="172" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <path d="M1270,144 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="1302" y="194" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="1345" cy="186" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <text class="fig-text" x="1027" y="164" font-size="18" text-anchor="start">1</text>
+  <text class="fig-text" x="1027" y="192" font-size="18" text-anchor="start">2</text>
+  <text class="fig-text" x="1104" y="156" font-size="18" text-anchor="start">3</text>
+  <text class="fig-text" x="1043" y="244" font-size="18" text-anchor="middle">74HC03</text>
+  <text class="fig-text" x="1287" y="178" font-size="18" text-anchor="start">12</text>
+  <text class="fig-text" x="1287" y="206" font-size="18" text-anchor="start">13</text>
+  <text class="fig-text" x="1364" y="170" font-size="18" text-anchor="start">11</text>
+  <text class="fig-text" x="1303" y="258" font-size="18" text-anchor="middle">74HC03</text>
+  <polyline points="820,186 1010,186" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1092,172 1200,172" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle cx="1200" cy="172" r="5.5" fill="#18212e" data-fill="ink" />
+  <polyline points="1200,172 1270,172" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1200,172 1200,200 1270,200" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1200,172 1200,172" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1200,60 1200,80" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <path d="M1200,80 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-linejoin="round" data-stroke="red" />
+  <text x="1216" y="114" font-size="18" text-anchor="start" fill="#c0392b" data-fill="red">10 kΩ</text>
+  <polyline points="1440,60 1440,80" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <path d="M1440,80 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-linejoin="round" data-stroke="red" />
+  <text x="1456" y="114" font-size="18" text-anchor="start" fill="#c0392b" data-fill="red">10 kΩ</text>
+  <polyline points="1200,140 1200,172" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <polyline points="1200,60 1440,60" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <text x="1190" y="50" font-size="20" text-anchor="end" fill="#c0392b" font-weight="bold" data-fill="red">+5V</text>
+  <polyline points="1352,186 1440,186" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="1440" cy="186" r="5" data-node="out0" data-node-color="blue" />
+  <polyline points="1440,140 1440,186" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <polyline points="1440,186 1490,186" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="1490" cy="186" r="5" data-node="out0" data-node-color="blue" />
+  <text class="fig-text" x="1514" y="194" font-size="26" text-anchor="start" data-node="out0" data-node-color="blue">OUT<tspan baseline-shift="sub" font-size="78%">0</tspan>
+  </text>
+  <text class="fig-text" x="1514" y="225" font-size="20" text-anchor="start">→ LED</text>
+  <text class="fig-text" x="1120" y="325" font-size="32" text-anchor="middle">비트 A</text>
+  <path class="fig-crossing" d="M820,256v18" stroke-width="12" />
+  <polyline points="820,256 820,274" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path class="fig-crossing" d="M850,177v18" stroke-width="12" />
+  <polyline points="850,177 850,195" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="190" cy="90" r="5" />
+  <text class="fig-text" x="168" y="98" font-size="24" text-anchor="end">OE0</text>
+  <polyline points="190,90 960,90 960,158 1010,158" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="190" cy="158" r="5" data-node="in0" data-node-color="blue" />
+  <text class="fig-text" x="168" y="166" font-size="24" text-anchor="end" data-node="in0" data-node-color="blue">IN0</text>
+  <polyline points="190,158 440,158" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="300" cy="158" r="5" data-node="in0" data-node-color="blue" />
+  <polyline points="300,158 300,378 440,378" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M440,620 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="472" y="670" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="515" cy="662" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <path d="M440,840 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="472" y="890" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="515" cy="882" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <path d="M700,634 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="732" y="684" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="775" cy="676" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <path d="M700,826 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="732" y="876" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="775" cy="868" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <text class="fig-text" x="457" y="654" font-size="18" text-anchor="start">1</text>
+  <text class="fig-text" x="457" y="682" font-size="18" text-anchor="start">2</text>
+  <text class="fig-text" x="534" y="646" font-size="18" text-anchor="start">3</text>
+  <text class="fig-text" x="473" y="734" font-size="18" text-anchor="middle">74HC00</text>
+  <text class="fig-text" x="457" y="874" font-size="18" text-anchor="start">4</text>
+  <text class="fig-text" x="457" y="902" font-size="18" text-anchor="start">5</text>
+  <text class="fig-text" x="534" y="866" font-size="18" text-anchor="start">6</text>
+  <text class="fig-text" x="473" y="954" font-size="18" text-anchor="middle">74HC00</text>
+  <text class="fig-text" x="717" y="668" font-size="18" text-anchor="start">12</text>
+  <text class="fig-text" x="717" y="696" font-size="18" text-anchor="start">13</text>
+  <text class="fig-text" x="794" y="660" font-size="18" text-anchor="start">11</text>
+  <text class="fig-text" x="733" y="741" font-size="18" text-anchor="middle">74HC00</text>
+  <text class="fig-text" x="717" y="860" font-size="18" text-anchor="start">9</text>
+  <text class="fig-text" x="717" y="888" font-size="18" text-anchor="start">10</text>
+  <text class="fig-text" x="794" y="852" font-size="18" text-anchor="start">8</text>
+  <text class="fig-text" x="733" y="940" font-size="18" text-anchor="middle">74HC00</text>
+  <polyline points="522,662 700,662" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="522,882 700,882" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="782,676 820,676 820,795 660,795 660,854 700,854" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="820" cy="676" r="5" data-node="qB" data-node-color="blue" />
+  <text class="fig-text" x="887" y="645" font-size="26" text-anchor="middle" data-node="qB" data-node-color="blue">Q<tspan baseline-shift="sub" font-size="78%">B</tspan>
+  </text>
+  <polyline points="782,868 850,868 850,755 630,755 630,690 700,690" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M1010,620 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="1042" y="670" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="1085" cy="662" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <path d="M1270,634 h26 a42,42 0 0 1 0,84 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="1302" y="684" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="1345" cy="676" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <text class="fig-text" x="1027" y="654" font-size="18" text-anchor="start">4</text>
+  <text class="fig-text" x="1027" y="682" font-size="18" text-anchor="start">5</text>
+  <text class="fig-text" x="1104" y="646" font-size="18" text-anchor="start">6</text>
+  <text class="fig-text" x="1043" y="734" font-size="18" text-anchor="middle">74HC03</text>
+  <text class="fig-text" x="1287" y="668" font-size="18" text-anchor="start">9</text>
+  <text class="fig-text" x="1287" y="696" font-size="18" text-anchor="start">10</text>
+  <text class="fig-text" x="1364" y="660" font-size="18" text-anchor="start">8</text>
+  <text class="fig-text" x="1303" y="748" font-size="18" text-anchor="middle">74HC03</text>
+  <polyline points="820,676 1010,676" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1092,662 1200,662" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle cx="1200" cy="662" r="5.5" fill="#18212e" data-fill="ink" />
+  <polyline points="1200,662 1270,662" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1200,662 1200,690 1270,690" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1200,662 1200,662" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1200,550 1200,570" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <path d="M1200,570 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-linejoin="round" data-stroke="red" />
+  <text x="1216" y="604" font-size="18" text-anchor="start" fill="#c0392b" data-fill="red">10 kΩ</text>
+  <polyline points="1440,550 1440,570" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <path d="M1440,570 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-linejoin="round" data-stroke="red" />
+  <text x="1456" y="604" font-size="18" text-anchor="start" fill="#c0392b" data-fill="red">10 kΩ</text>
+  <polyline points="1200,630 1200,662" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <polyline points="1200,550 1440,550" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <text x="1190" y="540" font-size="20" text-anchor="end" fill="#c0392b" font-weight="bold" data-fill="red">+5V</text>
+  <polyline points="1352,676 1440,676" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="1440" cy="676" r="5" data-node="out1" data-node-color="blue" />
+  <polyline points="1440,630 1440,676" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <polyline points="1440,676 1490,676" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="1490" cy="676" r="5" data-node="out1" data-node-color="blue" />
+  <text class="fig-text" x="1514" y="684" font-size="26" text-anchor="start" data-node="out1" data-node-color="blue">OUT<tspan baseline-shift="sub" font-size="78%">1</tspan>
+  </text>
+  <text class="fig-text" x="1514" y="715" font-size="20" text-anchor="start">→ LED</text>
+  <text class="fig-text" x="1120" y="815" font-size="32" text-anchor="middle">비트 B</text>
+  <path class="fig-crossing" d="M820,746v18" stroke-width="12" />
+  <polyline points="820,746 820,764" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path class="fig-crossing" d="M850,667v18" stroke-width="12" />
+  <polyline points="850,667 850,685" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="190" cy="580" r="5" />
+  <text class="fig-text" x="168" y="588" font-size="24" text-anchor="end">OE1</text>
+  <polyline points="190,580 960,580 960,648 1010,648" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="190" cy="648" r="5" data-node="in1" data-node-color="blue" />
+  <text class="fig-text" x="168" y="656" font-size="24" text-anchor="end" data-node="in1" data-node-color="blue">IN1</text>
+  <polyline points="190,648 440,648" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="300" cy="648" r="5" data-node="in1" data-node-color="blue" />
+  <polyline points="300,648 300,868 440,868" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="190" cy="406" r="5" data-node="wr0" data-node-color="red" />
+  <text class="fig-text" x="168" y="414" font-size="24" text-anchor="end" data-node="wr0" data-node-color="red">WR0</text>
+  <polyline points="190,406 440,406" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <circle class="fig-dot" cx="380" cy="406" r="5" data-node="wr0" data-node-color="red" />
+  <polyline points="380,406 380,896 440,896" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <circle class="fig-dot" cx="190" cy="980" r="5" data-node="wr1" data-node-color="blue" />
+  <text class="fig-text" x="168" y="988" font-size="24" text-anchor="end" data-node="wr1" data-node-color="blue">WR1</text>
+  <polyline points="190,980 340,980 340,186 440,186" fill="none" stroke="#2674df" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="blue" />
+  <circle class="fig-dot" cx="340" cy="676" r="5" data-node="wr1" data-node-color="blue" />
+  <polyline points="340,676 440,676" fill="none" stroke="#2674df" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="blue" />
+  <path class="fig-crossing" d="M380,571v18" stroke-width="12" />
+  <polyline points="380,571 380,589" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <path class="fig-crossing" d="M380,639v18" stroke-width="12" />
+  <polyline points="380,639 380,657" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <path class="fig-crossing" d="M380,667v18" stroke-width="12" />
+  <polyline points="380,667 380,685" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <path class="fig-crossing" d="M380,859v18" stroke-width="12" />
+  <polyline points="380,859 380,877" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="red" />
+  <path class="fig-crossing" d="M340,369v18" stroke-width="12" />
+  <polyline points="340,369 340,387" fill="none" stroke="#2674df" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="blue" />
+  <path class="fig-crossing" d="M340,397v18" stroke-width="12" />
+  <polyline points="340,397 340,415" fill="none" stroke="#2674df" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="blue" />
+  <path class="fig-crossing" d="M340,571v18" stroke-width="12" />
+  <polyline points="340,571 340,589" fill="none" stroke="#2674df" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="blue" />
+  <path class="fig-crossing" d="M340,639v18" stroke-width="12" />
+  <polyline points="340,639 340,657" fill="none" stroke="#2674df" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="blue" />
+  <path class="fig-crossing" d="M340,859v18" stroke-width="12" />
+  <polyline points="340,859 340,877" fill="none" stroke="#2674df" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="blue" />
+</svg>

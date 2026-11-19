@@ -1,1 +1,150 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 560" role="img" font-family="Arial, 'Malgun Gothic', sans-serif"><title>Weighted resistor와 Ladder type resistor</title><desc>왼쪽 가중 저항, 오른쪽 R-2R 래더</desc><rect width="1300" height="560" fill="#fff"/><circle cx="90" cy="70" r="6" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="90" y="56" font-size="22" text-anchor="middle" fill="#18212e" font-weight="bold">D1</text><polyline points="90,76 90,138" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M90,138 l-10,5 l20,10 l-20,10 l20,10 l-20,10 l20,10 l-10,5" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="90,198 90,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="106" y="174" font-size="18" text-anchor="start" fill="#18212e">R</text><circle cx="90" cy="260" r="5.5" fill="#18212e"/><circle cx="210" cy="70" r="6" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="210" y="56" font-size="22" text-anchor="middle" fill="#18212e" font-weight="bold">D2</text><polyline points="210,76 210,138" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M210,138 l-10,5 l20,10 l-20,10 l20,10 l-20,10 l20,10 l-10,5" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="210,198 210,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="226" y="174" font-size="18" text-anchor="start" fill="#18212e">2R</text><circle cx="210" cy="260" r="5.5" fill="#18212e"/><circle cx="330" cy="70" r="6" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="330" y="56" font-size="22" text-anchor="middle" fill="#18212e" font-weight="bold">D3</text><polyline points="330,76 330,138" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M330,138 l-10,5 l20,10 l-20,10 l20,10 l-20,10 l20,10 l-10,5" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="330,198 330,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="346" y="174" font-size="18" text-anchor="start" fill="#18212e">4R</text><circle cx="330" cy="260" r="5.5" fill="#18212e"/><circle cx="450" cy="70" r="6" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="450" y="56" font-size="22" text-anchor="middle" fill="#18212e" font-weight="bold">Dn</text><polyline points="450,76 450,138" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M450,138 l-10,5 l20,10 l-20,10 l20,10 l-20,10 l20,10 l-10,5" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="450,198 450,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="466" y="174" font-size="18" text-anchor="start" fill="#18212e">2ⁿ⁻¹R</text><circle cx="450" cy="260" r="5.5" fill="#18212e"/><text x="390" y="112" font-size="28" text-anchor="middle" fill="#18212e">…</text><polyline points="90,260 450,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="270" cy="260" r="5.5" fill="#18212e"/><polyline points="270,260 270,310" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M270,310 l-10,5 l20,10 l-20,10 l20,10 l-20,10 l20,10 l-10,5" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="270,370 270,420" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="286" y="346" font-size="18" text-anchor="start" fill="#18212e">RL ≫ R</text><polyline points="270,420 270,430" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="255,430 285,430" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="261,437 279,437" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="267,444 273,444" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="450,260 505,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="505" cy="260" r="6" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="517" y="267" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold">Vo</text><text x="270" y="520" font-size="22" text-anchor="middle" fill="#18212e" font-weight="bold">Weighted resistor</text><circle cx="760" cy="70" r="6" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="760" y="56" font-size="22" text-anchor="middle" fill="#18212e" font-weight="bold">Dn</text><polyline points="760,76 760,158" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M760,158 l-10,5 l20,10 l-20,10 l20,10 l-20,10 l20,10 l-10,5" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="760,218 760,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="776" y="194" font-size="18" text-anchor="start" fill="#18212e">2R</text><circle cx="760" cy="300" r="5.5" fill="#18212e"/><circle cx="900" cy="70" r="6" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="900" y="56" font-size="22" text-anchor="middle" fill="#18212e" font-weight="bold">D3</text><polyline points="900,76 900,158" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M900,158 l-10,5 l20,10 l-20,10 l20,10 l-20,10 l20,10 l-10,5" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="900,218 900,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="916" y="194" font-size="18" text-anchor="start" fill="#18212e">2R</text><circle cx="900" cy="300" r="5.5" fill="#18212e"/><circle cx="1040" cy="70" r="6" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="1040" y="56" font-size="22" text-anchor="middle" fill="#18212e" font-weight="bold">D2</text><polyline points="1040,76 1040,158" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M1040,158 l-10,5 l20,10 l-20,10 l20,10 l-20,10 l20,10 l-10,5" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="1040,218 1040,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="1056" y="194" font-size="18" text-anchor="start" fill="#18212e">2R</text><circle cx="1040" cy="300" r="5.5" fill="#18212e"/><circle cx="1180" cy="70" r="6" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="1180" y="56" font-size="22" text-anchor="middle" fill="#18212e" font-weight="bold">D1</text><polyline points="1180,76 1180,158" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M1180,158 l-10,5 l20,10 l-20,10 l20,10 l-20,10 l20,10 l-10,5" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="1180,218 1180,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="1196" y="194" font-size="18" text-anchor="start" fill="#18212e">2R</text><circle cx="1180" cy="300" r="5.5" fill="#18212e"/><polyline points="620,300 660,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M660,300 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="720,300 760,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="690" y="284" font-size="18" text-anchor="middle" fill="#18212e">2R</text><polyline points="760,300 800,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M800,300 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="860,300 900,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="830" y="284" font-size="18" text-anchor="middle" fill="#18212e">R</text><polyline points="900,300 940,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M940,300 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="1000,300 1040,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="970" y="284" font-size="18" text-anchor="middle" fill="#18212e">R</text><polyline points="1040,300 1080,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M1080,300 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><polyline points="1140,300 1180,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="1110" y="284" font-size="18" text-anchor="middle" fill="#18212e">R</text><polyline points="620,300 620,400" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="620,400 620,410" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="605,410 635,410" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="611,417 629,417" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="617,424 623,424" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="830" y="112" font-size="28" text-anchor="middle" fill="#18212e">…</text><polyline points="1180,300 1225,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="1225" cy="300" r="6" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="1237" y="307" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold">Vo</text><text x="900" y="520" font-size="22" text-anchor="middle" fill="#18212e" font-weight="bold">Ladder type resistor</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 505" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,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) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>Weighted resistor와 Ladder type resistor</title>
+  <desc>왼쪽 가중 저항, 오른쪽 R-2R 래더</desc>
+  <rect width="1300" height="505" fill="#fff" data-fill="paper" />
+  <circle class="fig-dot" cx="90" cy="70" r="5" />
+  <text class="fig-text" x="90" y="35" font-size="26" text-anchor="middle">D<tspan baseline-shift="sub" font-size="78%">1</tspan>
+  </text>
+  <polyline points="90,135 80,140 100,150 80,160 100,170 80,180 100,190 90,195" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="90,70 90,135" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="90,195 90,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="122" y="173" font-size="24" text-anchor="start">R</text>
+  <circle class="fig-dot" cx="210" cy="70" r="5" />
+  <text class="fig-text" x="210" y="35" font-size="26" text-anchor="middle">D<tspan baseline-shift="sub" font-size="78%">2</tspan>
+  </text>
+  <polyline points="210,135 200,140 220,150 200,160 220,170 200,180 220,190 210,195" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="210,70 210,135" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="210,195 210,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="242" y="173" font-size="24" text-anchor="start">2R</text>
+  <circle cx="210" cy="260" r="5.5" fill="#18212e" data-fill="ink" />
+  <circle class="fig-dot" cx="330" cy="70" r="5" />
+  <text class="fig-text" x="330" y="35" font-size="26" text-anchor="middle">D<tspan baseline-shift="sub" font-size="78%">3</tspan>
+  </text>
+  <polyline points="330,135 320,140 340,150 320,160 340,170 320,180 340,190 330,195" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="330,70 330,135" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="330,195 330,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="362" y="173" font-size="24" text-anchor="start">4R</text>
+  <circle cx="330" cy="260" r="5.5" fill="#18212e" data-fill="ink" />
+  <circle class="fig-dot" cx="450" cy="70" r="5" />
+  <text class="fig-text" x="450" y="35" font-size="26" text-anchor="middle">D<tspan baseline-shift="sub" font-size="78%">n</tspan>
+  </text>
+  <polyline points="450,135 440,140 460,150 440,160 460,170 440,180 460,190 450,195" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="450,70 450,135" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="450,195 450,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="482" y="173" font-size="24" text-anchor="start">2<tspan baseline-shift="super" font-size="78%">n−1</tspan>R</text>
+  <circle cx="450" cy="260" r="5.5" fill="#18212e" data-fill="ink" />
+  <text x="390" y="112" font-size="28" text-anchor="middle" fill="#18212e" data-fill="ink">…</text>
+  <polyline points="90,260 450,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle cx="270" cy="260" r="5.5" fill="#18212e" data-fill="ink" />
+  <polyline points="270,310 260,315 280,325 260,335 280,345 260,355 280,365 270,370" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="270,260 270,310" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="270,370 270,420" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="302" y="348" font-size="24" text-anchor="start">R<tspan baseline-shift="sub" font-size="78%">L</tspan> ≫ R</text>
+  <polyline points="270,420 270,430" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="255,430 285,430" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="261,437 279,437" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="267,444 273,444" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="450,260 505,260" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="505" cy="260" r="5" />
+  <text class="fig-text" x="530" y="268" font-size="26" text-anchor="start">V<tspan baseline-shift="sub" font-size="78%">o</tspan>
+  </text>
+  <text class="fig-text" x="270" y="488" font-size="26" text-anchor="middle">가중 저항</text>
+  <circle class="fig-dot" cx="760" cy="70" r="5" />
+  <text class="fig-text" x="760" y="35" font-size="26" text-anchor="middle">D<tspan baseline-shift="sub" font-size="78%">n</tspan>
+  </text>
+  <polyline points="760,155 750,160 770,170 750,180 770,190 750,200 770,210 760,215" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="760,70 760,155" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="760,215 760,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="792" y="193" font-size="24" text-anchor="start">2R</text>
+  <circle cx="760" cy="300" r="5.5" fill="#18212e" data-fill="ink" />
+  <circle class="fig-dot" cx="900" cy="70" r="5" />
+  <text class="fig-text" x="900" y="35" font-size="26" text-anchor="middle">D<tspan baseline-shift="sub" font-size="78%">3</tspan>
+  </text>
+  <polyline points="900,155 890,160 910,170 890,180 910,190 890,200 910,210 900,215" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="900,70 900,155" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="900,215 900,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="932" y="193" font-size="24" text-anchor="start">2R</text>
+  <circle cx="900" cy="300" r="5.5" fill="#18212e" data-fill="ink" />
+  <circle class="fig-dot" cx="1040" cy="70" r="5" />
+  <text class="fig-text" x="1040" y="35" font-size="26" text-anchor="middle">D<tspan baseline-shift="sub" font-size="78%">2</tspan>
+  </text>
+  <polyline points="1040,155 1030,160 1050,170 1030,180 1050,190 1030,200 1050,210 1040,215" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1040,70 1040,155" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1040,215 1040,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="1072" y="193" font-size="24" text-anchor="start">2R</text>
+  <circle cx="1040" cy="300" r="5.5" fill="#18212e" data-fill="ink" />
+  <circle class="fig-dot" cx="1180" cy="70" r="5" />
+  <text class="fig-text" x="1180" y="35" font-size="26" text-anchor="middle">D<tspan baseline-shift="sub" font-size="78%">1</tspan>
+  </text>
+  <polyline points="1180,155 1170,160 1190,170 1170,180 1190,190 1170,200 1190,210 1180,215" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1180,70 1180,155" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1180,215 1180,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="1212" y="193" font-size="24" text-anchor="start">2R</text>
+  <circle cx="1180" cy="300" r="5.5" fill="#18212e" data-fill="ink" />
+  <polyline points="620,300 660,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M660,300 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="720,300 760,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="690" y="270" font-size="24" text-anchor="middle">2R</text>
+  <polyline points="760,300 800,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M800,300 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="860,300 900,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="830" y="270" font-size="24" text-anchor="middle">R</text>
+  <polyline points="900,300 940,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M940,300 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1000,300 1040,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="970" y="270" font-size="24" text-anchor="middle">R</text>
+  <polyline points="1040,300 1080,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path d="M1080,300 l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="1140,300 1180,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="1110" y="270" font-size="24" text-anchor="middle">R</text>
+  <polyline points="620,300 620,400" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="620,400 620,410" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="605,410 635,410" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="611,417 629,417" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="617,424 623,424" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text x="830" y="112" font-size="28" text-anchor="middle" fill="#18212e" data-fill="ink">…</text>
+  <polyline points="1180,300 1225,300" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="1225" cy="300" r="5" />
+  <text class="fig-text" x="1250" y="308" font-size="26" text-anchor="start">V<tspan baseline-shift="sub" font-size="78%">o</tspan>
+  </text>
+  <text class="fig-text" x="900" y="480" font-size="26" text-anchor="middle">R–2R 래더</text>
+</svg>

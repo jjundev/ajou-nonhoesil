@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,d09GMgABAAAAAAQEAA0AAAAACCAAAAO0AAFPGgAAAAAAAAAAAAAAAAAAAAAAAAAAGhYbgT4cKgZgAFQKg1iDAgE2AiQDIAsSAAQgBYVkByAb0QYojsK2bRMVQwzxZjnOLx6+1sr3e3p2+wgUgmaKIih/oJIIE9YRKuwsGnXGhsaHr9NeUki/C1ZW4mmgSSGd1vKRzP9/7/jRr8DC9ZdYJ7ACTeSPffvUWpx1PBoLLMLA9vaxQKIXWICBBJh5pptpzPYIlZ6Kiojqc08R6AYkIbSEQKc5fpinSRkFMH3KoqUwleHXKHrCU0qhD7PLOiDw4YQiuUkbj/Hpqqm/5qRYs9vmzjfJ3lY06QWRzkktqWShLs5TUcy0g++COYT9MQDk1npmCXSol7WvAT4ZVvqFLcwRPO0KJPktEOh68rAwHyfET/npLf1vCV+G8R7OJ+d9nQ2AKcZIqDBMS2CYtkPQrUiyExlyFUz5aTTgRBp7r+aY5oBmj2bX87tgUFth9tvVXoBvADIgXiNh+hlLE11ra33tP/fuGQ7duYOOu3eNhu/fLzYR7cWY8eoRo/Px68KXdwuNm3U7Hu7m3EmGSYezW7Fes4m2Ub0J3WhcW8A0HmHom6H/ReH9+4zOwPbJZR8eFJQaFt2RV32I5iEYF2MD42ajCsME2qa6eSqmpGFvHe/tylW8t/vU9UUTUax68zxdq+EVr/W61x/32LUx583bTdkeu46t0GlY/8ZmqS52zzb8HlJduiUe7rxUodrbqV0i5pVW8xqg/K1cbdBeZB24MMp7cDrHNWynZOXRHdqzKa90POlByPW7ppVRsfEXe1Zx3+ytq6/vOBNcRbYJzjzL+OTx3EPGusD437CA9ho67rFrc86bt5uzYRzHnbLfQvtqQ9ejY9e0r52AwdWGr2r3HQAE4o4j995L/WqziG+l0gdcP6sawxcrSuHXdOlM6RwBtCUQtL/+t4TCMsd6Cgz0dKXAe519YOc0+NV+6NMuQJ/Od5zXprgR78HFQLEUy11HT9DFJQC6vIOWyAZgFxAyLIggk17nZGWT3DOTtREbyJZVp8ieIPhO9lpNto39Kf8ZA8xTGuLJyDVSoggI0YiNIPz48OOPSEcRI1I0UpMS8FSLIpVBRoDCQWRgYSPycQjxSLDQKBx5eATUxFiUi/xEpCehxJER4yrCo6RCkZEifHnx5yNULGjlmndPRwEhKkUkAehcziI+1JfN8BAfiIPyPFIqSXGRUwC3VJKgE8UI/FQZiGxyPNL45owY5FFuJ7EDUq9sulJpEEsdFooYC5t4nqpHleE9YnoqVi75ndPCEEI0mlwYb95UOJQocjQVLyoUMS8ySgLesiXJWCx96JAWDdQ42wI=) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>J-K 플립플롭으로 만든 T 플립플롭</title>
+  <desc>J와 K를 하나로 묶은 입력 T와 하강 엣지 클록을 받는 J-K 플립플롭</desc>
+  <rect width="720" height="320" fill="#fff" data-fill="paper" />
+  <rect x="330" y="60" width="220" height="240" rx="4" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <polyline points="260,110 330,110" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text x="348" y="118" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold" data-fill="ink">J</text>
+  <polyline points="260,250 330,250" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text x="348" y="258" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold" data-fill="ink">K</text>
+  <path d="M330,166 L350,180 L330,194" fill="none" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" />
+  <circle cx="323" cy="180" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <polyline points="260,180 316,180" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text x="367" y="188" font-size="20" text-anchor="start" fill="#6b7585" data-fill="muted">CK</text>
+  <polyline points="550,110 620,110" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text x="532" y="118" font-size="22" text-anchor="end" fill="#18212e" font-weight="bold" data-fill="ink">Q</text>
+  <polyline points="550,250 620,250" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text x="532" y="258" font-size="22" text-anchor="end" fill="#18212e" font-weight="bold" data-fill="ink">Q′</text>
+  <text class="fig-text" x="48" y="118" font-size="26" text-anchor="end" data-node="t" data-node-color="blue">T</text>
+  <polyline points="70,110 260,110" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="190" cy="110" r="5" data-node="t" data-node-color="blue" />
+  <polyline points="190,110 190,250 260,250" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text x="40" y="188" font-size="22" text-anchor="start" fill="#18212e" font-weight="bold" data-fill="ink">CLK</text>
+  <polyline points="100,180 260,180" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path class="fig-crossing" d="M190,171v18" stroke-width="12" />
+  <polyline points="190,171 190,189" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="70" cy="110" r="5" data-node="t" data-node-color="blue" />
+  <circle class="fig-dot" cx="100" cy="180" r="5" />
+  <circle class="fig-dot" cx="620" cy="110" r="5" data-node="q" data-node-color="blue" />
+  <text class="fig-text" x="643" y="118" font-size="26" text-anchor="start" data-node="q" data-node-color="blue">Q</text>
+  <circle class="fig-dot" cx="620" cy="250" r="5" data-node="q-bar" data-node-color="red" />
+  <text class="fig-text" x="643" y="258" font-size="26" text-anchor="start" data-node="q-bar" data-node-color="red">Q′</text>
+</svg>

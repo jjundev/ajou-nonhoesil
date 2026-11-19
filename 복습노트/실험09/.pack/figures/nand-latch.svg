@@ -1,1 +1,68 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" role="img" font-family="Arial, 'Malgun Gothic', sans-serif"><title>NAND 두 개로 만든 SR 래치</title><desc>S′와 R′ 입력, 두 NAND의 교차 되먹임, 출력 Q와 Q′</desc><rect width="760" height="360" fill="#fff"/><path d="M300,50 h26 a45,45 0 0 1 0,90 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="333.5" y="103" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="378" cy="95" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><path d="M300,210 h26 a45,45 0 0 1 0,90 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round"/><text x="333.5" y="263" font-size="22" text-anchor="middle" fill="#6b7585"></text><circle cx="378" cy="255" r="7" fill="#fff" stroke="#18212e" stroke-width="3"/><text x="110" y="88" font-size="28" text-anchor="start" fill="#18212e" font-weight="bold">S′</text><text x="110" y="278" font-size="28" text-anchor="start" fill="#18212e" font-weight="bold">R′</text><polyline points="150,80 300,80" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="150,270 300,270" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="385,95 560,95" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="385,255 560,255" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="580" y="104" font-size="28" text-anchor="start" fill="#2674df" font-weight="bold">Q</text><text x="580" y="264" font-size="28" text-anchor="start" fill="#2674df" font-weight="bold">Q′</text><circle cx="450" cy="95" r="5.5" fill="#18212e"/><polyline points="450,95 450,165 260,195 260,240 300,240" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="490" cy="255" r="5.5" fill="#18212e"/><polyline points="490,255 490,175 240,135 240,110 300,110" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 655 345" role="img" data-note-schematic="1">
+  <style>@font-face { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; src: url(data:font/woff2;base64,d09GMgABAAAAAAO4AA0AAAAAB2wAAANlAAFPGgAAAAAAAAAAAAAAAAAAAAAAAAAAGhYbgQ4cKgZgADwKgwCCXQE2AiQDFAsMAAQgBYVkByAbWAYIHoVN2XwUsy8qDvFsKkzNFUG0H7/Zffe+eTJxuodkyTOeCQmvXimJkihZL+a0SLLyVQkVAA98wh8E6UZG7GbFFuqyFPRL0mxh6SBMnEu3Bh5Giu0GNuCJVNOwPugFnqIE3ywS06PAEvyFH/CdXp2O7Bgego5StG4hBPH0JgJtgBRCJQRaTOoJXVLTMYHcPfsgH8gp8G/U3XUO8IEEB6FoDgMfKtEkzYpg3VhYsVnqOAOUrlFeSSvltApe3AWA0vAJ3Qyi1OuYO3gXRfnTd/Ss9zRWSOUlCAy9uIEYw6+ro0I41f/IBfaTo71DQDnGagNGZZCo0Ccs0CdiVkCDIqTro0L//wNX2+D/vtsD3aPVoAUNeCTgBwAFkFKIPkoS3CXMSOT0FC3+5AQ/4+gIXh4fE2SqW7w/MzHHRx3hZzxcoMVfPhJk3p/Dk87M42N4eWTiTuhBiNl2Nxst/gQfP38vSBDknv64enKCIuKZ/BoK9YARn/gES5ZF8CMJrPAl7p9F1MspKq8nNTg9GQ4JDR21GDVkq4jrLqN95HnM42u/hvYvrCyIL2OWZ6DT4MnTTn0Es/hX+k+h6U4ba+OTgODdzKKkw1hhCVl2BjJScszvrwffhWRG5315sNcXUuAaYhDKL4+IGadbeNOlckxwvVnpiY2f/+bR2f7dLWMNKxua7rcExiGJwho2svoJZglsjZzxTmwx6XOfPErLXnkkTKOF/YJ3p+1LMFsfgEBcpuevvRKxJZH52lQ1gV/3bXJw5/7m8PyfgFWANQU0ShA0fvxHLtDENaW6AAIAUDfxGusbOJR/kIL5C4zinduCqC0JgZCGxXBbANDqFVSiNONQAGyYNmZTh5tsZZcmLWyt3wfbYNMf2x6j8M922Ezq3i7Nb0a3QmrBikrjMyAOzwI+YVRPR08fOEESsOezKThNAqQ4U3EQBZwRSOAFhceQESyI8sTg2CQEY1a/MvO9oCWVhPaOYTAhlQJ0tfR1DJCt3qzLN8lXPEzBFoEl1hOQDV3fnAHFUGJNZihMDBqwKWivFFhKg/L+wRm40TAUQf+ZBDSavsocQzBspnetJhEcBCQhkKRC6kIfvWTq04VH9j23DAGexaIZamszUQxIYzG1mJCkRWXgtN1snWcbf3USdlL7P+gHAAAAAA==) format("woff2"); }
+
+:root {
+  color-scheme: light dark;
+  --paper: #ffffff; --ink: #18212e; --muted: #475569; --panel: #eaf2ff;
+  --blue: #1658ac; --red: #ab2d20; --green: #176140; --amber: #8f4809;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151d29; --ink: #e6eef8; --muted: #bac9dc; --panel: #263951;
+    --blue: #8ec5ff; --red: #ffa697; --green: #85dcb4; --amber: #ffbf7f;
+  }
+}
+.fig-paper { fill: var(--paper); }
+.fig-ink { stroke: var(--ink); }
+.fig-text, .fig-dot { fill: var(--ink); }
+text { font-family: "Logic Lab Schematic"; font-weight: 600; font-style: normal; }
+[data-node-color="blue"] { --node: var(--blue); }
+[data-node-color="red"] { --node: var(--red); }
+[data-node-color] { fill: var(--node); }
+.fig-crossing { stroke: var(--paper); }
+[data-fill="paper"] { fill: var(--paper); }
+[data-fill="ink"] { fill: var(--ink); }
+[data-fill="muted"] { fill: var(--muted); }
+[data-fill="blue"] { fill: var(--blue); }
+[data-fill="panel"] { fill: var(--panel); }
+[data-fill="red"] { fill: var(--red); }
+[data-fill="green"] { fill: var(--green); }
+[data-fill="amber"] { fill: var(--amber); }
+[data-stroke="paper"] { stroke: var(--paper); }
+[data-stroke="ink"] { stroke: var(--ink); }
+[data-stroke="muted"] { stroke: var(--muted); }
+[data-stroke="blue"] { stroke: var(--blue); }
+[data-stroke="panel"] { stroke: var(--panel); }
+[data-stroke="red"] { stroke: var(--red); }
+[data-stroke="green"] { stroke: var(--green); }
+[data-stroke="amber"] { stroke: var(--amber); }
+</style>
+  <rect class="fig-paper" width="100%" height="100%" />
+  <title>NAND 두 개로 만든 SR 래치</title>
+  <desc>S′와 R′ 입력, 두 NAND의 교차 되먹임, 출력 Q와 Q′</desc>
+  <rect width="655" height="345" fill="#fff" data-fill="paper" />
+  <path d="M300,50 h26 a45,45 0 0 1 0,90 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="333.5" y="103" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="378" cy="95" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <path d="M300,210 h26 a45,45 0 0 1 0,90 h-26 z" fill="#fff" stroke="#18212e" stroke-width="3" stroke-linejoin="round" data-stroke="ink" data-fill="paper" />
+  <text x="333.5" y="263" font-size="22" text-anchor="middle" fill="#6b7585" data-fill="muted" />
+  <circle cx="378" cy="255" r="7" fill="#fff" stroke="#18212e" stroke-width="3" data-stroke="ink" data-fill="paper" />
+  <text x="104" y="88" font-size="28" text-anchor="start" fill="#18212e" font-weight="bold" data-fill="ink">S′</text>
+  <text x="104" y="278" font-size="28" text-anchor="start" fill="#18212e" font-weight="bold" data-fill="ink">R′</text>
+  <polyline points="150,80 300,80" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="150,270 300,270" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="385,95 560,95" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="385,255 560,255" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <text class="fig-text" x="584" y="103" font-size="26" text-anchor="start" data-node="q" data-node-color="blue">Q</text>
+  <text class="fig-text" x="584" y="263" font-size="26" text-anchor="start" data-node="q-bar" data-node-color="red">Q′</text>
+  <circle class="fig-dot" cx="560" cy="95" r="5" data-node="q" data-node-color="blue" />
+  <circle class="fig-dot" cx="560" cy="255" r="5" data-node="q-bar" data-node-color="red" />
+  <circle class="fig-dot" cx="450" cy="95" r="5" data-node="q" data-node-color="blue" />
+  <circle class="fig-dot" cx="490" cy="255" r="5" data-node="q-bar" data-node-color="red" />
+  <polyline points="450,95 450,191 260,191 260,240 300,240" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <polyline points="490,255 490,158 240,158 240,110 300,110" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <path class="fig-crossing" d="M450,149v18" stroke-width="12" />
+  <polyline points="450,149 450,167" fill="none" stroke="#18212e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-stroke="ink" />
+  <circle class="fig-dot" cx="150" cy="80" r="5" />
+  <circle class="fig-dot" cx="150" cy="270" r="5" />
+</svg>
