@@ -236,16 +236,18 @@ def seg(f, x, y, on, L=130, T=20):
 
 
 def ripple_block():
-    f = Fig(760, 220, '비동기 2단 카운터 블록도')
-    for x, n, q in ((170, 'FFA', 'A'), (470, 'FFB', 'B')):
-        f.rect(x, 50, 170, 110, fill=BLUEBG)
-        f.text(x + 14, 112, 'T', size=24)
-        f.text(x + 60, 112, n, size=24)
-        f.text(x + 150, 86, q, size=22, anchor='end')
-        f.text(x + 150, 138, q + "'", size=22, anchor='end')
-    f.text(30, 112, 'CLK', size=26, weight='bold')
-    f.line([(95, 104), (170, 104)])
-    f.line([(340, 80), (405, 80), (405, 104), (470, 104)])
+    f = Fig(760, 200, '비동기 2단 카운터 블록도')
+    for x, name, output in ((170, 'FFA', 'A'), (470, 'FFB', 'B')):
+        f.rect(x, 52, 170, 116, fill=BLUEBG)
+        f.text(x + 85, 41, name, size=24, anchor='middle', weight='bold')
+        f.text(x + 22, 108, 'CLK↓', size=22)
+        f.text(x + 20, 148, 'T=1', size=22)
+        f.text(x + 149, 86, output, size=22, anchor='end')
+        f.text(x + 149, 138, output + "'", size=22, anchor='end')
+        f.circle(x - 6, 100, 6, sw=2)
+    f.text(27, 108, 'CLK', size=26, weight='bold')
+    f.line([(95, 100), (158, 100)])
+    f.line([(340, 80), (405, 80), (405, 100), (458, 100)])
     f.text(405, 66, 'A', size=24, anchor='middle', fill=BLUE, weight='bold')
     f.line([(640, 80), (710, 80)])
     f.text(725, 88, 'B', size=24, anchor='middle', fill=BLUE, weight='bold')

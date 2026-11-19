@@ -258,7 +258,7 @@
       "key": "t-convert/1",
       "expected_headers": [
         "단계",
-        "이동 직전 Q0Q1Q2Q3",
+        "적재·이동 직후 Q0Q1Q2Q3",
         "읽은 Q3",
         "왜 이 값인가요"
       ],

@@ -448,6 +448,8 @@
         "OE1",
         "IN1",
         "WR1",
+        "저장 A",
+        "저장 B",
         "OUT0",
         "OUT1",
         "동작 · 이유"
@@ -499,6 +501,16 @@
           "group": "출력"
         },
         {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
           "role": "description",
           "kind": "text",
           "group": "설명"
@@ -526,7 +538,7 @@
           "kind": "major"
         },
         {
-          "left": 8,
+          "left": 10,
           "kind": "major"
         }
       ]
