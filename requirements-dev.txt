@@ -25,7 +25,7 @@
 # 런타임 의존성은 따로 없다 — `scripts/lab/` 은 표준 라이브러리만 쓰고
 # PDF 변환은 `과목정보.md` 의 `chrome` 목록(macOS·Windows) 중 이 머신에
 # 있는 경로로 헤드리스 Chrome 을 부른다.
-# 아래 넷은 **테스트와 검증 스크립트 전용**이다.
+# 아래는 테스트·검증 및 그림 저작 도구 전용이다.
 
 pytest>=9.1.1
 
@@ -45,3 +45,6 @@ pymupdf>=1.28.2
 
 # pillow — 교안 렌더 PNG 를 크롭·확대해 회로도를 vision 판독할 때.
 pillow>=12.3.0
+
+# FontTools + WOFF2 codecs — 실험설명 SVG에 Pretendard 600 서브셋을 포함할 때.
+fonttools[woff]
