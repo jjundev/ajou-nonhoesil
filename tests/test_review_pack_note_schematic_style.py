@@ -66,3 +66,43 @@ def test_svg_embedded_as_image_follows_parent_color_scheme(chromium, tmp_path):
                 assert background != stroke
                 pixels.append((background, stroke))
         assert all(a != b for a, b in zip(*pixels))
+
+
+INVENTORY = {
+    6: 'not-loop sr-basic-nand sr-latch-enable d-latch jk-latch tff-from-jk-note',
+    7: 'shift internal',
+    8: 'ripple-block sync-block decoder-and 7490-block',
+    9: 'nand-latch ram1bit ram2bit opendrain',
+    10: 'opamp-inv summing network oc dac-block comparator flash',
+}
+
+
+def draw_schematics(experiment, target):
+    import subprocess
+    import sys
+
+    source = ROOT / 'docs/learning-pack-source' / f'실험{experiment:02}'
+    command = '''
+import sys
+from pathlib import Path
+
+sys.path.insert(0, sys.argv[1])
+import importlib
+module = importlib.import_module(sys.argv[2])
+module.draw_note_schematics(Path(sys.argv[3]))
+'''
+    subprocess.run(
+        [sys.executable, '-B', '-c', command, str(source),
+         'figs' if experiment == 6 else 'figures', str(target)],
+        cwd=ROOT, check=True, capture_output=True,
+    )
+    assert {p.stem for p in target.glob('*.svg')} == set(INVENTORY[experiment].split())
+
+
+@pytest.mark.parametrize('experiment', range(6, 10))
+def test_digital_note_schematic_inventory_and_reproducibility(experiment, tmp_path):
+    first, second = tmp_path / 'first', tmp_path / 'second'
+    draw_schematics(experiment, first)
+    draw_schematics(experiment, second)
+    for path in first.glob('*.svg'):
+        assert path.read_bytes() == (second / path.name).read_bytes()

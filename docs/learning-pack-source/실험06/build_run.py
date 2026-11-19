@@ -42,17 +42,13 @@ for sub in ('questions', 'solutions'):
 
 note_figs = {
     'memory-sr-timing': figs.memory_fig('Enable이 1인 SR 래치가 S·R 펄스 뒤에도 값을 기억하는 타이밍도'),
-    'not-loop': figs.not_loop('NOT 두 개로 만든 고리'),
-    'sr-basic-nand': figs.latch('NAND 두 개로 만든 기본 S-R 래치', 'basic', w=760),
-    'sr-latch-enable': figs.latch('Enable이 있는 SR 래치 (실험 1)', 'sr'),
-    'd-latch': figs.latch('Enable이 있는 D 래치 (실험 2-1)', 'd'),
-    'jk-latch': figs.jk_latch('Enable이 있는 JK 래치 (실험 3-1, 보충)'),
     'level-vs-edge': figs.level_edge_fig('D 래치와 D 플립플롭의 비교 타이밍도'),
     'hc76-pinout': figs.hc76_fig('74HC76 핀 배치'),
     'tff-from-jk': figs.tff_fig('J-K 플립플롭으로 만든 T 플립플롭'),
 }
 for name, fg in note_figs.items():
     figs.save(fg, F / f'{name}.svg')
+figs.draw_note_schematics(F)
 
 W_MM = 150.0
 registry = []

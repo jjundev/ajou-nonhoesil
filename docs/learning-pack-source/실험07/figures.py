@@ -6,6 +6,7 @@ REPO=Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(REPO/'.claude/skills/breadboard-diagram/scripts'))
 from render_breadboard import BreadboardRenderer,_input_jumper
 from scripts.lab.review_pack.breadboard_template import template_png
+from scripts.lab.review_pack.note_schematic import SchematicSymbols, write_note_schematics
 
 def chain(n=4):
  f=Fig(1000,290,'공통 클록의 D 시프트 레지스터')
@@ -46,6 +47,114 @@ def internal(detail=False):
 def inverter():
  f=Fig(620,210,'74HC00 NAND의 두 입력을 묶은 보수 생성기');g=f.and_(210,70,bubble=True);f.text(30,100,'D');f.line([(65,93),(160,93),(160,g['ins'][0][1]),g['ins'][0]]);f.line([(160,93),(160,g['ins'][1][1]),g['ins'][1]]);f.dot(160,93);f.line([g['out'],(470,g['out'][1])]);f.text(490,112,'K');f.text(190,50,'1,2 → 3',size=24);f.text(20,190,'74HC00: VCC14=+5V, GND7=0V',size=23);return f
 
+
+class NoteFig(SchematicSymbols, Fig):
+    pass
+
+
+def note_shift():
+    f = NoteFig(890, 285, '공통 클록을 사용하는 4단 D 시프트 레지스터')
+    f.line([(82, 120), (125, 120)])
+    f.junction(82, 120)
+    f.label(60, 129, 'S', anchor='end')
+    f.line([(74, 247), (684, 247)])
+    f.junction(74, 247, node='clk', color='red')
+    f.label(52, 255, 'CLK', anchor='end', node='clk', color='red')
+    for i in range(4):
+        x = 125 + i * 195
+        row = 120
+        f.rect(x, 82, 122, 126, fill='#e8f1ff')
+        f.label(x + 20, row + 8, 'D')
+        f.label(x + 102, row + 8, 'Q', anchor='end')
+        f.label(x + 64, 169, 'FF', sub=str(i), anchor='middle')
+        f.path(f'M{x},176 l16,10 l-16,10', fill='none')
+        f.line([(x, 186), (x - 26, 186), (x - 26, 247)])
+        f.junction(x - 26, 247, node='clk', color='red')
+        branch = x + 154
+        f.line([(x + 122, row), (x + 195 if i < 3 else branch, row)])
+        f.line([(branch, row), (branch, 62)])
+        if i < 3:
+            f.junction(branch, row, node=f'q{i}')
+        f.junction(branch, 54, node=f'q{i}')
+        f.label(branch, 26, 'P', sub=str(i), anchor='middle', node=f'q{i}')
+    return f
+
+
+def note_internal():
+    f = NoteFig(1410, 493, '7496의 5단 시프트 및 비동기 프리셋 구조',
+                '각 단의 Q와 Q′가 다음 단 S와 R로 연결된다. PE와 개별 PRESET이 1이면 해당 단을 비동기로 세트한다.')
+    f.raw('<g transform="translate(20,0)">')
+    f.line([(93, 65), (1111, 65)])
+    f.junction(93, 65, node='pe', color='red')
+    f.label(71, 73, 'PE 8', anchor='end', node='pe', color='red')
+    f.line([(93, 421), (1271, 421)])
+    f.line([(93, 461), (1141, 461)])
+    f.junction(93, 421, node='clear', color='red')
+    f.junction(93, 461, node='cp')
+    f.label(71, 429, 'CLR 16', anchor='end', size=22, node='clear', color='red')
+    f.label(71, 469, 'CP 1', anchor='end', node='cp', size=22)
+
+    f.line([(55, 218), (81, 218)])
+    f.junction(55, 218)
+    f.label(53, 190, 'SER 9', anchor='middle', size=22)
+    first = f.not_(81, 196)
+    second = f.not_(157, 196)
+    f.line([first['out'], second['ins'][0]])
+    f.line([second['out'], (236, 218)])
+    f.line([(150, 218), (150, 309), (236, 309)])
+    f.junction(150, 218)
+
+    for i, (bit, preset, output) in enumerate(zip('ABCDE', (2, 3, 4, 6, 7), (15, 14, 13, 11, 10))):
+        x = 236 + 232 * i
+        f.rect(x, 190, 132, 162, fill='#e8f1ff', rx=5)
+        f.label(x + 20, 226, 'S')
+        f.label(x + 20, 317, 'R')
+        f.label(x + 110, 226, 'Q', anchor='end', node=f'q{bit}')
+        f.label(x + 110, 317, 'Q′', anchor='end', node=f'qb{bit}', color='red')
+        f.label(x + 66, 277, f'FF {bit}', anchor='middle')
+
+        # Both preset controls go into the same asynchronous set gate.
+        gate = f.and_(x - 35, 103, H=56, bubble=True, label='')
+        preset_x, enable_x = x - 73, x - 53
+        f.line([(preset_x, 39), (preset_x, gate['ins'][0][1]), gate['ins'][0]])
+        f.junction(preset_x, 39)
+        f.label(preset_x, 23, f'{bit} {preset}', anchor='middle', size=22)
+        f.line([(enable_x, 65), (enable_x, gate['ins'][1][1]), gate['ins'][1]])
+        f.crossing(preset_x, 65)
+        f.junction(enable_x, 65, node='pe', color='red')
+        f.line([gate['out'], (x + 66, gate['out'][1]), (x + 66, 183)])
+        f.circle(x + 66, 186.5, 3.5)
+
+        # The external falling edge is shown at each stage's clock pin.
+        f.path(f'M{x},246 l14,10 l-14,10', fill='none')
+        f.circle(x - 5, 256, 5)
+        f.line([(x - 10, 256), (x - 23, 256), (x - 23, 461)])
+        f.junction(x - 23, 461, node='cp')
+        f.circle(x + 107, 357, 5)
+        f.line([(x + 107, 362), (x + 107, 421)])
+        f.junction(x + 107, 421, node='clear', color='red')
+
+        tap = x + 158
+        right = x + 232 if i < 4 else tap
+        f.line([(x + 132, 218), (right, 218)])
+        f.line([(tap, 218), (tap, 362)])
+        if i < 4:
+            f.junction(tap, 218, node=f'q{bit}')
+            f.line([(x + 132, 309), (right, 309)])
+            f.crossing(tap, 309)
+            f.crossing(right - 23, 309)
+        f.junction(tap, 362, node=f'q{bit}')
+        f.label(tap, 392, 'Q', sub=bit, suffix=f' {output}', anchor='middle', size=22, node=f'q{bit}')
+        f.crossing(x - 23, 421)
+    f.crossing(213, 309)
+    f.raw('</g>')
+    return f
+
+
+def draw_note_schematics(output_dir: Path) -> tuple[Path, ...]:
+    return write_note_schematics(output_dir, {'shift': note_shift(), 'internal': note_internal()})
+
+
 def build(run,m):
  F=run/'figures';(F/'questions').mkdir(parents=True,exist_ok=True);(F/'solutions').mkdir(exist_ok=True);reg=[]
  def register(fid,pid,role,f,ww=120,ids=[]):
@@ -53,7 +162,7 @@ def build(run,m):
   stem.with_suffix('.svg').write_text(f.svg(physical=(ww,ww*f.h/f.w)),encoding='utf8');render_png(stem.with_suffix('.svg'),stem.with_suffix('.png'),ww)
   q=next(x for x in m['problems'] if x['id']==pid)
   reg.append(dict(id=fid,question_id=pid,role=role,svg=f'figures/{sub}/{fid}.svg',png=f'figures/{sub}/{fid}.png',svg_sha256=sha(stem.with_suffix('.svg')),png_sha256=sha(stem.with_suffix('.png')),w_mm=ww,h_mm=ww*f.h/f.w,source_asset_ids=ids,source_refs=q['sources'][:1],derivation='원문 핀·신호·공통 클록·단계 간 Q/보수 경로를 읽어 직접 재제작한 벡터 그림. 문제와 완성 해설을 분리했어요.',answer_exposure='none' if role=='problem' else 'present',review_status='not_run',review_notes='시각 대조 대기'))
- for name,f in [('shift',chain()),('internal',internal())]:(F/f'{name}.svg').write_text(f.svg(),encoding='utf8')
+ draw_note_schematics(F)
  register('dff-given','q-ff-design','problem',dff(),45,['a-s05-p1-q2'])
  register('shift-complete','q-ff-design','solution',chain(),150)
  register('ic7496-given','q-7496-block','problem',internal(True),155,['a-s02-p1-q4'])

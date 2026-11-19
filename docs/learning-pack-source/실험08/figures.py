@@ -6,6 +6,11 @@ REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / '.claude/skills/breadboard-diagram/scripts'))
 from render_breadboard import BreadboardRenderer, _input_jumper
 from scripts.lab.review_pack.breadboard_template import template_png
+from scripts.lab.review_pack.note_schematic import SchematicSymbols, write_note_schematics
+
+
+class NoteFig(SchematicSymbols, Fig):
+    pass
 
 
 def wave(f, x0, y, step, vals, h=44, color=INK, width=3):
@@ -236,21 +241,23 @@ def seg(f, x, y, on, L=130, T=20):
 
 
 def ripple_block():
-    f = Fig(760, 200, '비동기 2단 카운터 블록도')
-    for x, name, output in ((170, 'FFA', 'A'), (470, 'FFB', 'B')):
-        f.rect(x, 52, 170, 116, fill=BLUEBG)
-        f.text(x + 85, 41, name, size=24, anchor='middle', weight='bold')
-        f.text(x + 22, 108, 'CLK↓', size=22)
-        f.text(x + 20, 148, 'T=1', size=22)
-        f.text(x + 149, 86, output, size=22, anchor='end')
-        f.text(x + 149, 138, output + "'", size=22, anchor='end')
-        f.circle(x - 6, 100, 6, sw=2)
-    f.text(27, 108, 'CLK', size=26, weight='bold')
-    f.line([(95, 100), (158, 100)])
-    f.line([(340, 80), (405, 80), (405, 100), (458, 100)])
-    f.text(405, 66, 'A', size=24, anchor='middle', fill=BLUE, weight='bold')
-    f.line([(640, 80), (710, 80)])
-    f.text(725, 88, 'B', size=24, anchor='middle', fill=BLUE, weight='bold')
+    f = NoteFig(742, 230, '비동기 2단 카운터 블록도')
+    for x, name, output in ((152, 'A', 'A'), (440, 'B', 'B')):
+        f.rect(x, 52, 166, 145, fill=BLUEBG)
+        f.label(x + 83, 33, 'FF', sub=name, anchor='middle')
+        f.label(x + 31, 127, 'CLK')
+        f.label(x + 24, 173, 'T = 1')
+        f.label(x + 146, 85, output, anchor='end', node=output)
+        f.label(x + 146, 173, output + '′', anchor='end')
+        f.path(f'M{x},108 l14,10 l-14,10', fill='none')
+        f.circle(x - 6, 118, 6)
+    f.label(78, 126, 'CLK', anchor='end')
+    f.line([(100, 118), (140, 118)])
+    f.junction(100, 118)
+    f.line([(318, 77), (382, 77), (382, 118), (428, 118)])
+    f.line([(606, 77), (677, 77)])
+    f.junction(677, 77, node='B')
+    f.label(700, 85, 'B', node='B')
     return f
 
 
@@ -272,23 +279,30 @@ def ripple_delay():
 
 
 def sync_block():
-    f = Fig(780, 300, '동기 3진 카운터 블록도')
-    for x, n, q in ((190, 'FFA', 'A'), (490, 'FFB', 'B')):
-        f.rect(x, 70, 170, 130, fill=BLUEBG)
-        f.text(x + 12, 106, 'J', size=22)
-        f.text(x + 12, 142, 'CLK', size=18)
-        f.text(x + 12, 186, 'K=1', size=20)
-        f.text(x + 150, 106, q, size=22, anchor='end')
-        f.text(x + 150, 186, q + "'", size=22, anchor='end')
-        f.text(x + 90, 146, n, size=22, anchor='middle')
-    f.text(20, 268, 'CLK', size=26, weight='bold')
-    f.line([(90, 260), (450, 260), (450, 136), (490, 136)])
-    f.line([(150, 260), (150, 136), (190, 136)])
-    f.dot(150, 260)
-    f.line([(360, 100), (490, 100)])
-    f.text(425, 88, 'A → J2', size=20, anchor='middle', fill=BLUE, weight='bold')
-    f.line([(660, 180), (720, 180), (720, 36), (120, 36), (120, 100), (190, 100)], color=BLUE)
-    f.text(420, 26, "B' → J1", size=20, anchor='middle', fill=BLUE, weight='bold')
+    f = NoteFig(805, 319, '동기 3진 카운터 블록도')
+    for x, n, q in ((185, 'A', 'A'), (475, 'B', 'B')):
+        f.rect(x, 85, 176, 152, fill=BLUEBG)
+        f.label(x + 20, 126, 'J')
+        f.label(x + 31, 175, 'CLK', size=22)
+        f.label(x + 20, 216, 'K = 1', size=22)
+        f.label(x + 155, 126, q, anchor='end', node=q)
+        f.label(x + 155, 216, q + '′', anchor='end', node=f'{q}-bar', color='red')
+        f.label(x + 128, 175, 'FF', sub=n, anchor='middle', size=22)
+        f.path(f'M{x},156 l14,10 l-14,10', fill='none')
+        f.circle(x - 6, 166, 6)
+    f.label(81, 291, 'CLK', anchor='end', node='clock')
+    f.junction(104, 283, node='clock')
+    f.line([(104, 283), (428, 283), (428, 166), (463, 166)])
+    f.line([(151, 283), (151, 166), (173, 166)])
+    f.junction(151, 283, node='clock')
+    f.line([(361, 118), (475, 118)])
+    f.label(417, 100, 'A', anchor='middle', node='A')
+    f.line([(651, 118), (727, 118)])
+    f.junction(727, 118, node='B')
+    f.label(750, 126, 'B', node='B')
+    f.line([(651, 208), (702, 208), (702, 53), (123, 53), (123, 118), (185, 118)])
+    f.crossing(702, 118)
+    f.label(405, 34, 'B′', anchor='middle', node='B-bar', color='red')
     return f
 
 
@@ -312,40 +326,51 @@ def sync_states_fig():
 
 
 def decoder():
-    f = Fig(640, 470, '네 AND 게이트로 만든 상태 디코더')
-    for i, (x1, x2, n) in enumerate((("A'", "B'", 0), ('A', "B'", 1), ("A'", 'B', 2), ('A', 'B', 3))):
-        y = 20 + i * 112
-        g = f.and_(210, y, H=80)
-        f.text(70, g['ins'][0][1] + 8, x1, size=24)
-        f.text(70, g['ins'][1][1] + 8, x2, size=24)
-        f.line([(115, g['ins'][0][1]), g['ins'][0]])
-        f.line([(115, g['ins'][1][1]), g['ins'][1]])
-        f.line([g['out'], (400, g['out'][1])])
-        f.text(420, g['out'][1] + 8, f'출력 {n}', size=24, fill=BLUE, weight='bold')
+    f = NoteFig(550, 470, '네 AND 게이트로 만든 상태 디코더')
+    terms = (('A′', 'B′'), ('A', 'B′'), ('A′', 'B'), ('A', 'B'))
+    for i, names in enumerate(terms):
+        g = f.and_(190, 20 + i * 112, H=80)
+        for name, (x, y) in zip(names, g['ins']):
+            node = name[0] + ('-bar' if name.endswith('′') else '')
+            color = 'red' if name.endswith('′') else 'blue'
+            f.label(99, y + 8, name, anchor='end', node=node, color=color)
+            f.line([(123, y), (x, y)])
+            f.junction(123, y, node=node, color=color)
+        x, y = g['out']
+        f.line([(x, y), (368, y)])
+        f.junction(368, y)
+        f.label(391, y + 8, f'출력 {i}')
     return f
 
 
 def block7490():
-    f = Fig(860, 340, '7490을 BCD 카운터로 연결한 블록도')
-    f.rect(190, 30, 470, 240, fill='#fff', rx=4)
-    f.rect(220, 60, 140, 170, fill=BLUEBG)
-    f.text(290, 130, '2진 단', size=24, anchor='middle', weight='bold')
-    f.text(290, 170, 'QA', size=24, anchor='middle')
-    f.rect(430, 100, 200, 140, fill=BLUEBG)
-    f.text(530, 160, '5진 단', size=24, anchor='middle', weight='bold')
-    f.text(530, 200, 'QB QC QD', size=24, anchor='middle')
-    f.text(15, 138, 'Clock', size=24)
-    f.line([(95, 150), (220, 150)])
-    f.text(150, 138, '14번', size=20, anchor='middle', fill=GREY)
-    f.line([(360, 80), (760, 80)], color=BLUE)
-    f.text(690, 68, '12 → A', size=20, fill=BLUE)
-    f.line([(395, 80), (395, 170), (430, 170)], color=BLUE)
-    f.dot(395, 80, color=BLUE)
-    f.text(412, 196, '1', size=20, anchor='middle', fill=GREY)
-    f.text(395, 310, 'QA(12번)를 INPUT B(1번)에 연결', size=22, anchor='middle', fill=BLUE, weight='bold')
-    for y, t in ((130, '9 → B'), (170, '8 → C'), (210, '11 → D')):
-        f.line([(630, y), (760, y)])
-        f.text(690, y - 6, t, size=20)
+    f = NoteFig(845, 383, '7490의 QA를 CLKB에 연결한 BCD 카운터')
+    f.rect(178, 54, 474, 286, fill='#fff', rx=4)
+    f.rect(210, 117, 150, 120, fill=BLUEBG)
+    f.label(285, 145, '2진 단', anchor='middle')
+    f.label(335, 201, 'Q', sub='A', anchor='end', node='qa')
+    f.rect(465, 142, 158, 171, fill=BLUEBG)
+    f.label(544, 128, '5진 단', anchor='middle')
+    f.label(487, 269, 'CLKB', size=22)
+    f.label(134, 202, 'CLK', anchor='end', node='clka', color='red')
+    f.line([(156, 194), (210, 194)])
+    f.junction(156, 194, node='clka', color='red')
+    f.label(161, 172, '14', anchor='middle', size=22, node='clka', color='red')
+    # QA branches to the external A terminal and the 5-divider clock input.
+    f.line([(360, 194), (397, 194), (397, 89), (718, 89)])
+    f.line([(397, 194), (397, 260), (465, 260)])
+    f.junction(397, 194, node='qa')
+    f.junction(718, 89, node='qa')
+    f.label(745, 97, 'A', node='qa')
+    f.label(677, 70, '12', size=22, node='qa')
+    f.label(442, 242, '1', size=22, node='qa')
+    for y, bit, pin in ((170, 'B', 9), (219, 'C', 8), (268, 'D', 11)):
+        f.label(601, y + 8, 'Q', sub=bit, anchor='end', size=22)
+        f.line([(623, y), (718, y)])
+        f.junction(718, y)
+        f.label(745, y + 8, bit)
+        f.label(677, y - 18, str(pin), size=22)
+    f.label(432, 376, '7490', anchor='middle')
     return f
 
 
@@ -406,6 +431,13 @@ def mod6():
     return f
 
 
+def draw_note_schematics(output_dir: Path) -> tuple[Path, ...]:
+    return write_note_schematics(output_dir, {
+        'ripple-block': ripple_block(), 'sync-block': sync_block(),
+        'decoder-and': decoder(), '7490-block': block7490(),
+    })
+
+
 def build(run, m):
     F = run / 'figures'
     (F / 'questions').mkdir(parents=True, exist_ok=True)
@@ -420,8 +452,9 @@ def build(run, m):
         q = next(x for x in m['problems'] if x['id'] == pid)
         reg.append(dict(id=fid, question_id=pid, role=role, svg=f'figures/{sub}/{fid}.svg', png=f'figures/{sub}/{fid}.png', svg_sha256=sha(stem.with_suffix('.svg')), png_sha256=sha(stem.with_suffix('.png')), w_mm=ww, h_mm=ww * f.h / f.w, source_asset_ids=list(ids), source_refs=q['sources'][:1], derivation=how, answer_exposure='none' if role == 'problem' else 'present', review_status='pass', review_notes='2026-11-02 PNG·A4 PDF를 원문·교안 회로와 대조했어요. 핀, 공통 클럭, 되먹임, 하강 엣지 위치, 문제 그림의 답 비노출을 확인했어요.'))
 
-    for name, f in (('ripple-block', ripple_block()), ('ripple-wave', timing('비동기 2단 카운터 파형', ripple_states(4), extra=True)), ('ripple-delay', ripple_delay()), ('decoder-and', decoder()), ('sync-block', sync_block()), ('sync-states', sync_states_fig()), ('7490-block', block7490()), ('seven-seg-5', seven5()), ('full-chain', fullchain())):
+    for name, f in (('ripple-wave', timing('비동기 2단 카운터 파형', ripple_states(4), extra=True)), ('ripple-delay', ripple_delay()), ('sync-states', sync_states_fig()), ('seven-seg-5', seven5()), ('full-chain', fullchain())):
         (F / f'{name}.svg').write_text(f.svg(), encoding='utf8')
+    draw_note_schematics(F)
 
     register('xbit-given', 'q-xbit-ymod', 'problem', tchain(), 120, ['a-s02-p1-o-s02-q2'])
     register('sync-given', 'q-sync-wave', 'problem', schem(True), 150, ['a-s02-p1-o-s02-q3'])

@@ -1,5 +1,10 @@
 """All 실험06 schematics and timing diagrams, drawn from scratch (not copies of the originals)."""
 from figlib import *
+from scripts.lab.review_pack.note_schematic import SchematicSymbols, write_note_schematics
+
+
+class NoteFig(SchematicSymbols, Fig):
+    pass
 
 CAPTION = '선이 만나는 곳의 점은 연결, 점 없는 교차는 연결되지 않아요'
 
@@ -11,13 +16,19 @@ def save(fig, path):
 def _pin(f, x, y, n, side='in'):
     if n is None:
         return
+    if isinstance(f, NoteFig):
+        if side == 'in':
+            f.label(x + 16, y + 6, str(n), size=18)
+        else:
+            f.label(x + 4, y - 16, str(n), size=18)
+        return
     if side == 'in':
         f.text(x - 6, y - 7, str(n), size=18, anchor='end', fill=GREY)
     else:
         f.text(x + 4, y - 10, str(n), size=18, anchor='start', fill=GREY)
 
 
-def latch(title, kind='sr', names=None, pins=True, chips=True, desc='', w=900, cross_pins=None):
+def latch(title, kind='sr', names=None, pins=True, chips=True, desc='', w=900, cross_pins=None, *, note=False):
     """Gated latch drawn the same way as the 교안 schematics.
 
     kind: 'sr' (S, C, R → 4 NAND), 'd' (D, C → NOT + 4 NAND),
@@ -27,10 +38,10 @@ def latch(title, kind='sr', names=None, pins=True, chips=True, desc='', w=900, c
     """
     names = names or dict(sr=('S', 'E', 'R'), d=('D', 'E'), jk=('J', 'E', 'K'), basic=('S', 'R'))[kind]
     h = 520 if kind == 'basic' else 570
-    f = Fig(w, h, title, desc)
+    f = (NoteFig if note else Fig)(w, h, title, desc)
     # cross-coupled pair (G3 top → Q, G4 bottom → Q′)
-    g3 = f.and_(520, 70, 2, bubble=True, H=100)
-    g4 = f.and_(520, 350, 2, bubble=True, H=100)
+    g3 = f.and_(520, 70, 2, bubble=True, H=100, label='' if note else '&')
+    g4 = f.and_(520, 350, 2, bubble=True, H=100, label='' if note else '&')
     (x3a, y3a), (x3b, y3b) = g3['ins']
     (x4a, y4a), (x4b, y4b) = g4['ins']
     qx, qy = g3['out']
@@ -38,12 +49,24 @@ def latch(title, kind='sr', names=None, pins=True, chips=True, desc='', w=900, c
     xend = w - 80
     f.line([(qx, qy), (xend, qy)])
     f.line([(nx, ny), (xend, ny)])
-    f.text(xend + 12, qy + 8, 'Q', weight='bold')
-    f.text(xend + 12, ny + 8, 'Q′', weight='bold')
+    if note:
+        f.label(xend + 22, qy + 8, 'Q', node='q')
+        f.label(xend + 22, ny + 8, 'Q′', node='q-bar', color='red')
+        f.junction(xend, qy, node='q')
+        f.junction(xend, ny, node='q-bar', color='red')
+    else:
+        f.text(xend + 12, qy + 8, 'Q', weight='bold')
+        f.text(xend + 12, ny + 8, 'Q′', weight='bold')
     # Q → G4 top input, Q′ → G3 bottom input
-    f.dot(650, qy)
+    if note:
+        f.junction(650, qy, node='q')
+    else:
+        f.dot(650, qy)
     f.line([(650, qy), (650, 300), (470, 300), (470, y4a), (x4a, y4a)])
-    f.dot(680, ny)
+    if note:
+        f.junction(680, ny, node='q-bar', color='red')
+    else:
+        f.dot(680, ny)
     f.line([(680, ny), (680, 240), (490, 240), (490, y3b), (x3b, y3b)])
     chip_cross = '74HC00'
     if chips:
@@ -65,13 +88,18 @@ def latch(title, kind='sr', names=None, pins=True, chips=True, desc='', w=900, c
         f.line([(60, y3a), (x3a, y3a)])
         f.text(20, y4b + 8, r, weight='bold')
         f.line([(60, y4b), (x4b, y4b)])
-        f.text(20, h - 18, CAPTION, size=18, fill=GREY)
+        if note:
+            for yy in (y3a, y4b):
+                f.junction(60, yy)
+            f.crossing(650, 240)
+        else:
+            f.text(20, h - 18, CAPTION, size=18, fill=GREY)
         return f
 
     n = 3 if kind == 'jk' else 2
     H = 100 if n == 3 else 80
-    g1 = f.and_(240, y3a - H / 2, n, bubble=True, H=H)
-    g2 = f.and_(240, y4b - H / 2, n, bubble=True, H=H)
+    g1 = f.and_(240, y3a - H / 2, n, bubble=True, H=H, label='' if note else '&')
+    g2 = f.and_(240, y4b - H / 2, n, bubble=True, H=H, label='' if note else '&')
     f.line([g1['out'], (x3a, y3a)])
     f.line([g2['out'], (x4b, y4b)])
     gate_chip = '74HC10' if n == 3 else '74HC00'
@@ -114,8 +142,12 @@ def latch(title, kind='sr', names=None, pins=True, chips=True, desc='', w=900, c
                 _pin(f, px, py, k)
             _pin(f, *g1['out'], 3, 'out')
             _pin(f, *g2['out'], 6, 'out')
-            f.text(126, ry - 10, '1', size=18, anchor='end', fill=GREY)
-            f.text(nt['out'][0] + 4, ry - 10, '2', size=18, fill=GREY)
+            if note:
+                f.label(144, ry - 25, '1', size=18)
+                f.label(nt['out'][0] + 13, ry + 26, '2', size=18)
+            else:
+                f.text(126, ry - 10, '1', size=18, anchor='end', fill=GREY)
+                f.text(nt['out'][0] + 4, ry - 10, '2', size=18, fill=GREY)
     elif kind == 'jk':
         jy, ky = i1[1][1], i2[1][1]
         f.text(20, jy + 8, names[0], weight='bold')
@@ -123,9 +155,14 @@ def latch(title, kind='sr', names=None, pins=True, chips=True, desc='', w=900, c
         f.text(20, ky + 8, names[2], weight='bold')
         f.line([(60, ky), i2[1]])
         # Q′ → G1 top input (over the top), Q → G2 bottom input (under the bottom)
-        f.dot(735, ny)
+        if note:
+            f.junction(735, ny, node='q-bar', color='red')
+            f.junction(760, qy, node='q')
+        else:
+            f.dot(735, ny)
         f.line([(735, ny), (735, 25), (205, 25), (205, i1[0][1]), i1[0]])
-        f.dot(760, qy)
+        if not note:
+            f.dot(760, qy)
         f.line([(760, qy), (760, 520), (205, 520), (205, i2[2][1]), i2[2]])
         if pins:
             for (px, py), k in zip(i1, (1, 2, 13)):
@@ -134,13 +171,25 @@ def latch(title, kind='sr', names=None, pins=True, chips=True, desc='', w=900, c
                 _pin(f, px, py, k)
             _pin(f, *g1['out'], 12, 'out')
             _pin(f, *g2['out'], 6, 'out')
-    f.text(20, h - 14, CAPTION, size=18, fill=GREY)
+    if note:
+        input_rows = {'sr': (i1[0][1], i2[1][1]), 'd': (i1[0][1],),
+                      'jk': (i1[1][1], i2[1][1])}
+        for yy in (cy, *input_rows[kind]):
+            f.junction(60, yy)
+        f.crossing(650, 240)
+        if kind == 'd':
+            f.crossing(110, cy)
+        if kind == 'jk':
+            f.crossing(735, qy)
+            f.crossing(760, ny)
+    else:
+        f.text(20, h - 14, CAPTION, size=18, fill=GREY)
     return f
 
 
-def not_loop(title):
+def not_loop(title, *, note=False):
     """Two NOT gates in a ring: the memory idea before NAND handles are added."""
-    f = Fig(760, 380, title, 'NOT1의 출력 Q가 NOT2로, NOT2의 출력 Q′이 NOT1로 돌아가는 고리')
+    f = (NoteFig if note else Fig)(720 if note else 760, 335 if note else 380, title, 'NOT1의 출력 Q가 NOT2로, NOT2의 출력 Q′이 NOT1로 돌아가는 고리')
     n1 = f.not_(330, 72, H=56)
     n2 = f.not_(330, 232, H=56)
     (ax, ay), = n1['ins']
@@ -149,33 +198,51 @@ def not_loop(title):
     nx, ny = n2['out']
     f.line([(qx, qy), (640, qy)])
     f.line([(nx, ny), (640, ny)])
-    f.text(652, qy + 8, 'Q', weight='bold')
-    f.text(652, ny + 8, 'Q′', weight='bold')
+    if note:
+        f.label(662, qy + 8, 'Q', node='q')
+        f.label(662, ny + 8, 'Q′', node='q-bar', color='red')
+        f.junction(640, qy, node='q')
+        f.junction(640, ny, node='q-bar', color='red')
+    else:
+        f.text(652, qy + 8, 'Q', weight='bold')
+        f.text(652, ny + 8, 'Q′', weight='bold')
     # Q → NOT2 input, Q′ → NOT1 input
-    f.dot(500, qy)
+    if note:
+        f.junction(500, qy, node='q')
+    else:
+        f.dot(500, qy)
     f.line([(500, qy), (500, 200), (260, 200), (260, by), (bx, by)])
-    f.dot(540, ny)
+    if note:
+        f.junction(540, ny, node='q-bar', color='red')
+    else:
+        f.dot(540, ny)
     f.line([(540, ny), (540, 165), (220, 165), (220, ay), (ax, ay)])
     f.text(353, 60, 'NOT1', size=18, anchor='middle', fill=GREY)
     f.text(353, 312, 'NOT2', size=18, anchor='middle', fill=GREY)
-    f.text(580, qy - 12, '1', size=22, anchor='middle', fill=BLUE, weight='bold')
-    f.text(580, ny - 12, '0', size=22, anchor='middle', fill=BLUE, weight='bold')
-    f.text(20, 345, 'Q=1이면 NOT2가 0을, NOT1이 다시 1을 내서 그대로예요.', size=18, fill=BLUE)
-    f.text(20, 372, CAPTION, size=18, fill=GREY)
+    if note:
+        f.crossing(500, 165)
+        f.label(590, qy - 20, '1', anchor='middle', node='q')
+        f.label(590, ny - 20, '0', anchor='middle', node='q-bar', color='red')
+    else:
+        f.text(580, qy - 12, '1', size=22, anchor='middle', fill=BLUE, weight='bold')
+        f.text(580, ny - 12, '0', size=22, anchor='middle', fill=BLUE, weight='bold')
+        f.text(20, 345, 'Q=1이면 NOT2가 0을, NOT1이 다시 1을 내서 그대로예요.', size=18, fill=BLUE)
+        f.text(20, 372, CAPTION, size=18, fill=GREY)
     return f
 
 
-def jk_latch(title, names=('J', 'E', 'K'), pins=True, desc=''):
-    return latch(title, 'jk', names, pins=pins, desc=desc)
+def jk_latch(title, names=('J', 'E', 'K'), pins=True, desc='', *, note=False):
+    return latch(title, 'jk', names, pins=pins, desc=desc, note=note)
 
 
 # ------------------------------------------------------------------ blocks
 def ff_block(f, x, y, ins, outs, clk=None, clk_bubble=False, pr_clr=False, w=220, h=240):
     """Rectangle symbol. ins: list of (label, y_offset); clk: y_offset of the clock pin."""
     f.rect(x, y, w, h, fill='#fff', rx=4)
+    offset = 18 if isinstance(f, NoteFig) else 14
     for lab, dy in ins:
         f.line([(x - 70, y + dy), (x, y + dy)])
-        f.text(x + 14, y + dy + 8, lab, weight='bold')
+        f.text(x + offset, y + dy + 8, lab, weight='bold')
     if clk is not None:
         cy = y + clk
         f.path(f'M{x:g},{cy-14:g} L{x+20:g},{cy:g} L{x:g},{cy+14:g}', fill='none')
@@ -184,27 +251,52 @@ def ff_block(f, x, y, ins, outs, clk=None, clk_bubble=False, pr_clr=False, w=220
             f.line([(x - 70, cy), (x - 14, cy)])
         else:
             f.line([(x - 70, cy), (x, cy)])
-        f.text(x + 26, cy + 8, 'CK', size=20, fill=GREY)
+        f.text(x + (37 if isinstance(f, NoteFig) else 26), cy + 8, 'CK', size=20, fill=GREY)
     for lab, dy in outs:
         f.line([(x + w, y + dy), (x + w + 70, y + dy)])
-        f.text(x + w - 14, y + dy + 8, lab, anchor='end', weight='bold')
+        f.text(x + w - offset, y + dy + 8, lab, anchor='end', weight='bold')
     return dict(l=x - 70, r=x + w + 70)
 
 
-def tff_fig(title):
-    f = Fig(760, 360, title, 'J와 K를 하나로 묶은 입력 T와 하강 엣지 클록을 받는 J-K 플립플롭')
+def tff_fig(title, *, note=False):
+    f = (NoteFig if note else Fig)(720 if note else 760, 320 if note else 360, title, 'J와 K를 하나로 묶은 입력 T와 하강 엣지 클록을 받는 J-K 플립플롭')
     x, y = 330, 60
     ff_block(f, x, y, [('J', 50), ('K', 190)], [('Q', 50), ('Q′', 190)], clk=120, clk_bubble=True)
-    f.text(40, y + 58, 'T', weight='bold', size=24)
+    if note:
+        f.label(48, y + 58, 'T', anchor='end', node='t')
+    else:
+        f.text(40, y + 58, 'T', weight='bold', size=24)
     f.line([(70, y + 50), (x - 70, y + 50)])
-    f.dot(190, y + 50)
+    if note:
+        f.junction(190, y + 50, node='t')
+    else:
+        f.dot(190, y + 50)
     f.line([(190, y + 50), (190, y + 190), (x - 70, y + 190)])
     f.text(40, y + 128, 'CLK', weight='bold')
     f.line([(100, y + 120), (x - 70, y + 120)])
-    f.text(x + 300, y + 58, 'Q', weight='bold')
-    f.text(x + 300, y + 198, 'Q′', weight='bold')
-    f.text(20, 340, 'CK 앞의 원은 하강 엣지(1→0)에서 동작한다는 표시예요. 점 없는 교차는 연결되지 않아요.', size=18, fill=GREY)
+    if note:
+        f.crossing(190, y + 120)
+        f.junction(70, y + 50, node='t')
+        f.junction(100, y + 120)
+        for name, node, color, yy in (('Q', 'q', 'blue', y + 50), ('Q′', 'q-bar', 'red', y + 190)):
+            f.junction(x + 290, yy, node=node, color=color)
+            f.label(x + 313, yy + 8, name, node=node, color=color)
+    else:
+        f.text(x + 300, y + 58, 'Q', weight='bold')
+        f.text(x + 300, y + 198, 'Q′', weight='bold')
+        f.text(20, 340, 'CK 앞의 원은 하강 엣지(1→0)에서 동작한다는 표시예요. 점 없는 교차는 연결되지 않아요.', size=18, fill=GREY)
     return f
+
+
+def draw_note_schematics(output_dir: Path) -> tuple[Path, ...]:
+    return write_note_schematics(output_dir, {
+        'not-loop': not_loop('NOT 두 개로 만든 고리', note=True),
+        'sr-basic-nand': latch('NAND 두 개로 만든 기본 S-R 래치', 'basic', w=835, note=True),
+        'sr-latch-enable': latch('Enable이 있는 SR 래치 (실험 1)', 'sr', note=True),
+        'd-latch': latch('Enable이 있는 D 래치 (실험 2-1)', 'd', note=True),
+        'jk-latch': jk_latch('Enable이 있는 JK 래치 (실험 3-1, 보충)', note=True),
+        'tff-from-jk-note': tff_fig('J-K 플립플롭으로 만든 T 플립플롭', note=True),
+    })
 
 
 def hc76_fig(title):

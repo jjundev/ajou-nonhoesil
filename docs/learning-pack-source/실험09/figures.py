@@ -5,11 +5,22 @@ import json, base64, sys
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / '.claude/skills/breadboard-diagram/scripts'))
 
+from scripts.lab.review_pack.note_schematic import SchematicSymbols, write_note_schematics
+
 ORANGE = '#b45309'
 
 
-def term(f, x, y, name, right=True, color=INK):
+class NoteFig(SchematicSymbols, Fig):
+    pass
+
+
+def term(f, x, y, name, right=True, color=INK, *, node=None):
     """입력 단자(오각형)와 이름. 선은 (x+40, y)에서 시작해요."""
+    if isinstance(f, NoteFig):
+        f.junction(x + 40, y, node=node, color='red' if color == RED else 'blue')
+        f.label(x + 18, y + 8, name, size=24, anchor='end', node=node,
+                color='red' if color == RED else 'blue')
+        return (x + 40, y)
     if right:
         f.path(f'M{x},{y-11} h28 l12,11 l-12,11 h-28 z', fill='#fff', stroke=color, sw=2.5)
         f.text(x - 10, y + 8, name, size=22, anchor='end', fill=color, weight='bold')
@@ -28,44 +39,56 @@ def val(f, x, y, v, color=RED):
 
 
 # ---- 1 bit RAM (p4) --------------------------------------------------------
-def ram1(vals=None, title='1 bit RAM 회로', legend=True):
+def ram1(vals=None, title='1 bit RAM 회로', legend=True, *, note=False):
     """p4·기출 그림과 같은 연결: Input 인버터 → R 쪽 AND, Input 그대로 → S 쪽 AND, R/W 인버터 → 두 AND."""
-    f = Fig(1310, 560, title, 'Selection input·Input·Read/Write 입력, AND 세 개, 인버터 두 개, RS 플립플롭, Output')
+    f = (NoteFig if note else Fig)(1350 if note else 1310, 545 if note else 560, title, 'Selection input·Input·Read/Write 입력, AND 세 개, 인버터 두 개, RS 플립플롭, Output')
     f.raw('<g transform="translate(130,0)">')
     v = vals or {}
     sel_y, inp_y, rw_y = 60, 330, 500
-    term(f, 120, sel_y, 'Selection input')
-    term(f, 120, inp_y, 'Input')
-    term(f, 640, rw_y, 'Read/Write')
+    term(f, 120, sel_y, 'Selection input', node='selection' if note else None)
+    term(f, 120, inp_y, 'Input', node='input' if note else None)
+    term(f, 640, rw_y, 'Read/Write', color=RED if note else INK, node='rw' if note else None)
     ga = f.and_(470, 120, n=3, H=110)       # 위 AND → R
     gb = f.and_(470, 260, n=3, H=110)       # 아래 AND → S
     go = f.and_(900, 110, n=3, H=110)       # 출력 AND
     # RS 플립플롭
     f.rect(680, 130, 130, 230, fill=BLUEBG, rx=2)
-    f.text(698, 186, 'R', size=30)
-    f.text(698, 326, 'S', size=30)
-    f.text(792, 200, 'Q', size=30, anchor='end')
+    f.text(701 if note else 698, 186, 'R', size=30)
+    f.text(701 if note else 698, 326, 'S', size=30)
+    f.text(789 if note else 792, 200, 'Q', size=30, anchor='end')
     f.text(745, 395, 'RS 플립플롭', size=20, anchor='middle', fill=GREY)
     f.line([ga['out'], (680, ga['out'][1])])
     f.line([gb['out'], (680, gb['out'][1])])
     # Selection: 세 AND 의 첫 입력
     x_sel = 400
     f.line([(160, sel_y), (860, sel_y), (860, go['ins'][0][1]), go['ins'][0]])
-    f.dot(x_sel, sel_y)
+    if note:
+        f.junction(x_sel, sel_y, node='selection')
+    else:
+        f.dot(x_sel, sel_y)
     f.line([(x_sel, sel_y), (x_sel, gb['ins'][0][1]), gb['ins'][0]])
     f.line([(x_sel, ga['ins'][0][1]), ga['ins'][0]])
-    f.dot(x_sel, ga['ins'][0][1])
+    if note:
+        f.junction(x_sel, ga['ins'][0][1], node='selection')
+    else:
+        f.dot(x_sel, ga['ins'][0][1])
     # Input: 그대로 → 아래 AND 둘째 입력, 인버터 → 위 AND 둘째 입력
     inv = f.not_(260, ga['ins'][1][1] - 22)
     f.line([(160, inp_y), (440, inp_y), (440, gb['ins'][1][1]), gb['ins'][1]])
     x_i = 220
-    f.dot(x_i, inp_y)
+    if note:
+        f.junction(x_i, inp_y, node='input')
+    else:
+        f.dot(x_i, inp_y)
     f.line([(x_i, inp_y), (x_i, ga['ins'][1][1]), inv['ins'][0]])
     f.line([inv['out'], ga['ins'][1]])
     # Read/Write: 인버터 → 두 AND 셋째 입력, 그대로 → 출력 AND 셋째 입력
     x_rw = 870
     f.line([(680, rw_y), (x_rw, rw_y), (x_rw, go['ins'][2][1]), go['ins'][2]])
-    f.dot(x_rw, 440)
+    if note:
+        f.junction(x_rw, 440, node='rw', color='red')
+    else:
+        f.dot(x_rw, 440)
     f.line([(x_rw, 440), (606, 440)])
     f.path('M606,418 L606,462 L560,440 Z')   # 왼쪽을 향한 인버터
     f.circle(553, 440, 7)
@@ -76,8 +99,15 @@ def ram1(vals=None, title='1 bit RAM 회로', legend=True):
     # Q → 출력 AND 둘째 입력
     f.line([(810, 190), (840, 190), (840, go['ins'][1][1]), go['ins'][1]])
     f.line([go['out'], (1080, go['out'][1])])
-    f.text(1090, go['out'][1] + 8, 'Output', size=22, weight='bold')
-    if legend:
+    if note:
+        f.junction(1080, go['out'][1], node='out')
+        f.label(1103, go['out'][1] + 8, 'Output', node='out')
+        f.crossing(x_sel, ga['ins'][1][1])
+        f.crossing(x_rwb, gb['ins'][0][1])
+        f.crossing(x_rwb, inp_y)
+    else:
+        f.text(1090, go['out'][1] + 8, 'Output', size=22, weight='bold')
+    if legend and not note:
         f.text(250, 470, '0 : Write Operation', size=20, fill=GREY)
         f.text(250, 500, '1 : Read Operation', size=20, fill=GREY)
     for key, (x, y) in dict(sel=(300, sel_y - 26), inp=(300, inp_y - 26), rw=(790, rw_y - 26), R=(650, ga['out'][1] - 24), S=(650, gb['out'][1] - 24), Q=(860, 222), out=(1060, go['out'][1] - 28)).items():
@@ -88,12 +118,20 @@ def ram1(vals=None, title='1 bit RAM 회로', legend=True):
 
 
 # ---- 2 bit RAM (p6) --------------------------------------------------------
-def ram2(vals=None, title='2 bit RAM 회로 (74HC00 두 개, 74HC03 하나)'):
+def note_gate_pins(f, gate, pins, model, *, chip_label_gap=30):
+    for (x, y), pin in zip(gate['ins'], pins[:2]):
+        f.label(x + 17, y + 6, pin, size=18)
+    x, y = gate['out']
+    f.label(x + 12, y - 16, pins[2], size=18)
+    f.label(gate['ins'][0][0] + 33, y + gate['H'] / 2 + chip_label_gap, model, size=18, anchor='middle')
+
+
+def ram2(vals=None, title='2 bit RAM 회로 (74HC00 두 개, 74HC03 하나)', *, note=False):
     """p6 회로도와 같은 넷. WR1 은 두 비트의 세트 쪽 NAND(2번), WR0 은 리셋 쪽 NAND(5번)에 함께 들어가요."""
-    f = Fig(1600, 1020, title, 'OE0·IN0·WR0·OE1·IN1·WR1 입력, 비트마다 NAND SR 래치와 74HC03 출력단, OUT0·OUT1 LED')
+    f = (NoteFig if note else Fig)(1630 if note else 1600, 1030 if note else 1020, title, 'OE0·IN0·WR0·OE1·IN1·WR1 입력, 비트마다 NAND SR 래치와 74HC03 출력단, OUT0·OUT1 LED')
     v = vals or {}
     xs = dict(IN=300, WR1=340, WR0=380)
-    base = {'A': 70, 'B': 560}
+    base = {'A': 90, 'B': 580} if note else {'A': 70, 'B': 560}
     ends = {}
     for bit, y0 in base.items():
         k = '0' if bit == 'A' else '1'
@@ -103,17 +141,24 @@ def ram2(vals=None, title='2 bit RAM 회로 (74HC00 두 개, 74HC03 하나)'):
         g3 = f.and_(700, g1['out'][1] - 28, H=84, bubble=True, label='')
         g4 = f.and_(700, g2['out'][1] - 56, H=84, bubble=True, label='')
         for g, pins, nm in ((g1, ('1', '2', '3'), chip), (g2, ('4', '5', '6'), chip), (g3, ('12', '13', '11'), chip), (g4, ('9', '10', '8'), chip)):
-            f.text(g['ins'][0][0] - 6, g['ins'][0][1] - 6, pins[0], size=18, anchor='end', fill=GREY)
-            f.text(g['ins'][1][0] - 6, g['ins'][1][1] - 6, pins[1], size=18, anchor='end', fill=GREY)
-            f.text(g['out'][0] + 4, g['out'][1] - 8, pins[2], size=18, fill=GREY)
-            f.text(g['ins'][0][0] + 34, g['ins'][0][1] + 62 + 6, '74HC00', size=18, anchor='middle', fill=GREY)
+            if note:
+                note_gate_pins(f, g, pins, '74HC00', chip_label_gap=23 if g is g3 else 30)
+            else:
+                f.text(g['ins'][0][0] - 6, g['ins'][0][1] - 6, pins[0], size=18, anchor='end', fill=GREY)
+                f.text(g['ins'][1][0] - 6, g['ins'][1][1] - 6, pins[1], size=18, anchor='end', fill=GREY)
+                f.text(g['out'][0] + 4, g['out'][1] - 8, pins[2], size=18, fill=GREY)
+                f.text(g['ins'][0][0] + 34, g['ins'][0][1] + 62 + 6, '74HC00', size=18, anchor='middle', fill=GREY)
         # 앞단 → 래치
         f.line([g1['out'], g3['ins'][0]])
         f.line([g2['out'], g4['ins'][1]])
         q, qb = g3['out'], g4['out']
         # Q → 아래 게이트 9번(교차 결합)
         f.line([q, (820, q[1]), (820, y0 + 215), (660, y0 + 215), (660, g4['ins'][0][1]), g4['ins'][0]])
-        f.dot(820, q[1])
+        if note:
+            f.junction(820, q[1], node=f'q{bit}')
+            f.label(887, q[1] - 31, 'Q', sub=bit, node=f'q{bit}', anchor='middle')
+        else:
+            f.dot(820, q[1])
         # Q′ → 위 게이트 13번
         f.line([qb, (850, qb[1]), (850, y0 + 175), (630, y0 + 175), (630, g3['ins'][1][1]), g3['ins'][1]])
         # 읽기: 74HC03 두 게이트
@@ -122,10 +167,13 @@ def ram2(vals=None, title='2 bit RAM 회로 (74HC00 두 개, 74HC03 하나)'):
         p5 = ('1', '2', '3') if bit == 'A' else ('4', '5', '6')
         p6 = ('12', '13', '11') if bit == 'A' else ('9', '10', '8')
         for g, pins in ((g5, p5), (g6, p6)):
-            f.text(g['ins'][0][0] - 6, g['ins'][0][1] - 6, pins[0], size=18, anchor='end', fill=GREY)
-            f.text(g['ins'][1][0] - 6, g['ins'][1][1] + 22, pins[1], size=18, anchor='end', fill=GREY)
-            f.text(g['out'][0] + 4, g['out'][1] - 8, pins[2], size=18, fill=GREY)
-            f.text(g['ins'][0][0] + 34, g['ins'][1][1] + 48, '74HC03', size=18, anchor='middle', fill=GREY)
+            if note:
+                note_gate_pins(f, g, pins, '74HC03')
+            else:
+                f.text(g['ins'][0][0] - 6, g['ins'][0][1] - 6, pins[0], size=18, anchor='end', fill=GREY)
+                f.text(g['ins'][1][0] - 6, g['ins'][1][1] + 22, pins[1], size=18, anchor='end', fill=GREY)
+                f.text(g['out'][0] + 4, g['out'][1] - 8, pins[2], size=18, fill=GREY)
+                f.text(g['ins'][0][0] + 34, g['ins'][1][1] + 48, '74HC03', size=18, anchor='middle', fill=GREY)
         f.line([(820, q[1]), g5['ins'][1]])
         rd = g5['out']
         xr = 1200
@@ -139,18 +187,29 @@ def ram2(vals=None, title='2 bit RAM 회로 (74HC00 두 개, 74HC03 하나)'):
         for x in (xr, 1440):
             f.line([(x, top), (x, top + 20)], color=RED)
             f.path(f'M{x},{top+20} l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6', fill='none', stroke=RED, sw=2.5)
-            f.text(x + 16, top + 54, '10k', size=18, fill=RED)
+            f.text(x + 16, top + 54, ('10 kΩ' if note else '10k'), size=18, fill=RED)
         f.line([(xr, top + 80), (xr, g6['ins'][0][1])], color=RED)
         f.line([(xr - 0, top), (1440, top)], color=RED)
         f.text(xr - 10, top - 10, '+5V', size=20, anchor='end', fill=RED, weight='bold')
         out = g6['out']
         f.line([out, (1440, out[1])])
-        f.dot(1440, out[1])
+        if note:
+            f.junction(1440, out[1], node=f'out{k}')
+        else:
+            f.dot(1440, out[1])
         f.line([(1440, top + 80), (1440, out[1])], color=RED)
         f.line([(1440, out[1]), (1490, out[1])])
-        f.text(1500, out[1] + 8, f'OUT{k}', size=24, weight='bold', fill=BLUE)
-        f.text(1500, out[1] + 38, '→ LED', size=20, fill=GREY)
-        f.text(1080, y0 + 260, bit, size=90, anchor='middle', weight='bold', fill='#cbd5e1')
+        if note:
+            f.junction(1490, out[1], node=f'out{k}')
+            f.label(1514, out[1] + 8, 'OUT', sub=k, node=f'out{k}')
+            f.label(1514, out[1] + 39, '→ LED', size=20)
+            f.label(1120, y0 + 235, f'비트 {bit}', anchor='middle', size=32)
+            f.crossing(820, y0 + 175)
+            f.crossing(850, q[1])
+        else:
+            f.text(1500, out[1] + 8, f'OUT{k}', size=24, weight='bold', fill=BLUE)
+            f.text(1500, out[1] + 38, '→ LED', size=20, fill=GREY)
+            f.text(1080, y0 + 260, bit, size=90, anchor='middle', weight='bold', fill='#cbd5e1')
         ends[bit] = dict(g1=g1, g2=g2, g5=g5, q=q, qb=qb, rd=rd, out=out)
         # OE 입력: 위로 돌아 74HC03 첫 입력
         oe_y = y0
@@ -158,23 +217,40 @@ def ram2(vals=None, title='2 bit RAM 회로 (74HC00 두 개, 74HC03 하나)'):
         f.line([(190, oe_y), (960, oe_y), (960, g5['ins'][0][1]), g5['ins'][0]])
         # IN 입력
         in_y = g1['ins'][0][1]
-        term(f, 150, in_y, f'IN{k}')
+        term(f, 150, in_y, f'IN{k}', node=f'in{k}' if note else None)
         f.line([(190, in_y), g1['ins'][0]])
-        f.dot(xs['IN'], in_y)
+        if note:
+            f.junction(xs['IN'], in_y, node=f'in{k}')
+        else:
+            f.dot(xs['IN'], in_y)
         f.line([(xs['IN'], in_y), (xs['IN'], g2['ins'][0][1]), g2['ins'][0]])
     # WR 버스: WR0 단자는 A 쪽, WR1 단자는 B 쪽에 있어요(교안 배치).
     a, b = ends['A'], ends['B']
     wr0_y = a['g2']['ins'][1][1]
-    term(f, 150, wr0_y, 'WR0', color=GRN)
-    f.line([(190, wr0_y), a['g2']['ins'][1]], color=GRN)
-    f.dot(xs['WR0'], wr0_y, color=GRN)
-    f.line([(xs['WR0'], wr0_y), (xs['WR0'], b['g2']['ins'][1][1]), b['g2']['ins'][1]], color=GRN)
+    wr0_color = RED if note else GRN
+    term(f, 150, wr0_y, 'WR0', color=wr0_color, node='wr0' if note else None)
+    f.line([(190, wr0_y), a['g2']['ins'][1]], color=wr0_color)
+    if note:
+        f.junction(xs['WR0'], wr0_y, node='wr0', color='red')
+    else:
+        f.dot(xs['WR0'], wr0_y, color=wr0_color)
+    f.line([(xs['WR0'], wr0_y), (xs['WR0'], b['g2']['ins'][1][1]), b['g2']['ins'][1]], color=wr0_color)
     wr1_y = base['B'] + 400
-    term(f, 150, wr1_y, 'WR1', color=BLUE)
+    term(f, 150, wr1_y, 'WR1', color=BLUE, node='wr1' if note else None)
     f.line([(190, wr1_y), (xs['WR1'], wr1_y), (xs['WR1'], a['g1']['ins'][1][1]), a['g1']['ins'][1]], color=BLUE)
-    f.dot(xs['WR1'], b['g1']['ins'][1][1], color=BLUE)
+    if note:
+        f.junction(xs['WR1'], b['g1']['ins'][1][1], node='wr1')
+    else:
+        f.dot(xs['WR1'], b['g1']['ins'][1][1], color=BLUE)
     f.line([(xs['WR1'], b['g1']['ins'][1][1]), b['g1']['ins'][1]], color=BLUE)
-    f.text(30, 1005, '입력 스위치는 단자로 줄여 그렸어요. 선이 엇갈리기만 하는 곳(점 없음)은 연결이 아니에요.', size=20, fill=GREY)
+    if note:
+        # The write buses cross the independent OE and IN nets without joining them.
+        for row in (base['B'], b['g1']['ins'][0][1], b['g1']['ins'][1][1], b['g2']['ins'][0][1]):
+            f.crossing(xs['WR0'], row, color=RED)
+        for row in (a['g2']['ins'][0][1], wr0_y, base['B'], b['g1']['ins'][0][1], b['g2']['ins'][0][1]):
+            f.crossing(xs['WR1'], row, color=BLUE)
+    else:
+        f.text(30, 1005, '입력 스위치는 단자로 줄여 그렸어요. 선이 엇갈리기만 하는 곳(점 없음)은 연결이 아니에요.', size=20, fill=GREY)
     # 주석 값
     pos = {}
     for bit in 'AB':
@@ -194,23 +270,36 @@ def ram2(vals=None, title='2 bit RAM 회로 (74HC00 두 개, 74HC03 하나)'):
 
 
 # ---- NAND SR 래치 ------------------------------------------------------------
-def nand_latch(pins=False, title='NAND 두 개로 만든 SR 래치'):
-    f = Fig(760, 360, title, "S′와 R′ 입력, 두 NAND의 교차 되먹임, 출력 Q와 Q′")
+def nand_latch(pins=False, title='NAND 두 개로 만든 SR 래치', *, note=False):
+    f = (NoteFig if note else Fig)(655 if note else 760, 345 if note else 360, title, "S′와 R′ 입력, 두 NAND의 교차 되먹임, 출력 Q와 Q′")
     g1 = f.and_(300, 50, H=90, bubble=True, label='')
     g2 = f.and_(300, 210, H=90, bubble=True, label='')
-    f.text(110, g1['ins'][0][1] + 8, "S′", size=28, weight='bold')
-    f.text(110, g2['ins'][1][1] + 8, "R′", size=28, weight='bold')
+    f.text(104 if note else 110, g1['ins'][0][1] + 8, "S′", size=28, weight='bold')
+    f.text(104 if note else 110, g2['ins'][1][1] + 8, "R′", size=28, weight='bold')
     f.line([(150, g1['ins'][0][1]), g1['ins'][0]])
     f.line([(150, g2['ins'][1][1]), g2['ins'][1]])
     q, qb = g1['out'], g2['out']
     f.line([q, (560, q[1])])
     f.line([qb, (560, qb[1])])
-    f.text(580, q[1] + 9, 'Q', size=28, weight='bold', fill=BLUE)
-    f.text(580, qb[1] + 9, "Q′", size=28, weight='bold', fill=BLUE)
-    f.dot(450, q[1])
-    f.line([(450, q[1]), (450, 165), (260, 195), (260, g2['ins'][0][1]), g2['ins'][0]])
-    f.dot(490, qb[1])
-    f.line([(490, qb[1]), (490, 175), (240, 135), (240, g1['ins'][1][1]), g1['ins'][1]])
+    if note:
+        f.label(584, q[1] + 8, 'Q', node='q')
+        f.label(584, qb[1] + 8, 'Q′', node='q-bar', color='red')
+        f.junction(560, q[1], node='q')
+        f.junction(560, qb[1], node='q-bar', color='red')
+        f.junction(450, q[1], node='q')
+        f.junction(490, qb[1], node='q-bar', color='red')
+        f.line([(450, q[1]), (450, 191), (260, 191), (260, g2['ins'][0][1]), g2['ins'][0]])
+        f.line([(490, qb[1]), (490, 158), (240, 158), (240, g1['ins'][1][1]), g1['ins'][1]])
+        f.crossing(450, 158)
+        f.junction(150, g1['ins'][0][1])
+        f.junction(150, g2['ins'][1][1])
+    else:
+        f.text(580, q[1] + 9, 'Q', size=28, weight='bold', fill=BLUE)
+        f.text(580, qb[1] + 9, "Q′", size=28, weight='bold', fill=BLUE)
+        f.dot(450, q[1])
+        f.line([(450, q[1]), (450, 165), (260, 195), (260, g2['ins'][0][1]), g2['ins'][0]])
+        f.dot(490, qb[1])
+        f.line([(490, qb[1]), (490, 175), (240, 135), (240, g1['ins'][1][1]), g1['ins'][1]])
     if pins:
         for t, (x, y) in (('1', g1['ins'][0]), ('2', g1['ins'][1]), ('4', g2['ins'][0]), ('5', g2['ins'][1])):
             f.text(x - 6, y - 6, t, size=18, anchor='end', fill=GREY)
@@ -285,31 +374,37 @@ def memory_idea():
 
 
 def opendrain():
-    f = Fig(940, 360, '열린 드레인 출력과 10kΩ 풀업', 'NAND 출력이 0이면 스위치가 닫혀 GND로, 1이면 열려 풀업이 +5V로 끌어올려요')
-    for x0, closed, title in ((40, True, '내부 결과 0 → 스위치 닫힘'), (460, False, '내부 결과 1 → 스위치 열림')):
-        f.text(x0 + 170, 36, title, size=22, anchor='middle', weight='bold', fill=BLUE if not closed else INK)
-        f.text(x0 + 200, 76, '+5V', size=20, anchor='middle', fill=RED, weight='bold')
-        f.line([(x0 + 200, 84), (x0 + 200, 100)], color=RED)
-        f.path(f'M{x0+200},100 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6', fill='none', stroke=RED, sw=2.5)
-        f.text(x0 + 220, 140, '10k', size=18, fill=RED)
-        f.line([(x0 + 200, 160), (x0 + 200, 190)])
-        f.dot(x0 + 200, 190)
-        f.line([(x0 + 200, 190), (x0 + 330, 190)])
-        f.text(x0 + 340, 198, '출력', size=22, weight='bold')
-        f.line([(x0 + 200, 190), (x0 + 200, 220)])
-        f.circle(x0 + 200, 225, 5)
-        if closed:
-            f.line([(x0 + 200, 230), (x0 + 200, 270)], width=4)
-        else:
-            f.line([(x0 + 200, 230), (x0 + 230, 262)], width=4)
-        f.circle(x0 + 200, 275, 5)
-        f.line([(x0 + 200, 280), (x0 + 200, 300)])
-        f.line([(x0 + 180, 300), (x0 + 220, 300)])
-        f.line([(x0 + 188, 308), (x0 + 212, 308)])
-        f.text(x0 + 80, 255, '칩 안', size=18, fill=GREY)
-        f.text(x0 + 340, 240, '= 0V (0)' if closed else '= +5V (1)', size=22, fill=INK if closed else BLUE, weight='bold')
-    f.text(470, 345, '풀업이 없으면 오른쪽 경우 출력이 떠서 값이 정해지지 않아요', size=20, anchor='middle', fill=GREY)
+    f = NoteFig(790, 355, '열린 드레인 출력과 10kΩ 풀업',
+                '스위치가 닫히면 OUT은 0V, 열리면 저항이 OUT을 5V로 끌어올린다.')
+    for x, title, closed in ((114, '닫힌 스위치', True), (488, '열린 스위치', False)):
+        out = 'low' if closed else 'high'
+        color = 'red' if closed else 'blue'
+        f.label(x, 34, title, anchor='middle')
+        f.label(x, 81, '+5 V', anchor='middle')
+        f.junction(x, 100)
+        f.line([(x, 100), (x, 120)])
+        f.path(f'M{x},120 l-10,6 l20,12 l-20,12 l20,12 l-20,12 l10,6', fill='none')
+        f.label(x + 29, 153, '10 kΩ', size=22)
+        f.line([(x, 180), (x, 244)])
+        f.junction(x, 203, node=out, color=color)
+        f.line([(x, 203), (x + 119, 203)])
+        f.junction(x + 119, 203, node=out, color=color)
+        f.label(x + 144, 212, 'OUT', node=out, color=color)
+        f.label(x + 144, 246, '0 V' if closed else '5 V', node=out, color=color)
+        f.circle(x, 248, 4)
+        f.line([(x, 252), (x if closed else x + 24, 285)], width=4)
+        f.circle(x, 289, 4)
+        f.line([(x, 293), (x, 319)])
+        for span, y in ((16, 319), (10, 327), (4, 335)):
+            f.line([(x - span, y), (x + span, y)])
     return f
+
+
+def draw_note_schematics(output_dir: Path) -> tuple[Path, ...]:
+    return write_note_schematics(output_dir, {
+        'nand-latch': nand_latch(note=True), 'ram1bit': ram1(note=True),
+        'ram2bit': ram2(note=True), 'opendrain': opendrain(),
+    })
 
 
 def build(run, m):
@@ -326,8 +421,9 @@ def build(run, m):
         q = next(x for x in m['problems'] if x['id'] == pid)
         reg.append(dict(id=fid, question_id=pid, role=role, svg=f'figures/{sub}/{fid}.svg', png=f'figures/{sub}/{fid}.png', svg_sha256=sha(stem.with_suffix('.svg')), png_sha256=sha(stem.with_suffix('.png')), w_mm=ww, h_mm=ww * f.h / f.w, source_asset_ids=list(ids), source_refs=q['sources'][:1], derivation=how, answer_exposure='none' if role == 'problem' else 'present', review_status='pass', review_notes=REVIEW_NOTE))
 
-    for name, f in (('memory-idea', memory_idea()), ('nand-latch', nand_latch()), ('ram1bit', ram1()), ('ram2bit', ram2()), ('opendrain', opendrain()), ('pin670', pin670()), ('block670', block670())):
+    for name, f in (('memory-idea', memory_idea()), ('pin670', pin670()), ('block670', block670())):
         (F / f'{name}.svg').write_text(f.svg(), encoding='utf8')
+    draw_note_schematics(F)
 
     W1 = dict(sel=1, inp=1, rw=0, R=0, S=1, Q=1, out=0)
     W0 = dict(sel=1, inp=0, rw=0, R=1, S=0, Q=0, out=0)

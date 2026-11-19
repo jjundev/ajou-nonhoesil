@@ -104,7 +104,7 @@ TOPICS = [
  layer('eli5', '칸 A에 1을 쓰려면 IN0=1, WR1=1, WR0=0이에요',
   gist('<strong>WR1과 WR0이 서로 반대일 때, IN이 1인 칸에 WR1 값을 저장해요.</strong> 범례는 WR0·WR1을 A, B 부품처럼 적었지만, 회로도에서는 두 선 모두 A와 B에 함께 들어가는 한 쌍이에요. 기출 제공 답도 이 값이에요.') +
   table(['신호', '들어가는 곳', '하는 일'], [['OE0 · OE1', 'A · B의 출력단(74HC03)', '1이면 읽기 켜기'], ['IN0 · IN1', 'A · B의 앞단 NAND', '1이면 쓰기 켜기'], ['WR1', 'A·B 둘 다, Set 쪽 NAND(2번 핀)', '쓸 값'], ['WR0', 'A·B 둘 다, Reset 쪽 NAND(5번 핀)', '쓸 값의 반대 (WR1과 늘 반대로)']], 'ttt') +
-  fig('figures/ram2bit.svg', '2bit RAM 회로', '파란 WR1은 두 칸의 2번 핀, 초록 WR0은 두 칸의 5번 핀에 함께 들어가요. 칸 A, B는 각각 74HC00 하나로 만든 NAND SR 래치예요.')) +
+  fig('figures/ram2bit.svg', '2bit RAM 회로', '파란 WR1은 A와 B의 세트 쪽 NAND 2번, 빨간 WR0은 두 칸의 리셋 쪽 NAND 5번에 들어가요. 입력 스위치는 단자로 줄여 그렸어요.')) +
  layer('formal', '앞단 NAND가 S′·R′를 만들고, 뒤는 앞에서 본 래치예요',
   p('칸 A의 앞단 NAND 두 개(1·2번 → 3번, 4·5번 → 6번) 출력이 래치의 S′, R′예요.') +
   tex(r"S'_A = \overline{\mathrm{IN0}\cdot \mathrm{WR1}},\quad R'_A = \overline{\mathrm{IN0}\cdot \mathrm{WR0}}") +
