@@ -106,3 +106,12 @@ def test_digital_note_schematic_inventory_and_reproducibility(experiment, tmp_pa
     draw_schematics(experiment, second)
     for path in first.glob('*.svg'):
         assert path.read_bytes() == (second / path.name).read_bytes()
+
+
+def test_dac_note_schematic_inventory_and_summing_node(tmp_path):
+    draw_schematics(10, tmp_path)
+    tree = ET.parse(tmp_path / 'summing.svg')
+    dots = tree.findall(".//s:circle[@data-node='summing']", SVG_NS)
+    label = tree.find(".//s:text[@data-node='summing']", SVG_NS)
+    assert len(dots) == 4
+    assert {dot.get('data-node-color') for dot in dots} == {label.get('data-node-color')} == {'red'}

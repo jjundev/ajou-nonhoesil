@@ -1,11 +1,27 @@
 """교안·기출 회로를 직접 그린 벡터 원고와 300dpi 워크북 그림."""
 from figlib import Fig, render_png, sha, BLUE, BLUEBG, GREY, INK, RED, GRN
 from pathlib import Path
-import json, base64, sys
+import json, base64, re, sys
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / '.claude/skills/breadboard-diagram/scripts'))
 
+from scripts.lab.review_pack.note_schematic import SchematicSymbols, write_note_schematics
+
 ORANGE = '#b45309'
+
+
+class NoteFig(SchematicSymbols, Fig):
+    pass
+
+
+def resistor_label(f, x, y, label, anchor='middle'):
+    parts = re.fullmatch(r'(R)([0-9]+|f|L)(.*)', label)
+    if parts:
+        f.label(x, y, parts[1], sub=parts[2], suffix=parts[3], size=24, anchor=anchor)
+    elif label == '2ⁿ⁻¹R':
+        f.label(x, y, '2', super_='n−1', suffix='R', size=24, anchor=anchor)
+    else:
+        f.label(x, y, label, size=24, anchor=anchor)
 
 
 # ---- 작은 부품 --------------------------------------------------------------
@@ -15,17 +31,31 @@ def res_h(f, x1, x2, y, label=None, dy=-16, color=INK):
     f.line([(x1, y), (a, y)], color=color)
     f.path(f'M{a:g},{y:g} l5,-10 l10,20 l10,-20 l10,20 l10,-20 l10,20 l5,-10', fill='none', stroke=color)
     f.line([(b, y), (x2, y)], color=color)
-    if label:
+    if label and isinstance(f, NoteFig):
+        resistor_label(f, m, y - 30, label)
+    elif label:
         f.text(m, y + dy, label, size=18, anchor='middle', fill=color)
 
 
 def res_v(f, x, y1, y2, label=None, dx=16, color=INK, anchor='start'):
     m = (y1 + y2) / 2
     a, b = m - 30, m + 30
-    f.line([(x, y1), (x, a)], color=color)
-    f.path(f'M{x:g},{a:g} l-10,5 l20,10 l-20,10 l20,10 l-20,10 l20,10 l-10,5', fill='none', stroke=color)
+    if isinstance(f, NoteFig):
+        step = min(10, (y2 - y1) / 8)
+        a, b = m - 3 * step, m + 3 * step
+        points = [(x + (10 if i % 2 else -10), a + (i + 0.5) * step) for i in range(6)]
+        f.line([(x, a), *points, (x, b)], color=color)
+    else:
+        f.line([(x, y1), (x, a)], color=color)
+        f.path(f'M{x:g},{a:g} l-10,5 l20,10 l-20,10 l20,10 l-20,10 l20,10 l-10,5', fill='none', stroke=color)
+    if isinstance(f, NoteFig):
+        f.line([(x, y1), (x, a)], color=color)
     f.line([(x, b), (x, y2)], color=color)
-    if label:
+    if label and isinstance(f, NoteFig):
+        for i, text in enumerate(label.split('\n')):
+            x_label = x + max(dx, 32) if anchor == 'start' else x + min(dx, -32)
+            resistor_label(f, x_label, m + 8 + i * 28, text, anchor)
+    elif label:
         lines = label.split('\n')
         for i, t in enumerate(lines):
             f.text(x + dx, m - 10 * (len(lines) - 1) + 20 * i + 6, t, size=18, anchor=anchor, fill=color)
@@ -38,7 +68,18 @@ def gnd(f, x, y):
     f.line([(x - 3, y + 24), (x + 3, y + 24)])
 
 
-def term(f, x, y, name, side='left', color=INK, size=22):
+def term(f, x, y, name, side='left', color=INK, size=22, *, node=None):
+    if isinstance(f, NoteFig):
+        palette = 'red' if color == RED else 'blue'
+        f.junction(x, y, node=node, color=palette)
+        offsets = {'left': (-25, 8, 'end'), 'right': (25, 8, 'start'), 'top': (0, -35, 'middle')}
+        dx, dy, anchor = offsets[side]
+        signal = re.fullmatch(r'([VD])(in|out|o|ref|n|[0-9]+)', name)
+        if signal:
+            f.label(x + dx, y + dy, signal[1], sub=signal[2], anchor=anchor, node=node, color=palette)
+        else:
+            f.label(x + dx, y + dy, name, anchor=anchor, node=node, color=palette)
+        return
     f.circle(x, y, 6, stroke=color)
     if side == 'left':
         f.text(x - 12, y + 7, name, size=size, anchor='end', fill=color, weight='bold')
@@ -52,76 +93,91 @@ def opamp(f, x, y, W=140, H=160, label=None, minus_top=True, pins=None):
     """삼각형 왼쪽 변 x, 가운데 y. 반환: 위 입력·아래 입력·출력·위/아래 변 가운데."""
     f.path(f'M{x:g},{y-H/2:g} L{x:g},{y+H/2:g} L{x+W:g},{y:g} Z', fill=BLUEBG, stroke=BLUE)
     top, bot = (x, y - H / 4), (x, y + H / 4)
-    f.text(x + 14, top[1] + 9, '−' if minus_top else '+', size=28, fill=INK, weight='bold')
-    f.text(x + 14, bot[1] + 9, '+' if minus_top else '−', size=28, fill=INK, weight='bold')
+    offset = 20 if isinstance(f, NoteFig) else 14
+    f.text(x + offset, top[1] + 9, '−' if minus_top else '+', size=28, fill=INK, weight='bold')
+    f.text(x + offset, bot[1] + 9, '+' if minus_top else '−', size=28, fill=INK, weight='bold')
     if label:
         f.text(x + W * 0.42, y + 8, label, size=18, anchor='middle', fill=GREY)
     out = (x + W, y)
     mid = x + W / 2
     if pins:
         a, b, o = pins[:3]
-        f.text(x - 8, top[1] - 8, a, size=18, anchor='end', fill=GREY)
-        f.text(x - 8, bot[1] - 8, b, size=18, anchor='end', fill=GREY)
-        f.text(out[0] + 8, out[1] - 10, o, size=18, fill=GREY)
+        dy = 19 if isinstance(f, NoteFig) else 8
+        f.text(x - 8, top[1] - dy, a, size=18, anchor='end', fill=GREY)
+        f.text(x - 8, bot[1] - dy, b, size=18, anchor='end', fill=GREY)
+        f.text(out[0] + 8, out[1] - (dy + 2), o, size=18, fill=GREY)
     return dict(top=top, bot=bot, out=out, up=(mid, y - H / 4), down=(mid, y + H / 4))
 
 
 # ---- 실험설명 그림 ----------------------------------------------------------
 def opamp_inv():
-    f = Fig(860, 380, '반전 증폭기', 'Vin이 R1을 지나 반전 입력으로, Rf가 출력을 반전 입력으로 되돌려요. 비반전 입력은 GND.')
-    o = opamp(f, 420, 210, label='Op-Amp')
-    term(f, 120, o['top'][1], 'Vin')
-    res_h(f, 126, 330, o['top'][1], 'R1')
-    f.line([(330, o['top'][1]), o['top']])
-    f.dot(360, o['top'][1])
-    f.line([(360, o['top'][1]), (360, 80), (440, 80)])
-    res_h(f, 440, 600, 80, 'Rf')
-    f.line([(600, 80), (640, 80), (640, o['out'][1])])
-    f.dot(640, o['out'][1])
-    f.line([o['out'], (720, o['out'][1])])
-    term(f, 726, o['out'][1], 'Vout', 'right')
-    f.line([o['bot'], (370, o['bot'][1]), (370, 300)])
-    gnd(f, 370, 300)
-    f.text(350, o['top'][1] + 34, 'V− ≈ 0V', size=20, anchor='end', fill=RED)
-    f.text(420, 360, 'Vout = −(Rf/R1)·Vin', size=22, anchor='middle', fill=BLUE, weight='bold')
+    f = NoteFig(793, 346, '반전 증폭기',
+                '입력은 R1을 거쳐 반전 입력에 연결되고, Rf가 출력을 반전 입력으로 되돌린다. 비반전 입력은 접지한다.')
+    o = opamp(f, 405, 203, label='Op-Amp')
+    iy, oy = o['top'][1], o['out'][1]
+    term(f, 98, iy, 'Vin', node='vin')
+    res_h(f, 98, 310, iy, 'R1')
+    f.line([(310, iy), o['top']])
+    f.junction(328, iy, node='minus', color='red')
+    f.label(305, iy + 47, 'V', sub='−', suffix=' ≈ 0 V',
+            anchor='end', node='minus', color='red')
+    f.line([(328, iy), (328, 83), (410, 83)])
+    res_h(f, 410, 585, 83, 'Rf')
+    f.line([(585, 83), (620, 83), (620, oy)])
+    f.junction(620, oy, node='out')
+    f.line([o['out'], (699, oy)])
+    term(f, 699, oy, 'Vout', 'right', node='out')
+    f.line([o['bot'], (340, o['bot'][1]), (340, 299)])
+    gnd(f, 340, 299)
     return f
 
 
-def summing(n=4, title='네 입력 반전 가산증폭기', node_label=True):
+def summing(n=4, title='네 입력 반전 가산증폭기', node_label=True, *, note=False):
     H = 110 + 70 * (n - 1) + 270
-    f = Fig(900, H, title, f'V1~V{n}이 R1~R{n}을 지나 반전 입력의 한 점에서 만나요. Rf 귀환, 비반전 입력 접지.')
+    f = (NoteFig if note else Fig)(875 if note else 900, H - 50 if note else H, title, f'V1~V{n}이 R1~R{n}을 지나 반전 입력의 한 점에서 만나요. Rf 귀환, 비반전 입력 접지.')
     ys = [110 + 70 * i for i in range(n)]
     bus = 360
     for i, yy in enumerate(ys):
         term(f, 80, yy, f'V{i+1}')
-        res_h(f, 86, bus, yy, f'R{i+1}')
-        f.dot(bus, yy)
+        res_h(f, 80 if note else 86, bus, yy, f'R{i+1}')
+        if note:
+            f.junction(bus, yy, node='summing', color='red')
+        else:
+            f.dot(bus, yy)
     yc = ys[-1] + 60
     o = opamp(f, 470, yc + 40, label='Op-amp')
     f.line([(bus, ys[0]), (bus, o['top'][1]), o['top']])
-    f.line([(bus, ys[0]), (bus, 50), (480, 50)])
-    res_h(f, 480, 640, 50, 'Rf', dy=-14)
-    f.line([(640, 50), (680, 50), (680, o['out'][1])])
-    f.dot(680, o['out'][1])
-    f.line([o['out'], (760, o['out'][1])])
-    term(f, 766, o['out'][1], 'Vo', 'right')
+    feedback_y = 74 if note else 50
+    f.line([(bus, ys[0]), (bus, feedback_y), (480, feedback_y)])
+    res_h(f, 480, 640, feedback_y, 'Rf', dy=-14)
+    f.line([(640, feedback_y), (680, feedback_y), (680, o['out'][1])])
+    if note:
+        f.junction(680, o['out'][1], node='out')
+    else:
+        f.dot(680, o['out'][1])
+    f.line([o['out'], (766 if note else 760, o['out'][1])])
+    term(f, 766, o['out'][1], 'Vo', 'right', node='out' if note else None)
     f.line([o['bot'], (430, o['bot'][1]), (430, o['bot'][1] + 30)])
     gnd(f, 430, o['bot'][1] + 30)
-    if node_label:
+    if node_label and note:
+        f.label(bus - 23, o['top'][1] + 7, 'V', sub='−', suffix=' ≈ 0 V',
+                anchor='end', node='summing', color='red')
+    elif node_label:
         f.text(bus - 12, o['top'][1] - 12, '≈ 0V', size=20, anchor='end', fill=RED)
     return f
 
 
-def network(given=False):
-    f = Fig(1300, 560, 'Weighted resistor와 Ladder type resistor', '왼쪽 가중 저항, 오른쪽 R-2R 래더')
+def network(given=False, *, note=False):
+    f = (NoteFig if note else Fig)(1300, 505 if note else 560, 'Weighted resistor와 Ladder type resistor', '왼쪽 가중 저항, 오른쪽 R-2R 래더')
     # 가중 저항
     xs = [90, 210, 330, 450]
     names = ['D1', 'D2', 'D3', 'Dn']
     labs = ['R', '2R', '4R', '2ⁿ⁻¹R']
     for x, n_, lab in zip(xs, names, labs):
         term(f, x, 70, n_, 'top')
-        res_v(f, x, 76, 260, lab)
-        f.dot(x, 260)
+        res_v(f, x, 70 if note else 76, 260, lab)
+        if not note or x != xs[0]:
+            f.dot(x, 260)
     f.text(390, 112, '…', size=28, anchor='middle')
     f.line([(xs[0], 260), (xs[-1], 260)])
     f.dot(270, 260)
@@ -130,13 +186,16 @@ def network(given=False):
     if not given:
         f.line([(450, 260), (505, 260)])
         term(f, 505, 260, 'Vo', 'right')
-    f.text(270, 520, 'Weighted resistor', size=22, anchor='middle', weight='bold')
+    if note:
+        f.label(270, 488, '가중 저항', anchor='middle')
+    else:
+        f.text(270, 520, 'Weighted resistor', size=22, anchor='middle', weight='bold')
     # 래더
     xs2 = [760, 900, 1040, 1180]
     names2 = ['Dn', 'D3', 'D2', 'D1']
     for x, n_ in zip(xs2, names2):
         term(f, x, 70, n_, 'top')
-        res_v(f, x, 76, 300, '2R')
+        res_v(f, x, 70 if note else 76, 300, '2R')
         f.dot(x, 300)
     res_h(f, 620, 760, 300, '2R')
     for a, b in zip(xs2, xs2[1:]):
@@ -147,32 +206,34 @@ def network(given=False):
     if not given:
         f.line([(1180, 300), (1225, 300)])
         term(f, 1225, 300, 'Vo', 'right')
-    f.text(900, 520, 'Ladder type resistor', size=22, anchor='middle', weight='bold')
+    if note:
+        f.label(900, 480, 'R–2R 래더', anchor='middle')
+    else:
+        f.text(900, 520, 'Ladder type resistor', size=22, anchor='middle', weight='bold')
     return f
 
 
 def oc():
-    f = Fig(1100, 330, '7404와 7405, 1.5kΩ 풀업', '7405 출력과 풀업, 가중 저항이 한 접점에서 만나요. +5V 전원은 풀업 위에 있어요.')
+    f = NoteFig(970, 325, '7404, 7405와 1.5kΩ 풀업',
+                '7405의 출력, 1.5kΩ 풀업, 가중 저항이 한 접점에서 만난다.')
     y = 210
-    term(f, 140, y, 'Q (7490)')
-    a = f.not_(200, y - 22)
-    f.line([(146, y), a['ins'][0]])
-    b = f.not_(400, y - 22)
+    term(f, 167, y, 'Q (7490)', node='bit')
+    a = f.not_(185, y - 22)
+    f.line([(167, y), a['ins'][0]])
+    b = f.not_(369, y - 22)
     f.line([a['out'], b['ins'][0]])
-    f.text(223, y + 52, '7404', size=20, anchor='middle', fill=GREY)
-    f.text(423, y + 52, '7405', size=20, anchor='middle', fill=GREY)
-    f.text(423, y + 78, '(오픈 컬렉터)', size=18, anchor='middle', fill=GREY)
-    f.line([b['out'], (640, y)])
-    f.dot(600, y)
-    res_v(f, 600, 70, y, '1.5kΩ\n풀업', dx=-16, anchor='end')
-    f.line([(560, 60), (640, 60)])
-    f.line([(600, 60), (600, 70)])
-    f.text(600, 46, '+5V', size=22, anchor='middle', weight='bold', fill=RED)
-    res_h(f, 640, 860, y, '가중 저항 (예: 22.6kΩ)')
-    f.line([(860, y), (900, y)])
-    f.text(910, y + 7, '가산 노드로', size=20, fill=BLUE, weight='bold')
-    f.line([(600, y + 7), (600, y + 35)], color=GREY, width=2)
-    f.text(600, y + 58, '가중 저항 앞 접점', size=20, anchor='middle', fill=BLUE, weight='bold')
+    f.label(208, y + 54, '7404', anchor='middle')
+    f.label(392, y + 54, '7405', anchor='middle')
+    f.label(392, y + 85, '오픈 컬렉터', size=22, anchor='middle')
+    f.line([b['out'], (606, y)])
+    f.junction(563, y, node='pulled', color='red')
+    f.label(533, y - 34, 'V', sub='bit', anchor='end', node='pulled', color='red')
+    res_v(f, 563, 81, y, '1.5 kΩ')
+    f.junction(563, 81)
+    f.label(563, 58, '+5 V', anchor='middle')
+    res_h(f, 606, 786, y, '가중 저항')
+    f.line([(786, y), (815, y)])
+    term(f, 815, y, '가산점으로', 'right')
     return f
 
 
@@ -272,6 +333,107 @@ def dac(title='DAC 회로 (교안 회로도를 다시 그림)', pin7=None):
     return f
 
 
+def note_dac():
+    f = NoteFig(1490, 978, '7490과 LM741로 만든 4비트 가중 저항 DAC',
+                'QA가 최하위 비트, QD가 최상위 비트다. 가중 저항 네 개와 귀환 저항은 LM741의 반전 입력에 모인다.')
+    rows = (216, 324, 432, 540)
+    f.rect(170, 167, 146, 444, rx=5)
+    f.label(244, 593, '7490 U1', anchor='middle')
+    f.line([(60, 216), (170, 216)])
+    term(f, 60, 216, 'CLK', 'top', RED, node='clock')
+    f.label(154, 195, '14', anchor='end', size=22)
+    f.label(192, 225, 'CLKA', size=22)
+    f.label(192, 278, 'CLKB', size=22)
+    f.label(154, 251, '1', anchor='end', size=22, node='qa')
+    f.line([(360, 216), (360, 124), (108, 124), (108, 269), (170, 269)])
+    f.crossing(108, 216)
+    f.junction(360, 216, node='qa')
+    for name, sub, pin, yy in (('R', '01', 2, 365), ('R', '02', 3, 418),
+                                ('R', '91', 6, 471), ('R', '92', 7, 524)):
+        f.line([(100, yy), (170, yy)])
+        if yy != 365:
+            f.junction(100, yy)
+        f.label(151, yy - 18, str(pin), anchor='end', size=22)
+        f.label(191, yy + 8, name, sub=sub, size=22)
+    f.line([(100, 365), (100, 555)])
+    gnd(f, 100, 555)
+
+    pullups = (757, 859, 961, 1063)
+    f.line([(757, 68), (1063, 68)])
+    f.line([(757, 68), (757, 53)])
+    f.junction(757, 53, node='pullup', color='red')
+    f.label(757, 29, '+5 V', anchor='middle', node='pullup', color='red')
+    bus = 1284
+    for i, (yy, bit, qa_pin, gate_pins, pull, weight) in enumerate(zip(
+        rows, 'ABCD', (12, 9, 8, 11), ((1, 2), (3, 4), (5, 6), (9, 8)),
+        pullups, ('22.6 kΩ', '10.5 kΩ', '4.5 kΩ', '1.5 kΩ'),
+    )):
+        node = f'q{bit.lower()}'
+        f.label(292, yy + 8, 'Q', sub=bit, anchor='end', size=24, node=node)
+        f.label(335, yy - 19, str(qa_pin), anchor='middle', size=21, node=node)
+        gates = (f.not_(444, yy - 22), f.not_(602, yy - 22))
+        f.line([(316, yy), gates[0]['ins'][0]])
+        f.line([gates[0]['out'], gates[1]['ins'][0]])
+        f.line([gates[1]['out'], (1110, yy)])
+        for gate, label in zip(gates, ('7404', '7405')):
+            gx = gate['ins'][0][0]
+            f.label(gx - 19, yy - 20, str(gate_pins[0]), anchor='end', size=20)
+            f.label(gate['out'][0] + 9, yy - 20, str(gate_pins[1]), size=20)
+            f.label(gx + 19, yy + 53, label, size=23, anchor='middle')
+
+        res_v(f, pull, 68, 168)
+        if i in (1, 2):
+            f.junction(pull, 68, node='pullup', color='red')
+        f.label(pull + 25, 110, 'R', sub=str(i + 1), size=21)
+        f.label(pull + 25, 142, '1.5 kΩ', size=20)
+        f.line([(pull, 168), (pull, yy)])
+        f.junction(pull, yy)
+        res_h(f, 1110, bus, yy, f'R{i+5}  {weight}')
+        f.junction(bus, yy, node='summing', color='red')
+        if i in (0, 3):
+            f.label(1311, yy + 8, 'LSB' if i == 0 else 'MSB', size=22)
+
+    # The four vertical pull-up leads cross earlier bit rows without joining them.
+    for i, pull in enumerate(pullups):
+        for yy in rows[:i]:
+            f.crossing(pull, yy)
+
+    # Route the summing bus below the bit rows, to the inverting pin and Rf.
+    o = opamp(f, 1050, 778, W=152, H=160, label='LM741', pins=('2', '3', '6'))
+    f.line([(bus, rows[0]), (bus, 606), (995, 606), (995, o['top'][1]), o['top']])
+    f.junction(bus, 606, node='summing', color='red')
+    f.label(bus + 24, 646, 'V', sub='−', node='summing', color='red')
+    f.line([(bus, 606), (1372, 606)])
+    res_v(f, 1372, 606, o['out'][1])
+    f.label(1402, 681, 'R', sub='f')
+    f.label(1402, 714, '4.5 kΩ', size=22)
+    f.line([o['out'], (1436, o['out'][1])])
+    f.junction(1372, o['out'][1], node='out')
+    f.junction(1436, o['out'][1], node='out')
+    f.label(1436, o['out'][1] + 45, 'DAC OUT', anchor='end', node='out')
+    supply = o['up'][0]
+    f.line([o['up'], (supply, 681)])
+    f.label(supply + 33, 704, '4', size=22)
+    for y, span in ((681, 15), (674, 9), (667, 3)):
+        f.line([(supply - span, y), (supply + span, y)])
+    f.line([o['down'], (supply, 895)])
+    f.junction(supply, 895)
+    f.label(supply + 23, 901, '7', size=22)
+
+    # A 330Ω potentiometer sets the reference between the two 1kΩ resistors.
+    x = 802
+    term(f, x, 622, '+15 V', 'top', RED)
+    res_v(f, x, 622, 742, 'R10  1 kΩ', anchor='end')
+    res_v(f, x, 742, 894, 'R9  330 Ω', anchor='end')
+    res_v(f, x, 894, 930, 'R11  1 kΩ', anchor='end')
+    gnd(f, x, 930)
+    y = o['bot'][1]
+    f.path(f'M{x},{y:g} l26,-7 v14 z', fill=INK)
+    f.line([(x + 26, y), o['bot']])
+    f.label(x + 77, y - 35, 'V', sub='ref', node='reference')
+    return f
+
+
 def stair(rf_compare=False):
     if rf_compare:
         f = Fig(1100, 420, 'Rf 4.5k와 2.7k의 계단 높이 비교', '왼쪽 Rf 4.5kΩ, 오른쪽 Rf 2.7kΩ: 한 단의 높이가 0.6배')
@@ -305,60 +467,93 @@ def stair(rf_compare=False):
     return f
 
 
-def comparator():
-    f = Fig(900, 420, '실험 2 비교기 (교안 p22를 다시 그림)', 'DAC OUTPUT → 2번(−), R13 가운데 단자 → 3번(+), 7번 +15V, 4번 GND')
+def comparator(*, note=False):
+    f = (NoteFig if note else Fig)(900, 420, '실험 2 비교기 (교안 p22를 다시 그림)', 'DAC OUTPUT → 2번(−), R13 가운데 단자 → 3번(+), 7번 +15V, 4번 GND')
     o = opamp(f, 470, 220, W=150, H=150, label='LM741 (U5)', pins=('2', '3', '6'))
-    f.circle(90, o['top'][1], 6, stroke=RED)
-    f.text(90, o['top'][1] - 16, 'DAC OUTPUT', size=20, anchor='start', fill=RED, weight='bold')
-    f.line([(96, o['top'][1]), o['top']])
+    if note:
+        term(f, 105, o['top'][1], 'DAC OUT', 'top', RED, node='in')
+        f.line([(105, o['top'][1]), o['top']])
+    else:
+        f.circle(90, o['top'][1], 6, stroke=RED)
+        f.text(90, o['top'][1] - 16, 'DAC OUTPUT', size=20, anchor='start', fill=RED, weight='bold')
+        f.line([(96, o['top'][1]), o['top']])
     x = 230
-    f.text(x - 12, 212, '+15V', size=20, anchor='end', weight='bold', fill=RED)
-    f.circle(x, 205, 5, stroke=RED)
-    res_v(f, x, 210, 320, 'R13\n330Ω', dx=-16, anchor='end')
-    gnd(f, x, 320)
-    f.path(f'M{x+16},{o["bot"][1]} l12,-7 l0,14 z', fill=INK)
-    f.line([(x + 28, o['bot'][1]), o['bot']])
+    if note:
+        term(f, x, 211, '+15 V', 'left', RED)
+        res_v(f, x, 211, 362, 'R13  330 Ω', anchor='end')
+        gnd(f, x, 362)
+        f.path(f'M{x},{o["bot"][1]} l26,-7 v14 z', fill=INK)
+        f.line([(x + 26, o['bot'][1]), o['bot']])
+        f.label(310, o['bot'][1] - 35, 'V', sub='ref')
+    else:
+        f.text(x - 12, 212, '+15V', size=20, anchor='end', weight='bold', fill=RED)
+        f.circle(x, 205, 5, stroke=RED)
+        res_v(f, x, 210, 320, 'R13\n330Ω', dx=-16, anchor='end')
+        gnd(f, x, 320)
+        f.path(f'M{x+16},{o["bot"][1]} l12,-7 l0,14 z', fill=INK)
+        f.line([(x + 28, o['bot'][1]), o['bot']])
     f.line([o['up'], (o['up'][0], 90)])
-    f.text(o['up'][0] + 8, 120, '4', size=18, fill=GREY)
-    f.text(o['up'][0], 80, '0 (GND)', size=18, anchor='middle')
-    f.line([o['down'], (o['down'][0], 330)])
-    f.text(o['down'][0] + 8, 310, '7', size=18, fill=GREY)
-    f.text(o['down'][0], 356, '+15V', size=20, anchor='middle', weight='bold', fill=RED)
+    if note:
+        f.line([o['down'], (o['down'][0], 330)])
+        x_ground = o['up'][0]
+        for y, span in ((90, 15), (83, 9), (76, 3)):
+            f.line([(x_ground - span, y), (x_ground + span, y)])
+        f.label(x_ground + 21, 124, '4', size=22)
+        f.label(x_ground + 21, 312, '7', size=22)
+        f.junction(x_ground, 330, node='supply', color='red')
+        f.label(x_ground, 369, '+15 V', anchor='middle', node='supply', color='red')
+    else:
+        f.text(o['up'][0] + 8, 120, '4', size=18, fill=GREY)
+        f.text(o['up'][0], 80, '0 (GND)', size=18, anchor='middle')
+        f.line([o['down'], (o['down'][0], 330)])
+        f.text(o['down'][0] + 8, 310, '7', size=18, fill=GREY)
+        f.text(o['down'][0], 356, '+15V', size=20, anchor='middle', weight='bold', fill=RED)
     f.line([o['out'], (780, o['out'][1])])
-    f.text(790, o['out'][1] + 7, 'OUTPUT', size=20, fill=RED, weight='bold')
+    if note:
+        term(f, 780, o['out'][1], 'OUT', 'right', node='out')
+    else:
+        f.text(790, o['out'][1] + 7, 'OUTPUT', size=20, fill=RED, weight='bold')
     return f
 
 
 def flash():
-    f = Fig(1000, 560, '2비트 Flash ADC', '저항 사다리가 기준 3개를 만들고 비교기 3개가 Vin을 동시에 비교')
-    x = 160
-    f.text(x, 50, 'Vref', size=22, anchor='middle', weight='bold', fill=RED)
-    f.line([(x, 58), (x, 70)])
-    ys = [70, 170, 280, 390, 490]
-    for a, b in zip(ys, ys[1:]):
-        res_v(f, x, a, b, 'R', dx=-16, anchor='end')
-    gnd(f, x, 490)
-    refs = ['3/4 Vref', '2/4 Vref', '1/4 Vref']
-    term(f, 120, 520, '', 'left')
-    f.text(330, 545, 'Vin (모든 비교기의 + 입력)', size=20, anchor='middle', fill=BLUE)
-    vin_x = 300
-    f.line([(126, 520), (vin_x, 520), (vin_x, 120)], color=BLUE)
-    f.text(108, 527, 'Vin', size=22, anchor='end', weight='bold', fill=BLUE)
-    for i, yy in enumerate(ys[1:4]):
-        o = opamp(f, 420, yy, W=110, H=90, minus_top=False)
-        f.dot(x, yy)
-        f.line([(x, yy), (380, yy), (380, o['bot'][1]), o['bot']])
-        f.text(250, yy - 10, refs[i], size=18, anchor='end', fill=GREY)
-        f.line([(vin_x, o['top'][1]), o['top']], color=BLUE)
-        f.dot(vin_x, o['top'][1], color=BLUE)
-        f.line([o['out'], (700, o['out'][1])])
-        f.text(600, o['out'][1] - 10, f'C{3-i}', size=18, fill=GREY)
-    f.rect(700, 140, 140, 300, fill='#fff')
-    f.text(770, 300, '인코더', size=22, anchor='middle')
-    for yy, n_ in ((240, 'B1'), (340, 'B0')):
-        f.line([(840, yy), (900, yy)])
-        f.text(910, yy + 7, n_, size=22, weight='bold')
+    f = NoteFig(945, 595, '2비트 Flash ADC',
+                '저항 사다리의 세 기준은 비교기의 반전 입력, Vin은 비반전 입력에 연결한다.')
+    x, vin_x = 143, 310
+    rows = (63, 185, 304, 423, 545)
+    term(f, x, rows[0], 'Vref', 'top', RED, node='ref')
+    for a, b in zip(rows, rows[1:]):
+        res_v(f, x, a, b, 'R', anchor='end')
+    gnd(f, x, rows[-1])
+    term(f, 245, 524, 'Vin', node='vin')
+    f.line([(245, 524), (vin_x, 524), (vin_x, rows[1] - 24)])
+    for i, yy in enumerate(rows[1:4]):
+        o = opamp(f, 417, yy, W=115, H=96, minus_top=False)
+        threshold = f'threshold{i}'
+        f.junction(x, yy, node=threshold, color='red')
+        f.line([(x, yy), (375, yy), (375, o['bot'][1]), o['bot']])
+        f.crossing(vin_x, yy)
+        f.label(283, yy - 35, f'{3-i}/4 V', sub='ref', anchor='end',
+                node=threshold, color='red')
+        f.line([(vin_x, o['top'][1]), o['top']])
+        if i:
+            f.junction(vin_x, o['top'][1], node='vin')
+        f.line([o['out'], (681, yy)])
+        f.label(603, yy - 34, 'C', sub=str(3-i), anchor='middle')
+    f.rect(681, 150, 126, 307, fill=BLUEBG, rx=5)
+    f.label(744, 313, '인코더', anchor='middle')
+    for yy, bit in ((250, '1'), (361, '0')):
+        f.line([(807, yy), (868, yy)])
+        f.junction(868, yy, node=f'b{bit}')
+        f.label(892, yy + 8, 'B', sub=bit, node=f'b{bit}')
     return f
+
+
+def draw_note_schematics(output_dir: Path) -> tuple[Path, ...]:
+    return write_note_schematics(output_dir, {
+        'opamp-inv': opamp_inv(), 'summing': summing(note=True), 'network': network(note=True),
+        'oc': oc(), 'dac-block': note_dac(), 'comparator': comparator(note=True), 'flash': flash(),
+    })
 
 
 def counter_given(title='7490을 0~9 카운터로 연결한 회로'):
@@ -408,8 +603,8 @@ def build(run, m):
         q = next(x for x in m['problems'] if x['id'] == pid)
         reg.append(dict(id=fid, question_id=pid, role=role, svg=f'figures/{sub}/{fid}.svg', png=f'figures/{sub}/{fid}.png', svg_sha256=sha(stem.with_suffix('.svg')), png_sha256=sha(stem.with_suffix('.png')), w_mm=ww, h_mm=ww * f.h / f.w, source_asset_ids=list(ids), source_refs=q['sources'][:1], derivation=how, answer_exposure='none' if role == 'problem' else 'present', review_status='pass', review_notes=REVIEW_NOTE))
 
-    for name, f in (('opamp-inv', opamp_inv()), ('summing', summing()), ('network', network()), ('oc', oc()), ('dac-block', dac()), ('stair', stair()), ('comparator', comparator()), ('flash', flash())):
-        (F / f'{name}.svg').write_text(f.svg(), encoding='utf8')
+    (F / 'stair.svg').write_text(stair().svg(), encoding='utf8')
+    draw_note_schematics(F)
 
     register('summing-given', 'q-summing-amp', 'problem', summing(3, '반전 가산증폭기', node_label=False), 120, ['a-s01-p1-q2'])
     register('network-given', 'q-resistor-network', 'problem', network(True), 160, ['a-s01-p1-q4'])
