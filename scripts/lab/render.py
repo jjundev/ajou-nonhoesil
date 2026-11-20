@@ -260,9 +260,12 @@ def _comparison_table_html(header, rows, *, input_settings=None, input_column=1,
     out = ['<table class="comparison-table"><colgroup>' + ''.join(
                f'<col style="width:{w}%;">' for w in ({4:[7,43,32,18],5:[7,35,22,22,14],
                    6:[7,19,24,18,18,14], 7:[6,17,27,13,13,13,11],
-                   # 8열 = LED 판독 + 유지·반전·미정 + 프로브 측정 핀(실험10 V1~V3)
+                   # 8열 = LED 판독 + 유지·반전·미정 + 프로브 측정 핀
                    8:[5,14,18,11,11,11,18,12]}
-                   .get(len(header),[100/len(header)]*len(header))))
+                   .get(len(header),[100/len(header)]*len(header))
+                   # LED 판독 + 프로브 측정 핀 7열(실험10 V1~V3) — 측정 핀 칸에 폭을 준다
+                   if not (len(header) == 7 and '측정 핀·예상값' in header)
+                   else [6,14,20,15,15,18,12]))
                + '</colgroup><thead><tr>',
            *[f'<th>{_esc(h)}{input_head if i == input_column and input_settings is not None else ""}</th>'
              for i, h in enumerate(header)], '</tr></thead><tbody>']
@@ -1010,13 +1013,22 @@ def _inline_observation_html(table, leds, feed, png=None):
     if not any(feed[l.tag] is not None for l in lamps):
         lamps = []
     rows = []
+
+    def all_unknown(r):
+        # 전원 직후처럼 모든 LED가 미정인 행은 켜짐·꺼짐 칸에 `미정`을 적는다 — 별도 열을 만들지 않는다
+        v = dict(zip((n for n,_ in table.points), r.expected))
+        return bool(lamps) and all(v.get(feed[l.tag]) == '미정' for l in lamps)
     has_other = any(dict(zip((n for n,_ in table.points), r.expected)).get(feed[l.tag], '관측 안 함')
-                    not in ('0','1','H','L') for r in table.rows for l in lamps)
+                    not in ('0','1','H','L') for r in table.rows if not all_unknown(r) for l in lamps)
     probe_points = [(n,p) for n,p in table.points if n not in {feed[l.tag] for l in lamps}]
     for row in table.rows:
         values = dict(zip((n for n, _ in table.points), row.expected))
         inputs = '; '.join(f'{n} = {c}' for n, c in zip(table.inputs, row.inputs))
-        if lamps:
+        if lamps and all_unknown(row):
+            rows.append([f'S{row.order}', row.action, inputs, '미정', '미정',
+                         *(['없음'] if has_other else []),
+                         *(['; '.join(f'{n} ({p}): {values[n]}' for n,p in probe_points)] if probe_points else []), ''])
+        elif lamps:
             on, off, other = [], [], []
             for led in lamps:
                 token = values.get(feed[led.tag], '관측 안 함')
@@ -1027,14 +1039,15 @@ def _inline_observation_html(table, leds, feed, png=None):
                         '미정':'미정', '관측 안 함':'이번 절차 관측 안 함'}[token])
                 else:
                     (on if lit(bit, led.active_low) else off).append(label)
-            rows.append([str(row.order), row.action, inputs, ' · '.join(on) or '없음',
+            rows.append([f'S{row.order}', row.action, inputs, ' · '.join(on) or '없음',
                          ' · '.join(off) or '없음', *(['; '.join(other) or '없음'] if has_other else []),
                          *(['; '.join(f'{n} ({p}): {values[n]}' for n,p in probe_points)] if probe_points else []), ''])
         else:
             expected = '; '.join(f'{n} ({pin}): {v}' for (n,pin),v in zip(table.points,row.expected))
             rows.append([str(row.order), row.action, inputs, expected, ''])
     if lamps:
-        header = ['순서','조작','입력 설정','예상 켜지는 LED','예상 꺼지는 LED']
+        # LED 판독 표는 기록표(T1 등)와 같은 서식 — `스텝`·`S<n>`·`CLK=값`
+        header = ['스텝','조작','입력 설정','예상 켜지는 LED','예상 꺼지는 LED']
         if has_other:
             header.append('유지·반전·미정')
         if probe_points:
@@ -1047,12 +1060,14 @@ def _inline_observation_html(table, leds, feed, png=None):
         header = ['순서','조작','입력 설정','측정 핀·예상 논리값','실제 결과']
         detail = ''
     columns, head = _mirror(png, table.inputs)
-    settings = _input_settings_html(table.inputs, [row.inputs for row in table.rows], columns=columns)
+    settings = _input_settings_html(table.inputs, [row.inputs for row in table.rows], columns=columns,
+                                    spaced=not lamps)
     h = _comparison_table_html(header, rows, input_settings=settings, input_column=2, input_head=head)
     # One timeline, one stable authored order per row.
     for row in table.rows:
-        h = h.replace('<tr><td>' + str(row.order) + '</td>',
-                      f'<tr data-observation-order="{row.order}"><td>{row.order}</td>', 1)
+        label = f'S{row.order}' if lamps else str(row.order)
+        h = h.replace('<tr><td>' + label + '</td>',
+                      f'<tr data-observation-order="{row.order}"><td>{label}</td>', 1)
     return detail + h
 
 
