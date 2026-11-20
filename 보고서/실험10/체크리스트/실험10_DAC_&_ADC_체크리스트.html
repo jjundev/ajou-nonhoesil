@@ -441,8 +441,9 @@
 <div class="fit" data-fit="20"><div class="trail">실험 1: C1 › C2 › <b>C3</b></div><h2>C3 · 실험 1 — 4~6. 핀 개방·Rf 변경·병렬 저항 (74HC04 + 74HC05 + LM741) · 기록: T5, T6, T7, T8, T9</h2><div class="banner">앞 회로(C2)를 그대로 두고 이어 붙여요. 점퍼선은 뽑지 않아요</div></div>
 <div class="stage" data-fit="21"><h3>단계 1</h3><p class="operation">새로 꽂는 것은 없어요 · 빨간 점선 세 가닥이 절차 4(p19)에서 뽑는 선이에요 · 전원과 발생기 출력을 끄고 ① U2 pin 2→U3 pin 1 선의 U3 쪽 끝(좌 a25)만 뽑고 켜서 T5, 끄고 다시 꽂기 ② U2 pin 4→U3 pin 3 선(좌 b27)으로 같은 방법 T6 ③ U2 pin 6→U3 pin 5 선(좌 c29)으로 T7</p><figure class="board"><img src="../결선도/실험10_1_결선도_DAC_1단계_선개방.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a16 → 좌 a25 · QA': U2 pin 2 -&gt; U3 pin 1</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 b18 → 좌 b27 · QB': U2 pin 4 -&gt; U3 pin 3</span></li><li class="removal"><span class="box"></span><span class="n">3</span><span class="text">좌 c20 → 좌 c29 · QC': U2 pin 6 -&gt; U3 pin 5</span></li></ul><p class="list-head">계측 — 꽂지 않고 물어요</p><ol class="probes"><li class="probe"><span class="box"></span><span class="n">1</span><span class="route">DAC OUTPUT → 좌 h38</span><span class="desc">오실로스코프 CH — U4 pin 6 (DC 결합)</span></li></ol><p><span class="box"></span><b>확인:</b> 세 선의 U3 쪽 끝이 모두 다시 꽂혔는지 그림과 대조했나요?</p></div>
 <div class="stage" data-fit="22"><h3>단계 2</h3><p class="operation">새로 꽂는 것은 없어요 · 전원과 발생기 출력을 끄고 빨간 점선 ① R12(4.5k, 좌 j38↔우 a38)를 뽑아 같은 두 구멍에 2.7k를 꽂아요 · 켜서 T8을 보고, 끄고 4.5k로 되돌려요(p20)</p><figure class="board"><img src="../결선도/실험10_1_결선도_DAC_2단계_Rf.png" style="width:100%"></figure><p class="list-head">계측 — 꽂지 않고 물어요</p><ol class="probes"><li class="probe"><span class="box"></span><span class="n">1</span><span class="route">DAC OUTPUT → 좌 h38</span><span class="desc">오실로스코프 CH — U4 pin 6 (DC 결합)</span></li></ol><p><span class="box"></span><b>확인:</b> R12가 4.5k로 돌아왔는지 색띠와 두 구멍을 대조했나요?</p></div>
-<div class="stage" data-fit="23"><h3>단계 3</h3><p class="operation">68k 대신 22.6k 3개를 다리끼리 이어 직렬 사슬(67.8k)을 만들어요(조교 지시). 전원과 발생기 출력을 끄고 파란 ① 사슬의 한 끝을 우 b40(R6 아랫다리 줄), 다른 끝을 우 i38(가산 노드)에 꽂아요 · R6는 뽑지 않아요 · 켜서 T9를 보고, 끄고 사슬만 뽑아요(p21)</p><figure class="board"><img src="../결선도/실험10_1_결선도_DAC_3단계_병렬.png" style="width:100%"></figure><p class="list-head">계측 — 꽂지 않고 물어요</p><ol class="probes"><li class="probe"><span class="box"></span><span class="n">1</span><span class="route">DAC OUTPUT → 좌 h38</span><span class="desc">오실로스코프 CH — U4 pin 6 (DC 결합)</span></li></ol><p><span class="box"></span><b>확인:</b> 끝난 보드가 C2 완성본과 같은지(세 선이 다시 꽂혔고 R12가 4.5k이며 사슬이 빠졌는지) 그림과 대조했나요?</p></div>
-<div class="fit" data-fit="24"><p><b>완성본</b> — 끝난 보드는 C2 완성본과 같아요. 그림은 C2 완성본을 봐요.</p>
+<div class="stage" data-fit="23"><h3>단계 3 준비 ① · 22.6k 사슬 준비</h3><p class="banner">전원·신호발생기 OFF</p><figure class="board"><img src="../결선도/실험10_1_결선도_DAC_3준비_사슬.png" style="width:100%"></figure><p class="operation">R13·R14·R15(22.6k)를 우 b51→b53, c53→c55, d55→d57에 세워 꽂아 직렬 사슬을 만들어요(68k 대신, 조교 지시). 아직 회로와 잇지 않아요</p><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">우 b51 → 우 b53</span><span class="desc">R13 22.6kΩ(우 b51→우 b53) · T9 사슬 1/3: 우 51행 스트립 -&gt; 우 53행 스트립 (68k 대신)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">2</span><span class="route">우 c53 → 우 c55</span><span class="desc">R14 22.6kΩ(우 c53→우 c55) · T9 사슬 2/3: 우 53행 스트립 -&gt; 우 55행 스트립 (68k 대신)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">3</span><span class="route">우 d55 → 우 d57</span><span class="desc">R15 22.6kΩ(우 d55→우 d57) · T9 사슬 3/3: 우 55행 스트립 -&gt; 우 57행 스트립 (68k 대신)</span></li></ol><p class="list-head">계측 — 꽂지 않고 물어요</p><ol class="probes"><li class="probe"><span class="box"></span><span class="n">1</span><span class="route">DAC OUTPUT → 좌 h38</span><span class="desc">오실로스코프 CH — U4 pin 6 (DC 결합)</span></li></ol><p><span class="box"></span><b>완료 확인:</b> 멀티미터로 우 a51과 우 e57 사이가 약 67.8kΩ인지 쟀나요?</p></div>
+<div class="stage" data-fit="24"><h3>단계 3</h3><p class="operation">준비에서 꽂은 사슬(R13~R15)을 R6와 병렬로 이어요(조교 지시, 68k 대신). 전원과 발생기 출력을 끄고 점퍼 ① 우 a51→우 b40(R6 아랫다리 줄), ② 우 e57→우 i38(가산 노드)를 꽂아요 · R6는 뽑지 않아요 · 켜서 T9를 보고, 끄고 점퍼 둘만 뽑아요(p21)</p><figure class="board"><img src="../결선도/실험10_1_결선도_DAC_3단계_병렬.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">우 a51 → 우 b40</span><span class="desc">T9 사슬 윗끝 -&gt; OB 스트립(R6 아랫다리 줄)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">우 e57 → 우 i38</span><span class="desc">T9 사슬 아랫끝 -&gt; 가산 노드(우 f~j 38행)</span></li></ol><p class="list-head">계측 — 꽂지 않고 물어요</p><ol class="probes"><li class="probe"><span class="box"></span><span class="n">1</span><span class="route">DAC OUTPUT → 좌 h38</span><span class="desc">오실로스코프 CH — U4 pin 6 (DC 결합)</span></li></ol><p><span class="box"></span><b>확인:</b> 끝난 보드가 C2 완성본 회로와 같은지(세 선이 다시 꽂혔고 R12가 4.5k이며 점퍼 ①②가 빠졌는지) 그림과 대조했나요?</p></div>
+<div class="fit" data-fit="25"><p><b>완성본</b> — 끝난 보드는 C2 완성본과 같아요. 그림은 C2 완성본을 봐요.</p>
 <div class="unused"><b>미사용 핀</b><div class="chipunused"><b>U2 = 74HC04</b><ul><li><span class="box"></span>미사용 입력핀 11, 13 · 연결하지 않음 · 미사용 게이트 — 접지 생략</li></ul></div><div class="chipunused"><b>U4 = LM741</b><ul><li><span class="box"></span>미사용 1, 5, 8 · 연결하지 않음 · OFFSET NULL · NC</li></ul></div></div>
 <div class="tblock">
 <h3>T5~T7 · 7404→7405 선 개방 출력 파형 (p19)</h3>
@@ -490,7 +491,7 @@
 
 <div class="circuit-notes"><b>메모</b></div>
 </div></section>
-<div class="stage" data-fit="25"><h2>부록 · 문제가 있을 때만 하는 확인</h2><p>교안 필수 측정이 아니에요. 본문 측정이 예상과 다를 때 어느 단계 배선에서 어긋났는지 찾는 데 써요.</p><h3>부록 V1 · 7404 앞 세 입력 확인</h3><p class="operation"><b>C2 단계 1 배선을 마친 상태에서</b></p><section class="observation-procedure">
+<div class="stage" data-fit="26"><h2>부록 · 문제가 있을 때만 하는 확인</h2><p>교안 필수 측정이 아니에요. 본문 측정이 예상과 다를 때 어느 단계 배선에서 어긋났는지 찾는 데 써요.</p><h3>부록 V1 · 7404 앞 세 입력 확인</h3><p class="operation"><b>C2 단계 1 배선을 마친 상태에서</b></p><section class="observation-procedure">
 <p class="observation-purpose">QA·QB·QC가 U2로 들어가 반전되어 나오는지 1Hz 카운트 구간마다 확인한다.</p>
 <p><b>준비·초기화:</b> 전원과 발생기 출력을 끈 상태에서 발생기를 사각파·주기 1s로 맞추고, CLK 선을 잇기 전에 오실로스코프로 0V~+5V를 확인한다. 발생기·오실로스코프·회로 GND를 공통으로 잇는다. 발생기를 0V로 두고 전원을 켠 뒤 시작한다. 오실로스코프 프로브를 U2 pin 2·4·6에 차례로 대고, 느린 수평 눈금(Roll 등)이나 DMM으로 1Hz 변화를 본다. 카운트 구간은 LED QD~QA로 가른다.</p>
 <aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일4행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>QD</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>QC</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>QB</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>QA</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:6%;"><col style="width:14%;"><col style="width:20%;"><col style="width:15%;"><col style="width:15%;"><col style="width:18%;"><col style="width:12%;"></colgroup><thead><tr>
@@ -548,7 +549,7 @@
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
-<div class="stage" data-fit="26"><h3>부록 V2 · 7405 앞 두 비트 확인</h3><p class="operation"><b>C2 단계 2 배선을 마친 상태에서</b></p><section class="observation-procedure">
+<div class="stage" data-fit="27"><h3>부록 V2 · 7405 앞 두 비트 확인</h3><p class="operation"><b>C2 단계 2 배선을 마친 상태에서</b></p><section class="observation-procedure">
 <p class="observation-purpose">QA·QB가 U2와 U3을 거쳐 원래 값으로 돌아오고, 풀업으로 High가 만들어지는지 확인한다.</p>
 <p><b>준비·초기화:</b> 전원과 발생기 출력을 끈 상태로 2단계 배선을 마친 뒤 발생기를 0V로 두고 전원을 켠다. 발생기는 사각파·주기 1s다. 프로브를 U3 pin 2·4에 차례로 댄다. 카운트 구간은 LED로 가른다.</p>
 <aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일4행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>QD</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>QC</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>QB</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>QA</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:6%;"><col style="width:14%;"><col style="width:20%;"><col style="width:15%;"><col style="width:15%;"><col style="width:18%;"><col style="width:12%;"></colgroup><thead><tr>
@@ -606,7 +607,7 @@
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
-<div class="stage" data-fit="27"><h3>부록 V3 · 7405 뒤 두 비트 확인</h3><p class="operation"><b>C2 단계 3 배선을 마친 상태에서</b></p><section class="observation-procedure">
+<div class="stage" data-fit="28"><h3>부록 V3 · 7405 뒤 두 비트 확인</h3><p class="operation"><b>C2 단계 3 배선을 마친 상태에서</b></p><section class="observation-procedure">
 <p class="observation-purpose">QC·QD가 U2와 U3을 거쳐 원래 값으로 돌아오는지 확인한다.</p>
 <p><b>준비·초기화:</b> 전원과 발생기 출력을 끈 상태로 3단계 배선을 마친 뒤 발생기를 0V로 두고 전원을 켠다. 발생기는 사각파·주기 1s다. 프로브를 U3 pin 6·8에 차례로 댄다. 카운트 구간은 LED로 가른다.</p>
 <aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일4행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>QD</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>QC</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>QB</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>QA</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:6%;"><col style="width:14%;"><col style="width:20%;"><col style="width:15%;"><col style="width:15%;"><col style="width:18%;"><col style="width:12%;"></colgroup><thead><tr>
@@ -711,14 +712,16 @@
 [data-fit="21"] { page: fit-21; }
 @page fit-22 { size: 210mm 323mm; margin: 12mm 10mm; }
 [data-fit="22"] { page: fit-22; }
-@page fit-23 { size: 210mm 333mm; margin: 12mm 10mm; }
+@page fit-23 { size: 210mm 366mm; margin: 12mm 10mm; }
 [data-fit="23"] { page: fit-23; }
-@page fit-24 { size: 210mm 729mm; margin: 12mm 10mm; }
+@page fit-24 { size: 210mm 354mm; margin: 12mm 10mm; }
 [data-fit="24"] { page: fit-24; }
-@page fit-25 { size: 210mm 355mm; margin: 12mm 10mm; }
+@page fit-25 { size: 210mm 729mm; margin: 12mm 10mm; }
 [data-fit="25"] { page: fit-25; }
-@page fit-26 { size: 210mm 264mm; margin: 12mm 10mm; }
+@page fit-26 { size: 210mm 355mm; margin: 12mm 10mm; }
 [data-fit="26"] { page: fit-26; }
-@page fit-27 { size: 210mm 281mm; margin: 12mm 10mm; }
+@page fit-27 { size: 210mm 264mm; margin: 12mm 10mm; }
 [data-fit="27"] { page: fit-27; }
+@page fit-28 { size: 210mm 281mm; margin: 12mm 10mm; }
+[data-fit="28"] { page: fit-28; }
 </style>
