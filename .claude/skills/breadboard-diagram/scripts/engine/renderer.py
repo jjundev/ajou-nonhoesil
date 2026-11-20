@@ -684,6 +684,24 @@ class BreadboardRenderer(_RuleChecks):
                 break
         self._marker_removed(int(x), int(y), n)
 
+    def mark_part(self, a, b, n):
+        """이미 꽂힌 부품 자리(`a`·`b` = (x, 행))를 빨간 점선과 번호로 짚는다 — 바꿔 끼울 자리 표시(실험10 T8 R12).
+        걷기와 달리 기준선에서 빠지지 않고 점유표·순서표에도 안 남는다. 부품은 그대로 그 위에 그려진다."""
+        (xa, ra), (xb, rb) = a, b
+        self._ghost_wire([(xa, self.r_y(ra)), (xb, self.r_y(rb))], n)
+
+    def mark_add(self, a, b, n, color=(30, 90, 200, 255)):
+        """보드에 자리가 없어 공중으로 잇는 덧꽂기(실험10 T9 22.6k×3 직렬 사슬)를 두 끝 홀 `a`·`b` 사이 색 점선과
+        번호로 그린다. 끝 홀에는 큰 점을 찍는다. 점유표·순서표에 안 남는다 — 끝나면 뽑는 임시 부품이다."""
+        (xa, ra), (xb, rb) = a, b
+        pts = [(xa, self.r_y(ra)), (xb, self.r_y(rb))]
+        self._dashed(pts, color, width=4, dash=9, gap=6, draw=_ScaledDraw(self.ghost_layer))
+        for x, y in pts:
+            self.draw.ellipse([x - 6, y - 6, x + 6, y + 6], fill=color)
+        mx, my = (pts[0][0] + pts[1][0]) / 2, (pts[0][1] + pts[1][1]) / 2
+        self.marker_boxes.append((mx - 8, my - 8, mx + 8, my + 8))
+        self._marker_on(self.draw, int(mx), int(my), n, color, filled=True)
+
     def _hand_stroke(self, points, color):
         """손그림 모드 배선 한 가닥 — 획으로 기록만 한다(2026-10-15). 시드 rng 를 쓰는 순서가 같아
         손그림모사와 안내판의 획 좌표가 같다."""

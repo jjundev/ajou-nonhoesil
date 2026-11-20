@@ -1,0 +1,48 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) DAC — 4~6. 핀 개방·Rf 변경·병렬 저항 2단계 · Rf 교체(T8)",
+ "subtitle": "빨간 점선 ① R12(4.5k)를 뽑고 같은 두 구멍에 2.7k. 끝나면 4.5k 로",
+ "kept": 63,
+ "steps": [],
+ "removals": [],
+ "probes": [
+  {
+   "n": 1,
+   "label": "DAC OUTPUT",
+   "at": "좌 h38",
+   "desc": "오실로스코프 CH — U4 pin 6 (DC 결합)"
+  }
+ ],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "QD",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "QC",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "QB",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "QA",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "CLK",
+   "at": "좌 j4",
+   "rail": "중앙GND레일4행",
+   "x": 588,
+   "row": 4
+  }
+ ]
+}

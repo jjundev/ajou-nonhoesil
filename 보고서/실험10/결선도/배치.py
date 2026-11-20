@@ -306,12 +306,18 @@ def build_e10_change(output_path, template_path=None, stage=None, baseline=None,
                 submit=False, hand=hand, hand_guide=hand_guide)
     bb.note(_NOTE_POWER)
     bb.note('절차 4 는 U2→U3 선의 U3 쪽 끝을 잠시 뽑아 들고 본 뒤 다시 꽂는다. 절차 5 는 R12 를 2.7k 로 바꿨다가 '
-            '4.5k 로, 절차 6 은 R6 양 끝 행에 68k 를 덧꽂았다가 뽑는다.')
+            '4.5k 로, 절차 6 은 22.6k 세 개 직렬(68k 대신, 조교 지시)을 R6 와 병렬로 덧꽂았다가 뽑는다.')
     bb.export(output_path, max_row=63)
     return bb
 
 
 _OPEN_WIRES = ("QA': U2 pin 2 -> U3 pin 1", "QB': U2 pin 4 -> U3 pin 3", "QC': U2 pin 6 -> U3 pin 5")
+
+
+def _final_snapshot(template_path=None):
+    import os, tempfile
+    with tempfile.TemporaryDirectory() as d:
+        return build_e10_change(os.path.join(d, 'base.png'), template_path, stage=1).snapshot()
 
 
 def _open_board(output_path, template_path=None, stage=None, baseline=None):
@@ -320,14 +326,48 @@ def _open_board(output_path, template_path=None, stage=None, baseline=None):
     보드에는 아무것도 새로 꽂지 않는다. 걷기 보드 꼴을 빌려 세 선만 표시하고 나머지는 회색 C2 완성본이다.
     `build_` 접두어를 두지 않는다 — `removal_board` 와 같은 이유(steps 가 비어 가독성 검사에 걸린다).
     """
-    import os, tempfile
-    with tempfile.TemporaryDirectory() as d:
-        base = build_e10_change(os.path.join(d, 'base.png'), template_path, stage=2).snapshot()
+    base = _final_snapshot(template_path)
     keys = {k: _OPEN_WIRES.index(desc) + 1 for k, desc in base['wires'].items() if desc in _OPEN_WIRES}
     assert len(keys) == 3, keys
     ghost = dict(base, ghost={'wires': keys, 'title': f'{_E3} 1단계 · 선 개방(T5~T7)',
                               'subtitle': '빨간 선 ①→T5, ②→T6, ③→T7. U3 쪽 끝 하나만 뽑아 보고 다시 꽂아요'})
-    return build_e10_change(output_path, template_path, stage=2, baseline=ghost)
+    return build_e10_change(output_path, template_path, stage=1, baseline=ghost)
+
+
+def _rf_board(output_path, template_path=None, stage=None, baseline=None):
+    """C3 2단계 — 절차 5(T8). 회색 C2 완성본 위에 R12(Rf) 자리만 빨간 점선 ①로 짚는다. 같은 두 홀에
+    2.7k 를 꽂았다가 4.5k 로 되돌리므로 새로 그릴 선·부품은 없다."""
+    bb = _board(output_path, template_path, _FINAL_G, _final_snapshot(template_path),
+                f'{_E3} 2단계 · Rf 교체(T8)', '빨간 점선 ① R12(4.5k)를 뽑고 같은 두 구멍에 2.7k. 끝나면 4.5k 로',
+                palette=True, submit=False)
+    L, R = bb.cols['left'], bb.cols['right']
+    bb.mark_part((L['j'], _SUM), (R['a'], _SUM), 1)
+    bb.note('R12 = 좌 j38(U4 pin 6 행) ↔ 우 a38(가산 노드). 바꾸는 동안 전원과 발생기 출력을 꺼요.')
+    bb.export(output_path, max_row=63)
+    return bb
+
+
+# T9 병렬 사슬 — 68k 대신 22.6k 세 개 직렬(67.8k, 조교 지시 2026-11-20). 보드 위에 세 개를 꽂을 자리가 없다:
+# 우 a~e 38행은 다 차 있고, 39행은 R6 몸통·글자가 막고, 40.5·41.5행에는 OD·+15V 가로선이 지나 세운 저항이
+# 선을 가린다(R15). 그래서 세 개를 다리끼리 이어 공중 사슬로 만들고 두 끝만 OB 스트립 빈 홀(우 b40)과
+# 가산 노드 빈 홀(우 i38, e38→f38 선으로 a~e 38행과 같은 넷)에 꽂는다.
+_CHAIN_ENDS = (('b', 2), ('i', 0))   # (열, _SUM 기준 행차)
+
+
+def _parallel_board(output_path, template_path=None, stage=None, baseline=None):
+    """C3 3단계 — 절차 6(T9). R6(10.5k, 우 d38↔d40)는 그대로 두고, 22.6k 세 개 직렬 사슬의 두 끝을
+    우 b40(OB)·우 i38(가산 노드)에 꽂아 R6 와 병렬로 둔다. 사슬은 파란 점선 ① 하나로 그린다."""
+    bb = _board(output_path, template_path, _FINAL_G, _final_snapshot(template_path),
+                f'{_E3} 3단계 · 병렬 저항(T9)',
+                'R6 는 그대로. 22.6k 3개를 다리끼리 이은 사슬(67.8k)의 두 끝을 파란 점 두 곳에. 끝나면 사슬만 뽑아요',
+                palette=True, submit=False)
+    R = bb.cols['right']
+    (c0, d0), (c1, d1) = _CHAIN_ENDS
+    bb.mark_add((R[c0], _SUM + d0), (R[c1], _SUM + d1), 1)
+    bb.note('파란 ① = 22.6k ×3 직렬 사슬(68k 대신, 조교 지시). 한 끝 우 b40(R6 아랫다리 줄), 다른 끝 우 i38'
+            '(가산 노드). 10.5k ∥ 67.8k ≈ 9.1k.')
+    bb.export(output_path, max_row=63)
+    return bb
 
 
 _N1 = '실험10_1_결선도_7490카운터'
@@ -341,7 +381,8 @@ BOARDS = [
         '실험 1) DAC — 2~3. V+ 점퍼 걷기', '전원과 발생기 출력을 꺼요. 빨간 선(VP → GND)만 뽑아요.'), None),
     (f'{_N2}_6단계_분배기.png', build_e10_dac, 6),
     (f'{_N2}_1단계_선개방.png', _open_board, None),
-    (f'{_N2}_변경.png', build_e10_change, 2),
+    (f'{_N2}_2단계_Rf.png', _rf_board, None),
+    (f'{_N2}_3단계_병렬.png', _parallel_board, None),
 ]
 ASSEMBLY_BOARDS = {
     f'{_N1}_1단계_QA.png': [(f'{_N1}_1준비_{i}.png', partial(_prep_counter, order=i)) for i in (1, 2)],

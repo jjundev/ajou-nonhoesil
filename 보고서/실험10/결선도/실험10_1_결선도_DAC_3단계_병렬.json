@@ -1,7 +1,7 @@
 {
  "schema": "breadboard-sidecar/v1",
- "title": "실험 1) DAC — 4~6. 핀 개방·Rf 변경·병렬 저항 1단계",
- "subtitle": "발생기 1.0kHz · 바꾼 것은 그 절차가 끝나면 되돌린다",
+ "title": "실험 1) DAC — 4~6. 핀 개방·Rf 변경·병렬 저항 3단계 · 병렬 저항(T9)",
+ "subtitle": "R6 는 그대로. 22.6k 3개를 다리끼리 이은 사슬(67.8k)의 두 끝을 파란 점 두 곳에. 끝나면 사슬만 뽑아요",
  "kept": 63,
  "steps": [],
  "removals": [],
