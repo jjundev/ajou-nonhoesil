@@ -48,7 +48,7 @@ LED 부하가 7490 출력 레벨에 주는 영향은 M6에 적었다.
 
 순차 출력은 `lab-netlist/v3`의 observed 노드와 저작한 확인 절차로 적는다. **모든 확인 절차는 교안 원문이
 아니다.** 저작한 기대값은 측정 기록이 아니며 명세의 실제 결과 칸은 빈 상태로 둔다. C2의 조립 중 확인(V1~V3)은
-교안 필수 측정이 아니라 `checklist: diagnostic`을 달았다. 기본 경로의 확인은 교안이 지시한 기록표 T1~T9다.
+교안 필수 측정이 아니지만 현장판에 관측표로 인쇄한다(사용자 결정 2026-11-20). 교안이 지시한 기록표는 T1~T9다.
 
 # 꼭 읽을 것
 
@@ -282,7 +282,6 @@ R11 = 우 j45–우 바깥 GND 레일.
 
 ## 확인 절차 V1 · 7404 앞 세 입력 확인
 
-- checklist: diagnostic
 - purpose: QA·QB·QC가 U2로 들어가 반전되어 나오는지 1Hz 카운트 구간마다 확인한다.
 - source: manual:p9
 - layout: inline
@@ -304,7 +303,6 @@ R11 = 우 j45–우 바깥 GND 레일.
 
 ## 확인 절차 V2 · 7405 앞 두 비트 확인
 
-- checklist: diagnostic
 - purpose: QA·QB가 U2와 U3을 거쳐 원래 값으로 돌아오고, 풀업으로 High가 만들어지는지 확인한다.
 - source: manual:p9
 - layout: inline
@@ -326,7 +324,6 @@ R11 = 우 j45–우 바깥 GND 레일.
 
 ## 확인 절차 V3 · 7405 뒤 두 비트 확인
 
-- checklist: diagnostic
 - purpose: QC·QD가 U2와 U3을 거쳐 원래 값으로 돌아오는지 확인한다.
 - source: manual:p9
 - layout: inline

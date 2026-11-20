@@ -1003,7 +1003,10 @@ _JUMPER = {"H/L": "H=+5V · L=GND"}
 
 
 def _inline_observation_html(table, leds, feed, png=None):
+    # 받는 신호를 아는 LED가 하나도 없으면 LED로 판독할 근거가 없다 — 프로브 표로 그린다
     lamps = [l for l in leds if l.tag in feed]
+    if not any(feed[l.tag] is not None for l in lamps):
+        lamps = []
     rows = []
     has_other = any(dict(zip((n for n,_ in table.points), r.expected)).get(feed[l.tag], '관측 안 함')
                     not in ('0','1','H','L') for r in table.rows for l in lamps)
@@ -1054,6 +1057,8 @@ def _inline_observation_html(table, leds, feed, png=None):
 def _observation_procedure_html(table, leds=(), feed=None, png=None) -> str:
     """Two matched timelines, with per-LED status. Never writes measured cells."""
     feed = feed or {}
+    if not any(feed.get(l.tag) is not None for l in leds):
+        feed = {}
     out = ['<section class="observation-procedure">']
     if getattr(table, 'purpose', ''):
         out.append(f'<p class="observation-purpose">{_esc(table.purpose)}</p>')
