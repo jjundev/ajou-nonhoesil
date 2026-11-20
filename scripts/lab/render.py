@@ -259,8 +259,13 @@ def _comparison_table_html(header, rows, *, input_settings=None, input_column=1,
     # 6·7열은 입력 칸이 위치 미러로 두세 열을 품는다 — 조작·LED 칸에서 폭을 가져온다.
     out = ['<table class="comparison-table"><colgroup>' + ''.join(
                f'<col style="width:{w}%;">' for w in ({4:[7,43,32,18],5:[7,35,22,22,14],
-                   6:[7,19,24,18,18,14], 7:[6,17,27,13,13,13,11]}
-                   .get(len(header),[100/len(header)]*len(header))))
+                   6:[7,19,24,18,18,14], 7:[6,17,27,13,13,13,11],
+                   # 8열 = LED 판독 + 유지·반전·미정 + 프로브 측정 핀
+                   8:[5,14,18,11,11,11,18,12]}
+                   .get(len(header),[100/len(header)]*len(header))
+                   # LED 판독 + 프로브 측정 핀 7열(실험10 V1~V3) — 측정 핀 칸에 폭을 준다
+                   if not (len(header) == 7 and '측정 핀·예상값' in header)
+                   else [6,14,20,15,15,18,12]))
                + '</colgroup><thead><tr>',
            *[f'<th>{_esc(h)}{input_head if i == input_column and input_settings is not None else ""}</th>'
              for i, h in enumerate(header)], '</tr></thead><tbody>']
@@ -370,6 +375,33 @@ def _capture_html(table, spec_dir=None) -> str:
     out.append(f"<p class='readout'>{_esc(_READOUT)}</p>")
     out.append(f"<p class='readout'>{_esc(_CAPTION)}</p>")
     out.append('<div class="differs"><b>예상과 다른 점</b></div>')
+    return "\n".join(out)
+
+
+def _capture_group_html(tables) -> str:
+    """같은 `group` 의 파형표를 한 블록에 나란히 — 조작·관찰 자리가 같고 바꾸는 자리만 다른 묶음.
+
+    예상 산문은 첫 표의 것을 한 번만 싣는다(뒤 표들은 "T5와 같은 이유"로 그것을 가리킨다).
+    예상 개형 그림은 싣지 않고 표 제목이 바꾸는 자리를 말한다. 칸마다 스케치·판독 조건·
+    예상과 다른 점을 따로 둔다 — 기록.md 는 표마다 따로 전사한다.
+    """
+    first = tables[0]
+    ids = f"{tables[0].id}~{tables[-1].id}" if len(tables) > 2 else " · ".join(t.id for t in tables)
+    out = ['<div class="tblock">', f"<h3>{_esc(ids)} · {_esc(first.group)}</h3>"]
+    expected = _plain(first.expected or "").strip()
+    if expected:
+        out.append(f'<div class="expected"><b>예상</b> — {_esc(expected)}</div>')
+    out.append(f'<div class="capture-group" style="display:grid;grid-template-columns:repeat({len(tables)},1fr);gap:3mm;">')
+    for t in tables:
+        out.append('<div>')
+        out.append(f'<h4 style="margin:1mm 0;">{_esc(t.id)} · {_esc(t.title)}</h4>')
+        out.append('<div class="sketch" style="height:50mm;"></div>')
+        out.append('<p class="readout">V/div ______ · time/div ______</p>')
+        out.append('<div class="differs"><b>예상과 다른 점</b></div>')
+        out.append('</div>')
+    out.append('</div>')
+    out.append(f"<p class='readout'>{_esc(_READOUT)}</p>")
+    out.append("</div>")
     return "\n".join(out)
 
 
@@ -908,7 +940,7 @@ def _assembly_html(step, netlist) -> str:
             + f'<p><span class="box"></span><b>완료 확인:</b> {_esc(_plain(step.check))}</p></div>')
 
 
-def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=None) -> str:
+def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=None, appendix=None) -> str:
     """단계 블록 하나 — 그림, 이 단계에서 할 것, 확인 노드, 확인 칸, 단계 진리표.
 
     그림이 없으면 빈 브레드보드를 넣지 않는다 — 단계 그림은 회색 기준선이 요점이라
@@ -943,7 +975,11 @@ def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=No
         procedure = observations.procedure_for_stage(section, stage) if stage.get("procedure") else None
     except ValueError:
         procedure = None  # 아래의 기존 오류 표시 경로에서 처리한다.
-    diagnostic = bool(stage.get("diagnostic")) or (procedure is not None and procedure.checklist == "diagnostic")
+    # `checklist: appendix` 절차는 단계 안에서는 진단용처럼 숨기고 안내 한 줄만 둔다. 표는 `appendix`
+    # 목록에 넣어 체크리스트 맨 뒤 부록에 싣는다(2026-11-20 사용자: 교안 필수가 아닌 것은 본문에서 줄인다).
+    in_appendix = procedure is not None and procedure.checklist == "appendix"
+    diagnostic = (bool(stage.get("diagnostic")) or in_appendix
+                  or (procedure is not None and procedure.checklist == "diagnostic"))
     if diagnostic and data.get("probes"):
         data = {**data, "probes": []}
         text = _board_text_html(data)
@@ -969,6 +1005,21 @@ def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=No
         table = _led_table_html(spec, section, leds, feed, png=png)
     elif not diagnostic and spec is not None and stage.get("node") and not last:
         table = _stage_table_html(spec, section, stage["node"], _stage_led(stage["todo"]), png=png)
+    if in_appendix:
+        try:
+            names = list(dict.fromkeys([*procedure.observe, *[feed[led.tag] for led in leds
+                                                            if led.tag in (feed or {})
+                                                            and feed[led.tag] in {n['name'] for n in section.nodes}]]))
+            authored = observations.stage_observations(section, spec, stage, names)
+            body = _observation_procedure_html(authored, leds, feed, png=png)
+        except ValueError as exc:
+            body = f"<p class='src'>확인 절차를 인쇄할 수 없어요: {_esc(exc)}</p>"
+        if appendix is not None:
+            appendix.append(f'<div class="stage"><h3>부록 {_esc(procedure.id)} · {_esc(procedure.title)}</h3>'
+                            f'<p class="operation"><b>{_esc(section.id)} 단계 {_esc(stage["n"])} 배선을 마친 상태에서</b></p>'
+                            f'{body}</div>')
+        table = (f'<p class="optional"><b>선택 확인</b> — 교안 필수가 아니에요. 뒤 측정이 예상과 다를 때만 '
+                 f'맨 뒤 부록 {_esc(procedure.id)}({_esc(procedure.title)})로 이 단계 배선을 확인해요.</p>')
     # 걷기 행은 `단계 2걷기` 가 아니라 `2단계 전 · 걷기` 로 찍는다 — 인쇄본에서
     # "2단계 앞에 하는 정리" 로 읽혀야 한다. `단계 2 · 걷기` 는 바로 뒤 `단계 2`
     # 와 번호가 겹쳐 같은 단계를 두 번 하는 것처럼 보였다(2026-09-29 실험04).
@@ -1003,15 +1054,27 @@ _JUMPER = {"H/L": "H=+5V · L=GND"}
 
 
 def _inline_observation_html(table, leds, feed, png=None):
+    # 받는 신호를 아는 LED가 하나도 없으면 LED로 판독할 근거가 없다 — 프로브 표로 그린다
     lamps = [l for l in leds if l.tag in feed]
+    if not any(feed[l.tag] is not None for l in lamps):
+        lamps = []
     rows = []
+
+    def all_unknown(r):
+        # 전원 직후처럼 모든 LED가 미정인 행은 켜짐·꺼짐 칸에 `미정`을 적는다 — 별도 열을 만들지 않는다
+        v = dict(zip((n for n,_ in table.points), r.expected))
+        return bool(lamps) and all(v.get(feed[l.tag]) == '미정' for l in lamps)
     has_other = any(dict(zip((n for n,_ in table.points), r.expected)).get(feed[l.tag], '관측 안 함')
-                    not in ('0','1','H','L') for r in table.rows for l in lamps)
+                    not in ('0','1','H','L') for r in table.rows if not all_unknown(r) for l in lamps)
     probe_points = [(n,p) for n,p in table.points if n not in {feed[l.tag] for l in lamps}]
     for row in table.rows:
         values = dict(zip((n for n, _ in table.points), row.expected))
         inputs = '; '.join(f'{n} = {c}' for n, c in zip(table.inputs, row.inputs))
-        if lamps:
+        if lamps and all_unknown(row):
+            rows.append([f'S{row.order}', row.action, inputs, '미정', '미정',
+                         *(['없음'] if has_other else []),
+                         *(['; '.join(f'{n} ({p}): {values[n]}' for n,p in probe_points)] if probe_points else []), ''])
+        elif lamps:
             on, off, other = [], [], []
             for led in lamps:
                 token = values.get(feed[led.tag], '관측 안 함')
@@ -1022,14 +1085,15 @@ def _inline_observation_html(table, leds, feed, png=None):
                         '미정':'미정', '관측 안 함':'이번 절차 관측 안 함'}[token])
                 else:
                     (on if lit(bit, led.active_low) else off).append(label)
-            rows.append([str(row.order), row.action, inputs, ' · '.join(on) or '없음',
+            rows.append([f'S{row.order}', row.action, inputs, ' · '.join(on) or '없음',
                          ' · '.join(off) or '없음', *(['; '.join(other) or '없음'] if has_other else []),
                          *(['; '.join(f'{n} ({p}): {values[n]}' for n,p in probe_points)] if probe_points else []), ''])
         else:
             expected = '; '.join(f'{n} ({pin}): {v}' for (n,pin),v in zip(table.points,row.expected))
             rows.append([str(row.order), row.action, inputs, expected, ''])
     if lamps:
-        header = ['순서','조작','입력 설정','예상 켜지는 LED','예상 꺼지는 LED']
+        # LED 판독 표는 기록표(T1 등)와 같은 서식 — `스텝`·`S<n>`·`CLK=값`
+        header = ['스텝','조작','입력 설정','예상 켜지는 LED','예상 꺼지는 LED']
         if has_other:
             header.append('유지·반전·미정')
         if probe_points:
@@ -1042,18 +1106,22 @@ def _inline_observation_html(table, leds, feed, png=None):
         header = ['순서','조작','입력 설정','측정 핀·예상 논리값','실제 결과']
         detail = ''
     columns, head = _mirror(png, table.inputs)
-    settings = _input_settings_html(table.inputs, [row.inputs for row in table.rows], columns=columns)
+    settings = _input_settings_html(table.inputs, [row.inputs for row in table.rows], columns=columns,
+                                    spaced=not lamps)
     h = _comparison_table_html(header, rows, input_settings=settings, input_column=2, input_head=head)
     # One timeline, one stable authored order per row.
     for row in table.rows:
-        h = h.replace('<tr><td>' + str(row.order) + '</td>',
-                      f'<tr data-observation-order="{row.order}"><td>{row.order}</td>', 1)
+        label = f'S{row.order}' if lamps else str(row.order)
+        h = h.replace('<tr><td>' + label + '</td>',
+                      f'<tr data-observation-order="{row.order}"><td>{label}</td>', 1)
     return detail + h
 
 
 def _observation_procedure_html(table, leds=(), feed=None, png=None) -> str:
     """Two matched timelines, with per-LED status. Never writes measured cells."""
     feed = feed or {}
+    if not any(feed.get(l.tag) is not None for l in leds):
+        feed = {}
     out = ['<section class="observation-procedure">']
     if getattr(table, 'purpose', ''):
         out.append(f'<p class="observation-purpose">{_esc(table.purpose)}</p>')
@@ -1247,10 +1315,19 @@ def _unstaged_nodes_html(spec, section, png=None) -> str:
 def _circuit_tables(spec, section, badges=None, leds=(), netlist=None) -> str:
     out = []
     circuit_item = next((i for i in spec.items if i.id == section.item), None)
+    grouped = set()
     for table_id in section.tables:
         table = spec.table(table_id)
-        if table is None or table.role == "reference":
+        if table is None or table.role == "reference" or table_id in grouped:
             continue
+        if table.kind == "capture" and getattr(table, "group", None):
+            members = [spec.table(t) for t in section.tables
+                       if spec.table(t) is not None and spec.table(t).kind == "capture"
+                       and getattr(spec.table(t), "group", None) == table.group]
+            if len(members) > 1:
+                grouped.update(t.id for t in members)
+                out.append(_capture_group_html(members))
+                continue
         # 토큰은 표를 가진 항목에서 딴다 — `contact_sheet` 는 기록.md 의 항목
         # 헤딩으로 사진을 묶는다. 소유 항목이 없으면 회로의 `item` 으로 물러선다.
         item = next((i for i in spec.items if table_id in i.tables), circuit_item)
@@ -1345,6 +1422,7 @@ def circuit_pages(spec, netlist) -> str:
     feed_after = {}
     shown = set()
     v3_feeds = feeds_by_circuit(netlist) if netlist.schema == "lab-netlist/v3" else None
+    appendix = []
     for section in netlist.circuits:
         nodes, prose_before, prose_after = _circuit_body(section)
         chips = _chip_boxes(nodes)
@@ -1373,18 +1451,35 @@ def circuit_pages(spec, netlist) -> str:
                 stages.extend(_assembly_html(step, netlist)
                               for step in steps_for_stage(section, stage.get('stage_no')))
             stages.append(_stage_html(stage, netlist, section, spec, last=stage is last,
-                                      leds=leds, feed=feed))
+                                      leds=leds, feed=feed, appendix=appendix))
         if stages:
             # 회로 개요와 실제 작업을 분리한다. 준비 1은 다음 쪽에서 시작한다.
             out.append(FIT_PLAIN + header + '</div>')
             out.extend(stages)
         feed_after = feeds[-1] if feeds else (feed_after if section.continues else {})
-        out.append(FIT_PLAIN)
+        # 앞 회로를 이어받고 완성본 그림까지 같으면(실험10 C3: 바꿨다가 되돌림) 같은 그림을 다시 싣지 않는다.
+        same_board = bool(stages and section.continues and previous is not None and section.diagram
+                          and section.diagram == previous.diagram)
+        if not same_board:
+            out.append(FIT_PLAIN)
         if not stages:
             out.append(header)
             # 단계 없는 계측 회로의 유일한 장비 설정·저항망 표는 보존한다.
             if prose_before.strip():
                 out.append(_blocks(prose_before))
+        if same_board:
+            # 완성본 쪽을 따로 두지 않고 기록표 쪽 머리에 한 줄로 적는다.
+            out.append(FIT_PLAIN + f'<p><b>완성본</b> — 끝난 보드는 {_esc(previous.id)} 완성본과 같아요. '
+                       f'그림은 {_esc(previous.id)} 완성본을 봐요.</p>')
+            out.append(_unused_html(chips))
+            outputs = _record_outputs(spec, section)
+            badges = {led.tag: f"LED{circled(led.index)}" for led in leds if led.tag in outputs}
+            out.append(_circuit_tables(spec, section, badges, leds, netlist=netlist))
+            out.append(_unstaged_nodes_html(spec, section, png=png))
+            out.append('<div class="circuit-notes"><b>메모</b></div>')
+            out.append('</div></section>')
+            previous = section
+            continue
         out.append('<div class="wirebox"><h3>완성본</h3>')
         out.append(_diagram_html(section, netlist))
         if not stages:
@@ -1410,6 +1505,12 @@ def circuit_pages(spec, netlist) -> str:
         out.append('<div class="circuit-notes"><b>메모</b></div>')
         out.append('</div></section>')
         previous = section
+    if appendix:
+        intro = ('<h2>부록 · 문제가 있을 때만 하는 확인</h2>'
+                 '<p>교안 필수 측정이 아니에요. 본문 측정이 예상과 다를 때 어느 단계 배선에서 어긋났는지 '
+                 '찾는 데 써요.</p>')
+        appendix[0] = appendix[0].replace('<div class="stage">', '<div class="stage">' + intro, 1)
+        out.extend(appendix)
     return _drop_issue_refs("\n".join(out))
 
 

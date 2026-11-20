@@ -1,0 +1,67 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) DAC — 4~6. 핀 개방·Rf 변경·병렬 저항 3단계 · 병렬 저항(T9)",
+ "subtitle": "R6 는 그대로. 사슬 두 끝을 점퍼로 R6 아랫다리 줄·가산 노드에. 끝나면 점퍼만 뽑아요",
+ "kept": 66,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "우 a51",
+   "to": "우 b40",
+   "desc": "T9 사슬 윗끝 -> OB 스트립(R6 아랫다리 줄)",
+   "count": 1,
+   "color": "#e67800"
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "우 e57",
+   "to": "우 i38",
+   "desc": "T9 사슬 아랫끝 -> 가산 노드(우 f~j 38행)",
+   "count": 1,
+   "color": "#009696"
+  }
+ ],
+ "removals": [],
+ "probes": [
+  {
+   "n": 1,
+   "label": "DAC OUTPUT",
+   "at": "좌 h38",
+   "desc": "오실로스코프 CH — U4 pin 6 (DC 결합)"
+  }
+ ],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "QD",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "QC",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "QB",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "QA",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "CLK",
+   "at": "좌 j4",
+   "rail": "중앙GND레일4행",
+   "x": 588,
+   "row": 4
+  }
+ ]
+}

@@ -343,8 +343,9 @@ def _split_procedures(body, path, line, schema):
         seen.add(ident)
         end = next((j for j in range(i+1, len(lines)) if lines[j].startswith("## ")), len(lines))
         attrs, rest = _leading_attrs("\n".join(lines[i+1:end]))
-        if attrs.get("checklist", "required") not in ("required", "diagnostic"):
-            raise NetlistError(f"{path}:{line+i} {ident} checklist 는 required 또는 diagnostic 이어야 한다")
+        # appendix: 교안 필수가 아닌 고장 추적용 — 단계에는 안내 한 줄만, 표는 체크리스트 맨 뒤 부록에 싣는다
+        if attrs.get("checklist", "required") not in ("required", "diagnostic", "appendix"):
+            raise NetlistError(f"{path}:{line+i} {ident} checklist 는 required·diagnostic·appendix 중 하나여야 한다")
         for key in ("source", "provenance", "setup", "encoding", "inputs", "observe"):
             if not attrs.get(key):
                 raise NetlistError(f"{path}:{line+i} {ident} 필수 속성 {key} 누락")

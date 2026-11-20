@@ -1,0 +1,73 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) DAC — 4~6. 핀 개방·Rf 변경·병렬 저항 3단계 준비 · 22.6k 사슬",
+ "subtitle": "22.6k 세 개를 우 51→53, 53→55, 55→57행에 세워 직렬로(68k 대신)",
+ "kept": 63,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "우 b51",
+   "to": "우 b53",
+   "desc": "R13 22.6kΩ(우 b51→우 b53) · T9 사슬 1/3: 우 51행 스트립 -> 우 53행 스트립 (68k 대신)",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "우 c53",
+   "to": "우 c55",
+   "desc": "R14 22.6kΩ(우 c53→우 c55) · T9 사슬 2/3: 우 53행 스트립 -> 우 55행 스트립 (68k 대신)",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "우 d55",
+   "to": "우 d57",
+   "desc": "R15 22.6kΩ(우 d55→우 d57) · T9 사슬 3/3: 우 55행 스트립 -> 우 57행 스트립 (68k 대신)",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [
+  {
+   "n": 1,
+   "label": "DAC OUTPUT",
+   "at": "좌 h38",
+   "desc": "오실로스코프 CH — U4 pin 6 (DC 결합)"
+  }
+ ],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "QD",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "QC",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "QB",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "QA",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "CLK",
+   "at": "좌 j4",
+   "rail": "중앙GND레일4행",
+   "x": 588,
+   "row": 4
+  }
+ ]
+}

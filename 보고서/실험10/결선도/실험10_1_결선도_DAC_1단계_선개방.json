@@ -1,10 +1,23 @@
 {
  "schema": "breadboard-sidecar/v1",
- "title": "실험 1) DAC — 4~6. 핀 개방·Rf 변경·병렬 저항 1단계",
- "subtitle": "발생기 1.0kHz · 바꾼 것은 그 절차가 끝나면 되돌린다",
- "kept": 63,
+ "title": "실험 1) DAC — 4~6. 핀 개방·Rf 변경·병렬 저항 1단계 · 선 개방(T5~T7)",
+ "subtitle": "빨간 선 ①→T5, ②→T6, ③→T7. U3 쪽 끝 하나만 뽑아 보고 다시 꽂아요",
+ "kept": 60,
  "steps": [],
- "removals": [],
+ "removals": [
+  {
+   "n": 1,
+   "text": "좌 a16 → 좌 a25 · QA': U2 pin 2 -> U3 pin 1"
+  },
+  {
+   "n": 2,
+   "text": "좌 b18 → 좌 b27 · QB': U2 pin 4 -> U3 pin 3"
+  },
+  {
+   "n": 3,
+   "text": "좌 c20 → 좌 c29 · QC': U2 pin 6 -> U3 pin 5"
+  }
+ ],
  "probes": [
   {
    "n": 1,

@@ -684,6 +684,12 @@ class BreadboardRenderer(_RuleChecks):
                 break
         self._marker_removed(int(x), int(y), n)
 
+    def mark_part(self, a, b, n):
+        """이미 꽂힌 부품 자리(`a`·`b` = (x, 행))를 빨간 점선과 번호로 짚는다 — 바꿔 끼울 자리 표시(실험10 T8 R12).
+        걷기와 달리 기준선에서 빠지지 않고 점유표·순서표에도 안 남는다. 부품은 그대로 그 위에 그려진다."""
+        (xa, ra), (xb, rb) = a, b
+        self._ghost_wire([(xa, self.r_y(ra)), (xb, self.r_y(rb))], n)
+
     def _hand_stroke(self, points, color):
         """손그림 모드 배선 한 가닥 — 획으로 기록만 한다(2026-10-15). 시드 rng 를 쓰는 순서가 같아
         손그림모사와 안내판의 획 좌표가 같다."""

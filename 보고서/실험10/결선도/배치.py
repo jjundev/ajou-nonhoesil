@@ -306,7 +306,124 @@ def build_e10_change(output_path, template_path=None, stage=None, baseline=None,
                 submit=False, hand=hand, hand_guide=hand_guide)
     bb.note(_NOTE_POWER)
     bb.note('절차 4 는 U2→U3 선의 U3 쪽 끝을 잠시 뽑아 들고 본 뒤 다시 꽂는다. 절차 5 는 R12 를 2.7k 로 바꿨다가 '
-            '4.5k 로, 절차 6 은 R6 양 끝 행에 68k 를 덧꽂았다가 뽑는다.')
+            '4.5k 로, 절차 6 은 22.6k 세 개 직렬(68k 대신, 조교 지시)을 점퍼로 R6 와 병렬로 이었다가 점퍼를 뽑는다.')
+    bb.export(output_path, max_row=63)
+    return bb
+
+
+_OPEN_WIRES = ("QA': U2 pin 2 -> U3 pin 1", "QB': U2 pin 4 -> U3 pin 3", "QC': U2 pin 6 -> U3 pin 5")
+
+
+def _final_snapshot(template_path=None):
+    import os, tempfile
+    with tempfile.TemporaryDirectory() as d:
+        return build_e10_change(os.path.join(d, 'base.png'), template_path, stage=1).snapshot()
+
+
+def _open_board(output_path, template_path=None, stage=None, baseline=None):
+    """C3 1단계 — 절차 4(T5~T7)에서 하나씩 뽑았다 다시 꽂는 U2→U3 선 셋을 걷기 표시(빨간 점선·번호)로 짚는다.
+
+    보드에는 아무것도 새로 꽂지 않는다. 걷기 보드 꼴을 빌려 세 선만 표시하고 나머지는 회색 C2 완성본이다.
+    `build_` 접두어를 두지 않는다 — `removal_board` 와 같은 이유(steps 가 비어 가독성 검사에 걸린다).
+    """
+    base = _final_snapshot(template_path)
+    keys = {k: _OPEN_WIRES.index(desc) + 1 for k, desc in base['wires'].items() if desc in _OPEN_WIRES}
+    assert len(keys) == 3, keys
+    ghost = dict(base, ghost={'wires': keys, 'title': f'{_E3} 1단계 · 선 개방(T5~T7)',
+                              'subtitle': '빨간 선 ①→T5, ②→T6, ③→T7. U3 쪽 끝 하나만 뽑아 보고 다시 꽂아요'})
+    return build_e10_change(output_path, template_path, stage=1, baseline=ghost)
+
+
+def _rf_board(output_path, template_path=None, stage=None, baseline=None):
+    """C3 2단계 — 절차 5(T8). 회색 C2 완성본 위에 R12(Rf) 자리만 빨간 점선 ①로 짚는다. 같은 두 홀에
+    2.7k 를 꽂았다가 4.5k 로 되돌리므로 새로 그릴 선·부품은 없다."""
+    bb = _board(output_path, template_path, _FINAL_G, _final_snapshot(template_path),
+                f'{_E3} 2단계 · Rf 교체(T8)', '빨간 점선 ① R12(4.5k)를 뽑고 같은 두 구멍에 2.7k. 끝나면 4.5k 로',
+                palette=True, submit=False)
+    L, R = bb.cols['left'], bb.cols['right']
+    bb.mark_part((L['j'], _SUM), (R['a'], _SUM), 1)
+    bb.note('R12 = 좌 j38(U4 pin 6 행) ↔ 우 a38(가산 노드). 바꾸는 동안 전원과 발생기 출력을 꺼요.')
+    bb.export(output_path, max_row=63)
+    return bb
+
+
+# T9 병렬 사슬 — 68k 대신 22.6k 세 개 직렬(67.8k, 조교 지시 2026-11-20). R6 둘레(우 38~42행)에는 세 개를 세울
+# 자리가 없다: 우 a~e 38행은 다 차 있고, 39행은 R6 몸통·글자가 막고, 40.5·41.5행에는 OD·+15V 가로선이 지나
+# 세운 저항이 선을 가린다(R15). 그래서 빈 아래 영역(우 a~e 51~57행)에 사슬을 세우고(3단계 준비) 점퍼 둘로
+# OB 스트립(R6 아랫다리 줄, 40행)과 가산 노드(우 f~j 38행 — e38→f38 점퍼로 a~e 38행과 같은 넷)에 잇는다(3단계).
+_T9 = (('b', 51, 53), ('c', 53, 55), ('d', 55, 57))      # (열, 윗행, 아랫행)
+
+
+def _t9_chain(bb):
+    R = bb.cols['right']
+    for k, (c, r0, r1) in enumerate(_T9, 1):
+        bb.resistor((R[c], r0), (R[c], r1), f'R{12 + k}', '22.6k',
+                    f'T9 사슬 {k}/3: 우 {r0}행 스트립 -> 우 {r1}행 스트립 (68k 대신)')
+
+
+def _chain_prep(output_path, template_path=None, baseline=None, *, order=1):
+    """C3 3단계 준비 — 사슬만 꽂는다. 회로와는 아직 닿지 않으니 양 끝(우 51행·57행)을 멀티미터로 재 67.8k 를 본다."""
+    bb = _board(output_path, template_path, _FINAL_G, _final_snapshot(template_path),
+                f'{_E3} 3단계 준비 · 22.6k 사슬', '22.6k 세 개를 우 51→53, 53→55, 55→57행에 세워 직렬로(68k 대신)',
+                palette=True, partial_=True)
+    _t9_chain(bb)
+    bb.note('사슬 양 끝 = 우 a~e 51행과 우 a~e 57행. 전원과 상관없이 두 스트립 사이를 멀티미터로 재 약 67.8kΩ 을 확인한다.')
+    bb.export(output_path, max_row=63)
+    return bb
+
+
+def _lane_route(bb, srcs, dsts):
+    """끝 홀 후보 둘 사이의 점퍼 경로 — [A, 반 행, 열 사이 통로 X, 반 행, B] 꼴을 모두 대 보고 엔진의 합법 검사
+    (`_valid`: 홀 위·다리 위·몸통 건너기 금지)와 번호 원 자리(`_marker_spot`)를 통과한 가장 짧은 것. 엔진
+    배선기(`_routes`)의 통로 후보에는 우 블록 아래 빈 영역에서 올라오는 경로가 없어 여기서 고른다."""
+    from render_breadboard import _seg_boxes, _clean, _valid, _marker_spot
+    R, half = bb.cols['right'], bb.spec.row_pitch / 2
+    xs = sorted(R[c] for c in 'abcdefghij')
+    lanes = [(a + b) / 2 for a, b in zip(xs, xs[1:])]
+    segs = [(k, pts) for k, pts, _ in bb._segments]
+    boxes = _seg_boxes(segs)
+    others = [p for _k, pts, _d in bb._segments for p in (pts[0], pts[-1])]
+    others += [(x, bb.r_y(r)) for (x, r), what in bb._leads.items() if '다리' in what]
+    best = None
+    for ax, ar in srcs:
+        for bx, br in dsts:
+            if (ax, ar) in bb._leads or (bx, br) in bb._leads:
+                continue
+            A, B = (ax, bb.r_y(ar)), (bx, bb.r_y(br))
+            for X in lanes:
+                for y1 in (A[1] - half, A[1] + half):
+                    for y2 in (B[1] - half, B[1] + half):
+                        p = _clean([A, (A[0], y1), (X, y1), (X, y2), (B[0], y2), B])
+                        if not _valid(bb, p, others, segs, boxes):
+                            continue
+                        m = _marker_spot(bb, p)
+                        if m is None:
+                            continue
+                        cost = sum(abs(a[0] - b[0]) + abs(a[1] - b[1]) for a, b in zip(p, p[1:]))
+                        if best is None or cost < best[0]:
+                            best = (cost, p, m)
+    assert best is not None, f'점퍼 경로 없음: {srcs} -> {dsts}'
+    return best[1], best[2]
+
+
+def _parallel_board(output_path, template_path=None, stage=None, baseline=None):
+    """C3 3단계 — 절차 6(T9). R6 는 그대로 두고 사슬 양 끝을 점퍼 둘로 OB 스트립과 가산 노드에 잇는다.
+    끝나면 점퍼 둘만 뽑는다(사슬은 남겨도 회로와 안 닿는다)."""
+    import os, tempfile
+    with tempfile.TemporaryDirectory() as d:
+        base = _chain_prep(os.path.join(d, 'prep.png'), template_path).snapshot()
+    bb = _board(output_path, template_path, _FINAL_G, base, f'{_E3} 3단계 · 병렬 저항(T9)',
+                'R6 는 그대로. 사슬 두 끝을 점퍼로 R6 아랫다리 줄·가산 노드에. 끝나면 점퍼만 뽑아요',
+                palette=True, submit=False)
+    _t9_chain(bb)
+    R = bb.cols['right']
+    top = [(R[c], _T9[0][1]) for c in 'acde']
+    bot = [(R[c], _T9[-1][2]) for c in 'abce']
+    for srcs, dsts, desc in ((top, [(R[c], _SUM + 2) for c in 'bce'], 'T9 사슬 윗끝 -> OB 스트립(R6 아랫다리 줄)'),
+                             (bot, [(R[c], _SUM) for c in 'ij'], 'T9 사슬 아랫끝 -> 가산 노드(우 f~j 38행)')):
+        path, marker = _lane_route(bb, srcs, dsts)
+        bb.step_wire(path, 'sig', desc, marker_at=marker)
+    bb.note('68k 대신 22.6k ×3 직렬(조교 지시). 10.5k ∥ 67.8k ≈ 9.1k. 끝나면 점퍼 둘을 뽑으면 보드가 C2 완성본 회로와 같다.')
     bb.export(output_path, max_row=63)
     return bb
 
@@ -321,10 +438,13 @@ BOARDS = [
     (f'{_N2}_6걷기_VP.png', removal_board((build_e10_dac, 5), (build_e10_dac, 6),
         '실험 1) DAC — 2~3. V+ 점퍼 걷기', '전원과 발생기 출력을 꺼요. 빨간 선(VP → GND)만 뽑아요.'), None),
     (f'{_N2}_6단계_분배기.png', build_e10_dac, 6),
-    (f'{_N2}_변경.png', build_e10_change, 1),
+    (f'{_N2}_1단계_선개방.png', _open_board, None),
+    (f'{_N2}_2단계_Rf.png', _rf_board, None),
+    (f'{_N2}_3단계_병렬.png', _parallel_board, 3),
 ]
 ASSEMBLY_BOARDS = {
     f'{_N1}_1단계_QA.png': [(f'{_N1}_1준비_{i}.png', partial(_prep_counter, order=i)) for i in (1, 2)],
     f'{_N2}_4단계_가중저항.png': [(f'{_N2}_4준비_{i}.png', partial(_prep_dac, order=i)) for i in (1, 2, 3)],
+    f'{_N2}_3단계_병렬.png': [(f'{_N2}_3준비_사슬.png', _chain_prep)],
 }
 FINALS = [(f'{_N1}.png', build_e10_counter), (f'{_N2}.png', build_e10_dac)]

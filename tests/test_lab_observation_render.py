@@ -254,5 +254,6 @@ def test_inline_action_is_separate_column_before_input_settings(with_led):
     row = re.search(r'<tbody>\s*<tr[^>]*>(.*?)</tr>', h, re.S)[1]
     cells = re.findall(r'<td[^>]*>(.*?)</td>', row, re.S)
     assert cells[1] == '먼저 입력을 설정'
-    assert cells[2] == 'SERIAL_DATA = 1'
+    # LED 판독 표는 기록표(T1 등)처럼 `=` 를 붙여 쓴다
+    assert cells[2] == ('SERIAL_DATA=1' if with_led else 'SERIAL_DATA = 1')
     assert h.count('class="actual"') == 1
