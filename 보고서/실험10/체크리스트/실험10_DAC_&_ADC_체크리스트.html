@@ -383,17 +383,23 @@
 <div class="stage" data-fit="8"><h3>단계 1</h3><p class="operation">전원과 발생기 출력을 끈 상태로 U2(74HC04)를 꽂고 pin 14를 +5V, pin 7을 GND에 이어요 · 신호선: U1 pin 12 (LED QA 스트립) -&gt; U2 pin 1 · U1 pin 9 (LED QB 스트립) -&gt; U2 pin 3 · U1 pin 8 (LED QC 스트립) -&gt; U2 pin 5</p><figure class="board"><img src="../결선도/실험10_1_결선도_DAC_1단계_7404.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">(빈 자리) → 꽂는다: 74HC04</span><span class="desc">좌 15행에 새로 꽂는다</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">2</span><span class="route">좌 g15 → 중앙VCC레일15행</span><span class="desc">pin 14 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">3</span><span class="route">좌 a21 → 좌 GND레일21행</span><span class="desc">pin 7 -&gt; GND 레일</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">4</span><span class="route">좌 d15 → 우 c18</span><span class="desc">QA: U1 pin 12 (LED QA 스트립) -&gt; U2 pin 1</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">5</span><span class="route">좌 c17 → 우 c13</span><span class="desc">QB: U1 pin 9 (LED QB 스트립) -&gt; U2 pin 3</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">6</span><span class="route">좌 d19 → 우 c8</span><span class="desc">QC: U1 pin 8 (LED QC 스트립) -&gt; U2 pin 5</span></li></ol><h4>V1 · 7404 앞 세 입력 확인</h4><section class="observation-procedure">
 <p class="observation-purpose">QA·QB·QC가 U2로 들어가 반전되어 나오는지 1Hz 카운트 구간마다 확인한다.</p>
 <p><b>준비·초기화:</b> 전원과 발생기 출력을 끈 상태에서 발생기를 사각파·주기 1s로 맞추고, CLK 선을 잇기 전에 오실로스코프로 0V~+5V를 확인한다. 발생기·오실로스코프·회로 GND를 공통으로 잇는다. 발생기를 0V로 두고 전원을 켠 뒤 시작한다. 오실로스코프 프로브를 U2 pin 2·4·6에 차례로 대고, 느린 수평 눈금(Roll 등)이나 DMM으로 1Hz 변화를 본다. 카운트 구간은 LED QD~QA로 가른다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일4행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>QD</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>QC</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>QB</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>QA</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일4행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>QD</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>QC</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>QB</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>QA</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:5%;"><col style="width:14%;"><col style="width:18%;"><col style="width:11%;"><col style="width:11%;"><col style="width:11%;"><col style="width:18%;"><col style="width:12%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>조작</th>
 <th>입력 설정<div class="mirror-head" style="--g:1"><span>가운데</span></div></th>
-<th>측정 핀·예상 논리값</th>
+<th>예상 켜지는 LED</th>
+<th>예상 꺼지는 LED</th>
+<th>유지·반전·미정</th>
+<th>측정 핀·예상값</th>
 <th>실제 결과</th>
 </tr></thead><tbody>
 <tr>
 <td>1</td>
 <td>발생기 0V로 전원을 켠다</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot">CLK = 0</span></div></div></td>
+<td>없음</td>
+<td>없음</td>
+<td>①QD: 미정<br>②QC: 미정<br>③QB: 미정<br>④QA: 미정</td>
 <td>QA_N (U2 pin 2): 미정<br>QB_N (U2 pin 4): 미정<br>QC_N (U2 pin 6): 미정</td>
 <td class="actual"></td>
 </tr>
@@ -401,6 +407,9 @@
 <td>2</td>
 <td>반복 클록. LED 넷이 모두 꺼진 COUNT 0 구간</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot"><span class="input-change">CLK = 반복 클록</span></span></div></div></td>
+<td>없음</td>
+<td>①QD · ②QC · ③QB · ④QA</td>
+<td>없음</td>
 <td>QA_N (U2 pin 2): 1<br>QB_N (U2 pin 4): 1<br>QC_N (U2 pin 6): 1</td>
 <td class="actual"></td>
 </tr>
@@ -408,6 +417,9 @@
 <td>3</td>
 <td>COUNT 1 구간(LED QA만 켜짐)</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot">CLK = 반복 클록</span></div></div></td>
+<td>④QA</td>
+<td>①QD · ②QC · ③QB</td>
+<td>없음</td>
 <td>QA_N (U2 pin 2): 0<br>QB_N (U2 pin 4): 1<br>QC_N (U2 pin 6): 1</td>
 <td class="actual"></td>
 </tr>
@@ -415,6 +427,9 @@
 <td>4</td>
 <td>COUNT 2 구간(LED QB만 켜짐)</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot">CLK = 반복 클록</span></div></div></td>
+<td>③QB</td>
+<td>①QD · ②QC · ④QA</td>
+<td>없음</td>
 <td>QA_N (U2 pin 2): 1<br>QB_N (U2 pin 4): 0<br>QC_N (U2 pin 6): 1</td>
 <td class="actual"></td>
 </tr>
@@ -422,6 +437,9 @@
 <td>5</td>
 <td>COUNT 4 구간(LED QC만 켜짐)</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot">CLK = 반복 클록</span></div></div></td>
+<td>②QC</td>
+<td>①QD · ③QB · ④QA</td>
+<td>없음</td>
 <td>QA_N (U2 pin 2): 1<br>QB_N (U2 pin 4): 1<br>QC_N (U2 pin 6): 0</td>
 <td class="actual"></td>
 </tr>
@@ -429,17 +447,23 @@
 <div class="stage" data-fit="9"><h3>단계 2</h3><p class="operation">전원과 발생기 출력을 끄고 U3(74HC05)를 꽂아 pin 14를 +5V, pin 7을 GND에 이어요 · 풀업 R1·R2(1.5k)를 U3 pin 2·4 행과 +5V 레일 사이에 꽂아요 · 신호선: U1 pin 11 -&gt; U2 pin 9 · U2 pin 2 -&gt; U3 pin 1 · U2 pin 4 -&gt; U3 pin 3</p><figure class="board"><img src="../결선도/실험10_1_결선도_DAC_2단계_7405AB.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">(빈 자리) → 꽂는다: 74HC05</span><span class="desc">좌 25행에 새로 꽂는다</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">2</span><span class="route">좌 g25 → 중앙VCC레일25행</span><span class="desc">pin 14 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">3</span><span class="route">좌 a31 → 좌 GND레일31행</span><span class="desc">pin 7 -&gt; GND 레일</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">4</span><span class="route">좌 a26 → 좌 VCC레일25행</span><span class="desc">R1 1.5kΩ(좌 a26→좌 VCC레일25행) · U3 pin 2 풀업 -&gt; +5V</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">5</span><span class="route">좌 a28 → 좌 VCC레일28행</span><span class="desc">R2 1.5kΩ(좌 a28→좌 VCC레일28행) · U3 pin 4 풀업 -&gt; +5V</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">6</span><span class="route">좌 g7 → 좌 g20</span><span class="desc">QD: U1 pin 11 -&gt; U2 pin 9</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#009696">7</span><span class="route">좌 a16 → 좌 a25</span><span class="desc">QA': U2 pin 2 -&gt; U3 pin 1</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#c81e96">8</span><span class="route">좌 b18 → 좌 b27</span><span class="desc">QB': U2 pin 4 -&gt; U3 pin 3</span></li></ol><h4>V2 · 7405 앞 두 비트 확인</h4><section class="observation-procedure">
 <p class="observation-purpose">QA·QB가 U2와 U3을 거쳐 원래 값으로 돌아오고, 풀업으로 High가 만들어지는지 확인한다.</p>
 <p><b>준비·초기화:</b> 전원과 발생기 출력을 끈 상태로 2단계 배선을 마친 뒤 발생기를 0V로 두고 전원을 켠다. 발생기는 사각파·주기 1s다. 프로브를 U3 pin 2·4에 차례로 댄다. 카운트 구간은 LED로 가른다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일4행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>QD</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>QC</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>QB</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>QA</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일4행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>QD</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>QC</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>QB</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>QA</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:5%;"><col style="width:14%;"><col style="width:18%;"><col style="width:11%;"><col style="width:11%;"><col style="width:11%;"><col style="width:18%;"><col style="width:12%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>조작</th>
 <th>입력 설정<div class="mirror-head" style="--g:1"><span>가운데</span></div></th>
-<th>측정 핀·예상 논리값</th>
+<th>예상 켜지는 LED</th>
+<th>예상 꺼지는 LED</th>
+<th>유지·반전·미정</th>
+<th>측정 핀·예상값</th>
 <th>실제 결과</th>
 </tr></thead><tbody>
 <tr>
 <td>1</td>
 <td>발생기 0V로 전원을 켠다</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot">CLK = 0</span></div></div></td>
+<td>없음</td>
+<td>없음</td>
+<td>①QD: 미정<br>②QC: 미정<br>③QB: 미정<br>④QA: 미정</td>
 <td>OA (U3 pin 2): 미정<br>OB (U3 pin 4): 미정</td>
 <td class="actual"></td>
 </tr>
@@ -447,6 +471,9 @@
 <td>2</td>
 <td>반복 클록. COUNT 0 구간</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot"><span class="input-change">CLK = 반복 클록</span></span></div></div></td>
+<td>없음</td>
+<td>①QD · ②QC · ③QB · ④QA</td>
+<td>없음</td>
 <td>OA (U3 pin 2): 0<br>OB (U3 pin 4): 0</td>
 <td class="actual"></td>
 </tr>
@@ -454,6 +481,9 @@
 <td>3</td>
 <td>COUNT 1 구간</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot">CLK = 반복 클록</span></div></div></td>
+<td>④QA</td>
+<td>①QD · ②QC · ③QB</td>
+<td>없음</td>
 <td>OA (U3 pin 2): 1<br>OB (U3 pin 4): 0</td>
 <td class="actual"></td>
 </tr>
@@ -461,6 +491,9 @@
 <td>4</td>
 <td>COUNT 2 구간</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot">CLK = 반복 클록</span></div></div></td>
+<td>③QB</td>
+<td>①QD · ②QC · ④QA</td>
+<td>없음</td>
 <td>OA (U3 pin 2): 0<br>OB (U3 pin 4): 1</td>
 <td class="actual"></td>
 </tr>
@@ -468,6 +501,9 @@
 <td>5</td>
 <td>COUNT 3 구간</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot">CLK = 반복 클록</span></div></div></td>
+<td>③QB · ④QA</td>
+<td>①QD · ②QC</td>
+<td>없음</td>
 <td>OA (U3 pin 2): 1<br>OB (U3 pin 4): 1</td>
 <td class="actual"></td>
 </tr>
@@ -475,17 +511,23 @@
 <div class="stage" data-fit="10"><h3>단계 3</h3><p class="operation">전원과 발생기 출력을 끄고 풀업 R3·R4(1.5k)를 U3 pin 6·8 행과 +5V 레일 사이에 꽂아요 · 신호선: U2 pin 6 -&gt; U3 pin 5 · U2 pin 8 -&gt; U3 pin 9</p><figure class="board"><img src="../결선도/실험10_1_결선도_DAC_3단계_7405CD.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">좌 a30 → 좌 VCC레일30행</span><span class="desc">R3 1.5kΩ(좌 a30→좌 VCC레일30행) · U3 pin 6 풀업 -&gt; +5V</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">2</span><span class="route">좌 j31 → 중앙VCC레일31행</span><span class="desc">R4 1.5kΩ(좌 j31→중앙VCC레일31행) · U3 pin 8 풀업 -&gt; +5V</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#e67800">3</span><span class="route">좌 c20 → 좌 c29</span><span class="desc">QC': U2 pin 6 -&gt; U3 pin 5</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#009696">4</span><span class="route">좌 g21 → 좌 g30</span><span class="desc">QD': U2 pin 8 -&gt; U3 pin 9</span></li></ol><h4>V3 · 7405 뒤 두 비트 확인</h4><section class="observation-procedure">
 <p class="observation-purpose">QC·QD가 U2와 U3을 거쳐 원래 값으로 돌아오는지 확인한다.</p>
 <p><b>준비·초기화:</b> 전원과 발생기 출력을 끈 상태로 3단계 배선을 마친 뒤 발생기를 0V로 두고 전원을 켠다. 발생기는 사각파·주기 1s다. 프로브를 U3 pin 6·8에 차례로 댄다. 카운트 구간은 LED로 가른다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일4행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>QD</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>QC</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>QB</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>QA</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일4행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>QD</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>QC</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>QB</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>QA</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:5%;"><col style="width:14%;"><col style="width:18%;"><col style="width:11%;"><col style="width:11%;"><col style="width:11%;"><col style="width:18%;"><col style="width:12%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>조작</th>
 <th>입력 설정<div class="mirror-head" style="--g:1"><span>가운데</span></div></th>
-<th>측정 핀·예상 논리값</th>
+<th>예상 켜지는 LED</th>
+<th>예상 꺼지는 LED</th>
+<th>유지·반전·미정</th>
+<th>측정 핀·예상값</th>
 <th>실제 결과</th>
 </tr></thead><tbody>
 <tr>
 <td>1</td>
 <td>발생기 0V로 전원을 켠다</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot">CLK = 0</span></div></div></td>
+<td>없음</td>
+<td>없음</td>
+<td>①QD: 미정<br>②QC: 미정<br>③QB: 미정<br>④QA: 미정</td>
 <td>OC (U3 pin 6): 미정<br>OD (U3 pin 8): 미정</td>
 <td class="actual"></td>
 </tr>
@@ -493,6 +535,9 @@
 <td>2</td>
 <td>반복 클록. COUNT 0 구간</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot"><span class="input-change">CLK = 반복 클록</span></span></div></div></td>
+<td>없음</td>
+<td>①QD · ②QC · ③QB · ④QA</td>
+<td>없음</td>
 <td>OC (U3 pin 6): 0<br>OD (U3 pin 8): 0</td>
 <td class="actual"></td>
 </tr>
@@ -500,6 +545,9 @@
 <td>3</td>
 <td>COUNT 4 구간</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot">CLK = 반복 클록</span></div></div></td>
+<td>②QC</td>
+<td>①QD · ③QB · ④QA</td>
+<td>없음</td>
 <td>OC (U3 pin 6): 1<br>OD (U3 pin 8): 0</td>
 <td class="actual"></td>
 </tr>
@@ -507,6 +555,9 @@
 <td>4</td>
 <td>COUNT 8 구간</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot">CLK = 반복 클록</span></div></div></td>
+<td>①QD</td>
+<td>②QC · ③QB · ④QA</td>
+<td>없음</td>
 <td>OC (U3 pin 6): 0<br>OD (U3 pin 8): 1</td>
 <td class="actual"></td>
 </tr>
@@ -514,6 +565,9 @@
 <td>5</td>
 <td>COUNT 9 뒤 COUNT 0으로 복귀</td>
 <td><div class="mirror" style="--g:1"><div class="col"><span class="slot">CLK = 반복 클록</span></div></div></td>
+<td>없음</td>
+<td>①QD · ②QC · ③QB · ④QA</td>
+<td>없음</td>
 <td>OC (U3 pin 6): 0<br>OD (U3 pin 8): 0</td>
 <td class="actual"></td>
 </tr>
@@ -530,7 +584,7 @@
 <figure class="board"><img src="../결선도/실험10_1_결선도_DAC.png" style="width:100%"></figure>
 </div></div>
 <div class="fit" data-fit="19">
-<div class="unused"><b>미사용 핀</b><div class="chipunused"><b>U2 = 74HC04</b><ul><li><span class="box"></span>미사용 입력핀 11, 13 · 연결하지 않음 · 미사용 게이트 — 접지 생략</li></ul></div><div class="chipunused"><b>U3 = 74HC05</b><ul><li><span class="box"></span>미사용 입력핀 11, 13 · 연결하지 않음 · 미사용 게이트 — 접지 생략</li></ul></div><div class="chipunused"><b>U4 = LM741</b><ul><li><span class="box"></span>미사용 1, 5, 8 · 연결하지 않음 · OFFSET NULL · NC</li></ul></div></div>
+<div class="unused"><b>미사용 핀</b><div class="chipunused"><b>U1 = 7490</b><ul><li><span class="box"></span>미사용 4, 13 · 연결하지 않음 · No Connect</li></ul></div><div class="chipunused"><b>U2 = 74HC04</b><ul><li><span class="box"></span>미사용 입력핀 11, 13 · 연결하지 않음 · 미사용 게이트 — 접지 생략</li></ul></div><div class="chipunused"><b>U3 = 74HC05</b><ul><li><span class="box"></span>미사용 입력핀 11, 13 · 연결하지 않음 · 미사용 게이트 — 접지 생략</li></ul></div><div class="chipunused"><b>U4 = LM741</b><ul><li><span class="box"></span>미사용 1, 5, 8 · 연결하지 않음 · OFFSET NULL · NC</li></ul></div></div>
 <div class="tblock">
 <h3>T2 · DAC 출력 전압 최소·최대·피크-피크 기록</h3>
 <p class="table-purpose">V+를 GND에 물렸을 때와 전압 분배기에 물렸을 때 DAC OUTPUT의 최소·최대·피크-피크 전압을 잰다.</p>
@@ -646,11 +700,11 @@
 [data-fit="6"] { page: fit-6; }
 @page fit-7 { size: 210mm 57mm; margin: 12mm 10mm; }
 [data-fit="7"] { page: fit-7; }
-@page fit-8 { size: 210mm 595mm; margin: 12mm 10mm; }
+@page fit-8 { size: 210mm 666mm; margin: 12mm 10mm; }
 [data-fit="8"] { page: fit-8; }
-@page fit-9 { size: 210mm 564mm; margin: 12mm 10mm; }
+@page fit-9 { size: 210mm 624mm; margin: 12mm 10mm; }
 [data-fit="9"] { page: fit-9; }
-@page fit-10 { size: 210mm 524mm; margin: 12mm 10mm; }
+@page fit-10 { size: 210mm 602mm; margin: 12mm 10mm; }
 [data-fit="10"] { page: fit-10; }
 @page fit-11 { size: 210mm 367mm; margin: 12mm 10mm; }
 [data-fit="11"] { page: fit-11; }
@@ -668,7 +722,7 @@
 [data-fit="17"] { page: fit-17; }
 @page fit-18 { size: 210mm 279mm; margin: 12mm 10mm; }
 [data-fit="18"] { page: fit-18; }
-@page fit-19 { size: 210mm 621mm; margin: 12mm 10mm; }
+@page fit-19 { size: 210mm 637mm; margin: 12mm 10mm; }
 [data-fit="19"] { page: fit-19; }
 @page fit-20 { size: 210mm 64mm; margin: 12mm 10mm; }
 [data-fit="20"] { page: fit-20; }

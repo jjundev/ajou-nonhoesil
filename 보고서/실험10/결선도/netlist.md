@@ -188,6 +188,24 @@ U4 pin 6 사이에 있다. 분배기 R10·R9·R11은 +15V와 GND 사이에 있�
 아니다.** 단계 1~3의 확인은 저항망을 잇기 전의 조립 상태에서만 맞는다. 4단계에서 R5~R8이 들어오면 U3 출력은
 가산 노드 전위의 영향을 받는다(M7).
 
+## U1 = 7490
+
+| 핀 | 연결 | 기능 |
+|---|---|---|
+| 5 | VCC(+5V) | 전원 (C1 그대로) |
+| 10 | GND | 접지 (C1 그대로) |
+| 14 | IN:CLK | CLKA (C1 그대로) |
+| 1 | U1.pin12 | CLKB (C1 그대로) |
+| 2 | GND | R01 (C1 그대로) |
+| 3 | GND | R02 (C1 그대로) |
+| 6 | GND | R91 (C1 그대로) |
+| 7 | GND | R92 (C1 그대로) |
+| 12 | U1.pin1, LED QA 급전, U2.pin1 | QA (LSB) |
+| 9 | LED QB 급전, U2.pin3 | QB |
+| 8 | LED QC 급전, U2.pin5 | QC |
+| 11 | LED QD 급전, U2.pin9 | QD (MSB) |
+| 미사용 4, 13 | 연결하지 않음 | No Connect |
+
 ## U2 = 74HC04
 
 | 핀 | 연결 | 기능 |
@@ -254,6 +272,10 @@ R11 = 우 j45–우 바깥 GND 레일.
 | QB_N | observed | - | U2 pin 4 |
 | QC_N | observed | - | U2 pin 6 |
 | QD_N | observed | - | U2 pin 8 |
+| QA | observed | - | U1 pin 12 |
+| QB | observed | - | U1 pin 9 |
+| QC | observed | - | U1 pin 8 |
+| QD | observed | - | U1 pin 11 |
 | OA | observed | - | U3 pin 2 |
 | OB | observed | - | U3 pin 4 |
 | OC | observed | - | U3 pin 6 |
@@ -291,15 +313,15 @@ R11 = 우 j45–우 바깥 GND 레일.
 - encoding: 0/1
 - inputs: [CLK]
 - clocks: [CLK]
-- observe: [QA_N, QB_N, QC_N]
+- observe: [QA_N, QB_N, QC_N, QD, QC, QB, QA]
 
-| 순서 | 조작 | CLK | QA_N | QB_N | QC_N |
-|---|---|---|---|---|---|
-| 1 | 발생기 0V로 전원을 켠다 | 0 | 미정 | 미정 | 미정 |
-| 2 | 반복 클록. LED 넷이 모두 꺼진 COUNT 0 구간 | RUN | 1 | 1 | 1 |
-| 3 | COUNT 1 구간(LED QA만 켜짐) | RUN | 0 | 1 | 1 |
-| 4 | COUNT 2 구간(LED QB만 켜짐) | RUN | 1 | 0 | 1 |
-| 5 | COUNT 4 구간(LED QC만 켜짐) | RUN | 1 | 1 | 0 |
+| 순서 | 조작 | CLK | QA_N | QB_N | QC_N | QD | QC | QB | QA |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | 발생기 0V로 전원을 켠다 | 0 | 미정 | 미정 | 미정 | 미정 | 미정 | 미정 | 미정 |
+| 2 | 반복 클록. LED 넷이 모두 꺼진 COUNT 0 구간 | RUN | 1 | 1 | 1 | 0 | 0 | 0 | 0 |
+| 3 | COUNT 1 구간(LED QA만 켜짐) | RUN | 0 | 1 | 1 | 0 | 0 | 0 | 1 |
+| 4 | COUNT 2 구간(LED QB만 켜짐) | RUN | 1 | 0 | 1 | 0 | 0 | 1 | 0 |
+| 5 | COUNT 4 구간(LED QC만 켜짐) | RUN | 1 | 1 | 0 | 0 | 1 | 0 | 0 |
 
 ## 확인 절차 V2 · 7405 앞 두 비트 확인
 
@@ -312,15 +334,15 @@ R11 = 우 j45–우 바깥 GND 레일.
 - encoding: 0/1
 - inputs: [CLK]
 - clocks: [CLK]
-- observe: [OA, OB]
+- observe: [OA, OB, QD, QC, QB, QA]
 
-| 순서 | 조작 | CLK | OA | OB |
-|---|---|---|---|---|
-| 1 | 발생기 0V로 전원을 켠다 | 0 | 미정 | 미정 |
-| 2 | 반복 클록. COUNT 0 구간 | RUN | 0 | 0 |
-| 3 | COUNT 1 구간 | RUN | 1 | 0 |
-| 4 | COUNT 2 구간 | RUN | 0 | 1 |
-| 5 | COUNT 3 구간 | RUN | 1 | 1 |
+| 순서 | 조작 | CLK | OA | OB | QD | QC | QB | QA |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 발생기 0V로 전원을 켠다 | 0 | 미정 | 미정 | 미정 | 미정 | 미정 | 미정 |
+| 2 | 반복 클록. COUNT 0 구간 | RUN | 0 | 0 | 0 | 0 | 0 | 0 |
+| 3 | COUNT 1 구간 | RUN | 1 | 0 | 0 | 0 | 0 | 1 |
+| 4 | COUNT 2 구간 | RUN | 0 | 1 | 0 | 0 | 1 | 0 |
+| 5 | COUNT 3 구간 | RUN | 1 | 1 | 0 | 0 | 1 | 1 |
 
 ## 확인 절차 V3 · 7405 뒤 두 비트 확인
 
@@ -333,15 +355,15 @@ R11 = 우 j45–우 바깥 GND 레일.
 - encoding: 0/1
 - inputs: [CLK]
 - clocks: [CLK]
-- observe: [OC, OD]
+- observe: [OC, OD, QD, QC, QB, QA]
 
-| 순서 | 조작 | CLK | OC | OD |
-|---|---|---|---|---|
-| 1 | 발생기 0V로 전원을 켠다 | 0 | 미정 | 미정 |
-| 2 | 반복 클록. COUNT 0 구간 | RUN | 0 | 0 |
-| 3 | COUNT 4 구간 | RUN | 1 | 0 |
-| 4 | COUNT 8 구간 | RUN | 0 | 1 |
-| 5 | COUNT 9 뒤 COUNT 0으로 복귀 | RUN | 0 | 0 |
+| 순서 | 조작 | CLK | OC | OD | QD | QC | QB | QA |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 발생기 0V로 전원을 켠다 | 0 | 미정 | 미정 | 미정 | 미정 | 미정 | 미정 |
+| 2 | 반복 클록. COUNT 0 구간 | RUN | 0 | 0 | 0 | 0 | 0 | 0 |
+| 3 | COUNT 4 구간 | RUN | 1 | 0 | 0 | 1 | 0 | 0 |
+| 4 | COUNT 8 구간 | RUN | 0 | 1 | 1 | 0 | 0 | 0 |
+| 5 | COUNT 9 뒤 COUNT 0으로 복귀 | RUN | 0 | 0 | 0 | 0 | 0 | 0 |
 
 # C3 · 실험 1) DAC — 4~6. 핀 개방·Rf 변경·병렬 저항 (74HC04 + 74HC05 + LM741)
 

@@ -259,7 +259,9 @@ def _comparison_table_html(header, rows, *, input_settings=None, input_column=1,
     # 6·7열은 입력 칸이 위치 미러로 두세 열을 품는다 — 조작·LED 칸에서 폭을 가져온다.
     out = ['<table class="comparison-table"><colgroup>' + ''.join(
                f'<col style="width:{w}%;">' for w in ({4:[7,43,32,18],5:[7,35,22,22,14],
-                   6:[7,19,24,18,18,14], 7:[6,17,27,13,13,13,11]}
+                   6:[7,19,24,18,18,14], 7:[6,17,27,13,13,13,11],
+                   # 8열 = LED 판독 + 유지·반전·미정 + 프로브 측정 핀(실험10 V1~V3)
+                   8:[5,14,18,11,11,11,18,12]}
                    .get(len(header),[100/len(header)]*len(header))))
                + '</colgroup><thead><tr>',
            *[f'<th>{_esc(h)}{input_head if i == input_column and input_settings is not None else ""}</th>'
