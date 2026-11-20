@@ -1,0 +1,61 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) DAC — 4~6. 핀 개방·Rf 변경·병렬 저항 1단계 · 선 개방(T5~T7)",
+ "subtitle": "빨간 선 ①→T5, ②→T6, ③→T7. U3 쪽 끝 하나만 뽑아 보고 다시 꽂아요",
+ "kept": 60,
+ "steps": [],
+ "removals": [
+  {
+   "n": 1,
+   "text": "좌 a16 → 좌 a25 · QA': U2 pin 2 -> U3 pin 1"
+  },
+  {
+   "n": 2,
+   "text": "좌 b18 → 좌 b27 · QB': U2 pin 4 -> U3 pin 3"
+  },
+  {
+   "n": 3,
+   "text": "좌 c20 → 좌 c29 · QC': U2 pin 6 -> U3 pin 5"
+  }
+ ],
+ "probes": [
+  {
+   "n": 1,
+   "label": "DAC OUTPUT",
+   "at": "좌 h38",
+   "desc": "오실로스코프 CH — U4 pin 6 (DC 결합)"
+  }
+ ],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "QD",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "QC",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "QB",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "QA",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "CLK",
+   "at": "좌 j4",
+   "rail": "중앙GND레일4행",
+   "x": 588,
+   "row": 4
+  }
+ ]
+}

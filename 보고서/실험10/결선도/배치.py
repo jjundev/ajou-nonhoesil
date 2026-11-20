@@ -311,6 +311,25 @@ def build_e10_change(output_path, template_path=None, stage=None, baseline=None,
     return bb
 
 
+_OPEN_WIRES = ("QA': U2 pin 2 -> U3 pin 1", "QB': U2 pin 4 -> U3 pin 3", "QC': U2 pin 6 -> U3 pin 5")
+
+
+def _open_board(output_path, template_path=None, stage=None, baseline=None):
+    """C3 1단계 — 절차 4(T5~T7)에서 하나씩 뽑았다 다시 꽂는 U2→U3 선 셋을 걷기 표시(빨간 점선·번호)로 짚는다.
+
+    보드에는 아무것도 새로 꽂지 않는다. 걷기 보드 꼴을 빌려 세 선만 표시하고 나머지는 회색 C2 완성본이다.
+    `build_` 접두어를 두지 않는다 — `removal_board` 와 같은 이유(steps 가 비어 가독성 검사에 걸린다).
+    """
+    import os, tempfile
+    with tempfile.TemporaryDirectory() as d:
+        base = build_e10_change(os.path.join(d, 'base.png'), template_path, stage=2).snapshot()
+    keys = {k: _OPEN_WIRES.index(desc) + 1 for k, desc in base['wires'].items() if desc in _OPEN_WIRES}
+    assert len(keys) == 3, keys
+    ghost = dict(base, ghost={'wires': keys, 'title': f'{_E3} 1단계 · 선 개방(T5~T7)',
+                              'subtitle': '빨간 선 ①→T5, ②→T6, ③→T7. U3 쪽 끝 하나만 뽑아 보고 다시 꽂아요'})
+    return build_e10_change(output_path, template_path, stage=2, baseline=ghost)
+
+
 _N1 = '실험10_1_결선도_7490카운터'
 _N2 = '실험10_1_결선도_DAC'
 BOARDS = [
@@ -321,7 +340,8 @@ BOARDS = [
     (f'{_N2}_6걷기_VP.png', removal_board((build_e10_dac, 5), (build_e10_dac, 6),
         '실험 1) DAC — 2~3. V+ 점퍼 걷기', '전원과 발생기 출력을 꺼요. 빨간 선(VP → GND)만 뽑아요.'), None),
     (f'{_N2}_6단계_분배기.png', build_e10_dac, 6),
-    (f'{_N2}_변경.png', build_e10_change, 1),
+    (f'{_N2}_1단계_선개방.png', _open_board, None),
+    (f'{_N2}_변경.png', build_e10_change, 2),
 ]
 ASSEMBLY_BOARDS = {
     f'{_N1}_1단계_QA.png': [(f'{_N1}_1준비_{i}.png', partial(_prep_counter, order=i)) for i in (1, 2)],
