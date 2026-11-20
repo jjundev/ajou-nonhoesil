@@ -44,6 +44,7 @@ class SpecTable:
     purpose: Optional[str] = None  # 기록표의 확인 목적 한 문장
     comparison: Optional[str] = None  # stepped opt-in: led
     figure: Optional[str] = None     # `- figure: ../output/x.png`. 명세 파일 위치 기준 상대경로
+    group: Optional[str] = None      # capture 전용. 같은 group 이 이어지면 인쇄본에서 한 블록으로 묶는다
 
 
 @dataclass
@@ -122,6 +123,7 @@ def _parse_table(table_id, title, block, path) -> SpecTable:
         figure=attrs.get("figure") or None,
         purpose=attrs.get("purpose") or None,
         comparison=attrs.get("comparison") or None,
+        group=attrs.get("group") or None,
     )
     # 교안이 입력과 출력에 같은 글자를 쓰는 실물이 있다(실험3 반감산기
     # `A B D B`). 진리표에서 입력 하나·출력 하나로 갈리면 자리로 가를 수
