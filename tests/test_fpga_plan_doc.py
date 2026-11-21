@@ -42,3 +42,36 @@ def test_notion_markdown_has_no_errors():
 def test_body_style_clean():
     # 백틱·em dash·조사 띄어쓰기·조교 호칭 (.claude/보고서서식.md §AI 티·§붙여쓰기·§호칭)
     assert validate.check_body_style(DOC.read_text(encoding="utf-8")) == []
+
+
+REQ = "과제 요구사항 분석 및 구현 방안"
+
+
+def test_eval_items_each_once():
+    rows = [r for t in tables(section(REQ)) for r in t.rows]
+    for n in range(1, 11):
+        assert sum(r[0].strip() == f"E{n}" for r in rows) == 1, f"E{n}"
+
+
+def test_key_map_covers_all_pb():
+    text = section(REQ)
+    for n in range(16):
+        assert f"pb{n})" in text, f"pb{n}"
+
+
+def test_display_words_present():
+    # 서식 규칙상 백틱 대신 큰따옴표로 감싼다 (원 계획은 백틱)
+    text = section(REQ)
+    for w in ["------", "OPEn", "Error", "LOCK", "nonE", "donE", "InIt", "nEW", "AGAIn"]:
+        assert f'"{w}' in text, w
+
+
+def test_extra_features_exactly_three():
+    rows = [r for t in tables(section(REQ)) for r in t.rows if r[0].strip().startswith("A")]
+    assert [r[0].strip() for r in rows] == ["A1", "A2", "A3"]
+
+
+def test_numbers_match_spec():
+    text = section(REQ)
+    for s in ["1~6자리", "4~6자리", '"1234"', "10→20→40초", "1.5초", "10ms", "1kHz"]:
+        assert s in text, s
