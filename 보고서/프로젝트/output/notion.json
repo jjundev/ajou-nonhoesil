@@ -1,0 +1,13 @@
+{
+  "schema": "notion-uploads/v1",
+  "uploads": [
+    {
+      "kind": "예비보고서",
+      "version": 1,
+      "page_id": "41fb06d2-63bc-818b-86c1-fcd0e2b359b1",
+      "url": "https://app.notion.com/p/FPGA-Digital-Door-Lock-v1-sync-42a3a7cdbd5443ad97e7f040458a4fd0-41fb06d263bc818b86c1fcd0e2b359b1",
+      "source": "FPGA_설계_계획서.md",
+      "uploaded_at": "2026-11-21T21:47:43.916513+09:00"
+    }
+  ]
+}
