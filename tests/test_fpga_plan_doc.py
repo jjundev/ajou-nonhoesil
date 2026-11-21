@@ -3,10 +3,12 @@
 계획서에 쓴 내용은 12/11 구두 평가와 12/23 보고서에서 그대로 채점되므로,
 평가 항목 대응·수치·표시 문구가 빠지거나 갈리지 않았는지와 노션 호환을 본다.
 """
+import hashlib
 import re
 from pathlib import Path
 
 from scripts.lab import md, validate
+from scripts.lab.svg_png import png_text, svg_size
 
 ROOT = Path(__file__).resolve().parents[1]
 DOC = ROOT / "보고서/프로젝트/output/FPGA_설계_계획서.md"
@@ -141,3 +143,55 @@ def test_no_placeholders():
 
 def test_ta_always_honorific():
     assert not re.search(r"조교(?!님)", DOC.read_text(encoding="utf-8"))
+
+
+# ---- 최종 리뷰 반영 -------------------------------------------------------
+MODULES = ["tick_gen", "key_input", "key_decode", "door_fsm", "display_ctrl", "seg_driver", "por"]
+
+
+def _eval_row(n):
+    rows = [r for t in tables(section(REQ)) for r in t.rows if r[0].strip() == f"E{n}"]
+    return " ".join(rows[0])
+
+
+def test_roles_cover_every_module():
+    # 블록 다이어그램의 모든 상자와 최상위 모듈·핀 배치에 담당자가 있어야 한다
+    text = section("조원 역할 분담")
+    for s in MODULES + ["최상위", "핀"]:
+        assert s in text, s
+
+
+def test_e4_covers_both_readings():
+    # 조교님께 묻는 두 해석(변경 후 옛 값 / 변경 도중 옛 값) 모두 동작이 적혀 있어야 한다
+    assert "도중" in _eval_row(4)
+
+
+def test_e3_second_lock_is_conditional():
+    # A2: 한 번 맞히면 10초로 돌아가므로 "두 번째는 20초"에는 조건이 붙어야 한다
+    assert "맞히지 않" in _eval_row(3)
+
+
+def test_e10_does_not_say_locked_for_idle():
+    # "잠긴"은 LOCK 상태를 뜻하므로 닫힌 입력 대기를 그렇게 부르지 않는다
+    assert "잠긴" not in _eval_row(10)
+
+
+def test_h2_headings_unique():
+    h2 = [l for l in DOC.read_text(encoding="utf-8").splitlines() if l.startswith("## ")]
+    assert len(h2) == len(set(h2)), h2
+
+
+def test_figure_text_legible():
+    # 노션 PDF 는 그림을 본문 폭(약 165mm)에 맞춘다. 글자/폭 ≥ 0.014 → 약 6.5pt 이상
+    for name in ["블록다이어그램", "상태도", "키배치"]:
+        svg = (FIG / f"{name}.svg").read_text(encoding="utf-8")
+        width, _ = svg_size(svg)
+        smallest = min(float(s) for s in re.findall(r'font-size="([\d.]+)"', svg))
+        assert smallest / width >= 0.014, (name, smallest, width)
+
+
+def test_png_matches_svg():
+    # 문서에 들어가는 것은 PNG 다. SVG 를 고치고 다시 변환하지 않으면 잡는다
+    for name in ["블록다이어그램", "상태도", "키배치"]:
+        digest = hashlib.sha256((FIG / f"{name}.svg").read_bytes()).hexdigest()
+        assert png_text(FIG / f"{name}.png").get("svg-sha256") == digest, name
