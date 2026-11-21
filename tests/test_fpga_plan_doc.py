@@ -75,3 +75,17 @@ def test_numbers_match_spec():
     text = section(REQ)
     for s in ["1~6자리", "4~6자리", '"1234"', "10→20→40초", "1.5초", "10ms", "1kHz"]:
         assert s in text, s
+
+
+PROB = "예상 문제점 및 해결 방안"
+
+
+def test_problem_table_has_eight_rows():
+    t = tables(section(PROB))[0]
+    assert t.header[:2] == ["문제", "해결 방안"]
+    assert len(t.rows) >= 8
+
+
+def test_verification_plan_named():
+    text = section(PROB)
+    assert "Questa" in text and "테스트벤치" in text and "E1~E10" in text
