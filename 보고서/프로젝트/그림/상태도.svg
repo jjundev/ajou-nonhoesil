@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 710" width="1200" height="710" font-family="Malgun Gothic, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker></defs>
+<rect width="1200" height="710" fill="#fff"/>
+<ellipse cx="170" cy="330" rx="85" ry="36" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="170" y="327" font-size="17" text-anchor="middle" font-weight="bold">IDLE</text>
+<text x="170" y="348" font-size="12" text-anchor="middle" font-weight="normal">------</text>
+<ellipse cx="450" cy="330" rx="80" ry="36" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="450" y="327" font-size="17" text-anchor="middle" font-weight="bold">CHECK</text>
+<text x="450" y="348" font-size="12" text-anchor="middle" font-weight="normal">비교 (1클록)</text>
+<ellipse cx="750" cy="170" rx="80" ry="36" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="750" y="167" font-size="17" text-anchor="middle" font-weight="bold">OPEN</text>
+<text x="750" y="188" font-size="12" text-anchor="middle" font-weight="normal">OPEn</text>
+<ellipse cx="1050" cy="170" rx="85" ry="36" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="1050" y="167" font-size="17" text-anchor="middle" font-weight="bold">NEW_PW</text>
+<text x="1050" y="188" font-size="12" text-anchor="middle" font-weight="normal">nEW</text>
+<ellipse cx="1050" cy="400" rx="110" ry="36" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="1050" y="397" font-size="17" text-anchor="middle" font-weight="bold">NEW_CONFIRM</text>
+<text x="1050" y="418" font-size="12" text-anchor="middle" font-weight="normal">AGAIn</text>
+<ellipse cx="750" cy="500" rx="120" ry="36" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="750" y="497" font-size="17" text-anchor="middle" font-weight="bold">MSG</text>
+<text x="750" y="518" font-size="12" text-anchor="middle" font-weight="normal">Error, nonE, donE, InIt</text>
+<ellipse cx="450" cy="580" rx="90" ry="36" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="450" y="577" font-size="17" text-anchor="middle" font-weight="bold">LOCK</text>
+<text x="450" y="598" font-size="12" text-anchor="middle" font-weight="normal">LOCK + 남은 초</text>
+<line x1="255" y1="330" x2="368" y2="330" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="312" y="320" font-size="13" text-anchor="middle" font-weight="normal">OK</text>
+<line x1="500" y1="302" x2="682" y2="192" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="575" y="238" font-size="13" text-anchor="end" font-weight="normal">일치</text>
+<path d="M 680,152 Q 330,20 185,295" fill="none" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="400" y="98" font-size="13" text-anchor="middle" font-weight="normal">OK (다시 잠금)</text>
+<line x1="450" y1="366" x2="450" y2="542" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="458" y="460" font-size="13" text-anchor="start" font-weight="normal">3회째 오답</text>
+<line x1="378" y1="558" x2="210" y2="362" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="285" y="470" font-size="13" text-anchor="end" font-weight="normal">시간 만료</text>
+<line x1="510" y1="354" x2="660" y2="472" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="600" y="400" font-size="13" text-anchor="start" font-weight="normal">오답 1, 2회째</text>
+<text x="600" y="418" font-size="13" text-anchor="start" font-weight="normal">빈 입력</text>
+<path d="M 750,536 L 750,680 L 110,680 L 110,356" fill="none" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="430" y="672" font-size="13" text-anchor="middle" font-weight="normal">1.5초 (그 밖의 메시지)</text>
+<line x1="730" y1="206" x2="730" y2="463" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="722" y="330" font-size="13" text-anchor="end" font-weight="normal">RST</text>
+<line x1="772" y1="464" x2="772" y2="207" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="780" y="330" font-size="13" text-anchor="start" font-weight="normal">1.5초 (변경 실패)</text>
+<line x1="830" y1="170" x2="963" y2="170" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="896" y="160" font-size="13" text-anchor="middle" font-weight="normal">CHG</text>
+<line x1="1050" y1="206" x2="1050" y2="362" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="1058" y="290" font-size="13" text-anchor="start" font-weight="normal">OK, 4~6자리</text>
+<line x1="1000" y1="199" x2="815" y2="467" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="895" y="300" font-size="13" text-anchor="end" font-weight="normal">OK, 0~3자리</text>
+<line x1="975" y1="427" x2="858" y2="482" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="950" y="478" font-size="13" text-anchor="start" font-weight="normal">OK (같음 또는 다름)</text>
+<text x="20" y="30" font-size="12" text-anchor="start" font-weight="normal">MSG는 1.5초 동안 키를 무시하고, 변경 실패의 Error만 OPEN으로, 나머지는 IDLE로 간다.</text>
+</svg>

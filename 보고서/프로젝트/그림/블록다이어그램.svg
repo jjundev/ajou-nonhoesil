@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 545" width="1500" height="545" font-family="Malgun Gothic, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker></defs>
+<rect width="1500" height="545" fill="#fff"/>
+<rect x="170" y="240" width="150" height="90" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="245.0" y="270" font-size="17" text-anchor="middle" font-weight="bold">key_input</text>
+<text x="245.0" y="294" font-size="12" text-anchor="middle" font-weight="normal">반전, 2FF 동기화</text>
+<text x="245.0" y="312" font-size="12" text-anchor="middle" font-weight="normal">10ms 디바운스, 엣지</text>
+<rect x="430" y="240" width="150" height="90" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="505.0" y="270" font-size="17" text-anchor="middle" font-weight="bold">key_decode</text>
+<text x="505.0" y="294" font-size="12" text-anchor="middle" font-weight="normal">pb 번호를</text>
+<text x="505.0" y="312" font-size="12" text-anchor="middle" font-weight="normal">숫자·기능 키로</text>
+<rect x="690" y="240" width="150" height="90" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="765.0" y="270" font-size="17" text-anchor="middle" font-weight="bold">door_fsm</text>
+<text x="765.0" y="294" font-size="12" text-anchor="middle" font-weight="normal">상태, 입력 버퍼</text>
+<text x="765.0" y="312" font-size="12" text-anchor="middle" font-weight="normal">비밀번호, 실패, 잠금</text>
+<rect x="950" y="240" width="150" height="90" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="1025.0" y="270" font-size="17" text-anchor="middle" font-weight="bold">display_ctrl</text>
+<text x="1025.0" y="294" font-size="12" text-anchor="middle" font-weight="normal">상태를</text>
+<text x="1025.0" y="312" font-size="12" text-anchor="middle" font-weight="normal">여섯 글자로</text>
+<rect x="1210" y="240" width="150" height="90" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="1285.0" y="270" font-size="17" text-anchor="middle" font-weight="bold">seg_driver</text>
+<text x="1285.0" y="294" font-size="12" text-anchor="middle" font-weight="normal">글자를 세그먼트로</text>
+<text x="1285.0" y="312" font-size="12" text-anchor="middle" font-weight="normal">6자리 스캔, 블랭킹</text>
+<rect x="170" y="50" width="150" height="70" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="245.0" y="80" font-size="17" text-anchor="middle" font-weight="bold">tick_gen</text>
+<text x="245.0" y="104" font-size="12" text-anchor="middle" font-weight="normal">1kHz, 10ms, 100ms 틱</text>
+<rect x="170" y="430" width="150" height="70" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="245.0" y="460" font-size="17" text-anchor="middle" font-weight="bold">por</text>
+<text x="245.0" y="484" font-size="12" text-anchor="middle" font-weight="normal">전원 인가 리셋</text>
+<text x="20" y="78" font-size="14" text-anchor="start" font-weight="normal">clock_50m</text>
+<line x1="20" y1="85" x2="168" y2="85" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="20" y="277.0" font-size="14" text-anchor="start" font-weight="normal">pb[15:0]</text>
+<line x1="20" y1="285.0" x2="168" y2="285.0" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<line x1="320" y1="285.0" x2="428" y2="285.0" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="375.0" y="259.0" font-size="12" text-anchor="middle" font-weight="normal">key_valid</text>
+<text x="375.0" y="276.0" font-size="12" text-anchor="middle" font-weight="normal">key_code[3:0]</text>
+<line x1="580" y1="285.0" x2="688" y2="285.0" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="635.0" y="259.0" font-size="12" text-anchor="middle" font-weight="normal">key_valid</text>
+<text x="635.0" y="276.0" font-size="12" text-anchor="middle" font-weight="normal">키 종류</text>
+<line x1="840" y1="285.0" x2="948" y2="285.0" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="895.0" y="259.0" font-size="12" text-anchor="middle" font-weight="normal">상태, 입력</text>
+<text x="895.0" y="276.0" font-size="12" text-anchor="middle" font-weight="normal">남은 초</text>
+<line x1="1100" y1="285.0" x2="1208" y2="285.0" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="1155.0" y="277.0" font-size="12" text-anchor="middle" font-weight="normal">글자 6개</text>
+<line x1="1360" y1="267.0" x2="1398" y2="267.0" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="1404" y="272.0" font-size="14" text-anchor="start" font-weight="normal">fnd_s[5:0]</text>
+<line x1="1360" y1="303.0" x2="1398" y2="303.0" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="1404" y="308.0" font-size="14" text-anchor="start" font-weight="normal">fnd_d[7:0]</text>
+<line x1="245" y1="120" x2="245" y2="238" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="252" y="185" font-size="12" text-anchor="start" font-weight="normal">10ms 틱</text>
+<line x1="320" y1="85" x2="1285.0" y2="85" stroke="#000" stroke-width="1.6"/>
+<line x1="765.0" y1="85" x2="765.0" y2="238" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="772.0" y="185" font-size="12" text-anchor="start" font-weight="normal">100ms 틱</text>
+<line x1="1285.0" y1="85" x2="1285.0" y2="238" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="1292.0" y="185" font-size="12" text-anchor="start" font-weight="normal">1kHz 틱</text>
+<line x1="245" y1="430" x2="245" y2="332" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<line x1="320" y1="465" x2="1285.0" y2="465" stroke="#000" stroke-width="1.6"/>
+<line x1="505.0" y1="465" x2="505.0" y2="332" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<line x1="765.0" y1="465" x2="765.0" y2="332" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<line x1="1025.0" y1="465" x2="1025.0" y2="332" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<line x1="1285.0" y1="465" x2="1285.0" y2="332" stroke="#000" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="800" y="492" font-size="12" text-anchor="middle" font-weight="normal">rst (tick_gen 포함 모든 모듈)</text>
+<text x="20" y="525" font-size="12" text-anchor="start" font-weight="normal">모든 모듈은 clock_50m 하나로 동작하고, 느린 동작은 틱이 1클록 동안 1일 때만 진행한다.</text>
+</svg>

@@ -89,3 +89,33 @@ def test_problem_table_has_eight_rows():
 def test_verification_plan_named():
     text = section(PROB)
     assert "Questa" in text and "테스트벤치" in text and "E1~E10" in text
+
+
+FIG = ROOT / "보고서/프로젝트/그림"
+BLOCK = "프로젝트 동작 블록 다이어그램"
+
+
+def test_images_resolve():
+    text = section(BLOCK)
+    srcs = re.findall(r"!\[[^\]]+\]\(([^)]+)\)", text)
+    assert [Path(s).name for s in srcs] == ["블록다이어그램.png", "상태도.png", "키배치.png"]
+    for s in srcs:
+        assert (DOC.parent / s).is_file(), s
+
+
+def test_block_figure_names_every_module():
+    svg = (FIG / "블록다이어그램.svg").read_text(encoding="utf-8")
+    for m in ["tick_gen", "key_input", "key_decode", "door_fsm", "display_ctrl", "seg_driver", "por"]:
+        assert m in svg, m
+
+
+def test_state_figure_mentions_confirm():
+    svg = (FIG / "상태도.svg").read_text(encoding="utf-8")
+    for s in ["IDLE", "CHECK", "OPEN", "NEW_PW", "NEW_CONFIRM", "MSG", "LOCK"]:
+        assert s in svg, s
+
+
+def test_key_figure_matches_table():
+    svg = (FIG / "키배치.svg").read_text(encoding="utf-8")
+    for label in ["CHG", "RST", "OK", "BS", "CLR"] + [str(d) for d in range(10)]:
+        assert f">{label}<" in svg, label

@@ -101,8 +101,25 @@ Backspace와 Clear는 둘 다 입력을 고치는 기능이라 하나로 묶었�
 <empty-block/>
 <empty-block/>
 # 프로젝트 동작 블록 다이어그램
+## 모듈 블록 다이어그램
 
-(작성 예정)
+![그림 1. 모듈 블록 다이어그램](../그림/블록다이어그램.png)
+
+키패드 입력 pb[15:0]은 key_input에서 반전, 동기화, 디바운스를 거쳐 한 번 누를 때마다 key_valid 한 클록과 키 번호가 되고, key_decode가 이를 숫자 0~9와 OK, CHG, RST, BS, CLR로 바꾼다. door_fsm은 이 키로 상태를 바꾸면서 입력 버퍼, 비밀번호, 실패 횟수, 잠금 시간을 관리하고, display_ctrl이 현재 상태를 여섯 글자로 만들어 seg_driver가 7 Segment에 한 자리씩 돌아가며 내보낸다. 모든 모듈은 clock_50m 하나로 동작하며, tick_gen이 만드는 틱으로 느린 동작의 속도를 맞추고 por 모듈이 전원을 넣은 직후 전체를 초기화한다.
+
+<empty-block/>
+## 상태도
+
+![그림 2. door_fsm 상태도](../그림/상태도.png)
+
+입력 대기(IDLE)에서 OK를 누르면 CHECK가 한 클록 동안 비교해 OPEN, MSG, LOCK 중 하나로 보낸다. 비밀번호 변경은 OPEN에서만 시작되고 NEW_PW와 NEW_CONFIRM 두 단계를 거쳐야 저장된다. MSG는 Error, nonE, donE, InIt를 1.5초 보여 준 뒤 변경 실패일 때만 OPEN으로, 나머지는 IDLE로 돌아간다. 각 상태의 표시와 전이 조건은 상태와 표시 표에 정리했다.
+
+<empty-block/>
+## 키 배치
+
+![그림 3. 키패드 키 배치](../그림/키배치.png)
+
+숫자 키는 실제 도어락과 같은 순서로 두어 평가 때 바로 누를 수 있게 했고, 기능 키는 회색으로 구분했다. 각 키의 pb 번호는 키 배치 표와 같다.
 
 <empty-block/>
 <empty-block/>

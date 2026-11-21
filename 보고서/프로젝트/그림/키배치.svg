@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 610" width="600" height="610" font-family="Malgun Gothic, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker></defs>
+<rect width="600" height="610" fill="#fff"/>
+<circle cx="120" cy="110" r="52" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="120" y="116" font-size="26" text-anchor="middle" font-weight="bold">1</text>
+<text x="120" y="144" font-size="11" text-anchor="middle" font-weight="normal">pb0</text>
+<circle cx="240" cy="110" r="52" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="240" y="116" font-size="26" text-anchor="middle" font-weight="bold">2</text>
+<text x="240" y="144" font-size="11" text-anchor="middle" font-weight="normal">pb1</text>
+<circle cx="360" cy="110" r="52" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="360" y="116" font-size="26" text-anchor="middle" font-weight="bold">3</text>
+<text x="360" y="144" font-size="11" text-anchor="middle" font-weight="normal">pb2</text>
+<circle cx="480" cy="110" r="52" fill="#e6e6e6" stroke="#000" stroke-width="2"/>
+<text x="480" y="108" font-size="20" text-anchor="middle" font-weight="bold">CHG</text>
+<text x="480" y="130" font-size="11" text-anchor="middle" font-weight="normal">변경</text>
+<text x="480" y="146" font-size="11" text-anchor="middle" font-weight="normal">pb3</text>
+<circle cx="120" cy="230" r="52" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="120" y="236" font-size="26" text-anchor="middle" font-weight="bold">4</text>
+<text x="120" y="264" font-size="11" text-anchor="middle" font-weight="normal">pb4</text>
+<circle cx="240" cy="230" r="52" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="240" y="236" font-size="26" text-anchor="middle" font-weight="bold">5</text>
+<text x="240" y="264" font-size="11" text-anchor="middle" font-weight="normal">pb5</text>
+<circle cx="360" cy="230" r="52" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="360" y="236" font-size="26" text-anchor="middle" font-weight="bold">6</text>
+<text x="360" y="264" font-size="11" text-anchor="middle" font-weight="normal">pb6</text>
+<circle cx="480" cy="230" r="52" fill="#e6e6e6" stroke="#000" stroke-width="2"/>
+<text x="480" y="228" font-size="20" text-anchor="middle" font-weight="bold">RST</text>
+<text x="480" y="250" font-size="11" text-anchor="middle" font-weight="normal">초기화</text>
+<text x="480" y="266" font-size="11" text-anchor="middle" font-weight="normal">pb7</text>
+<circle cx="120" cy="350" r="52" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="120" y="356" font-size="26" text-anchor="middle" font-weight="bold">7</text>
+<text x="120" y="384" font-size="11" text-anchor="middle" font-weight="normal">pb8</text>
+<circle cx="240" cy="350" r="52" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="240" y="356" font-size="26" text-anchor="middle" font-weight="bold">8</text>
+<text x="240" y="384" font-size="11" text-anchor="middle" font-weight="normal">pb9</text>
+<circle cx="360" cy="350" r="52" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="360" y="356" font-size="26" text-anchor="middle" font-weight="bold">9</text>
+<text x="360" y="384" font-size="11" text-anchor="middle" font-weight="normal">pb10</text>
+<circle cx="480" cy="350" r="52" fill="#e6e6e6" stroke="#000" stroke-width="2"/>
+<text x="480" y="370" font-size="11" text-anchor="middle" font-weight="normal">예비</text>
+<text x="480" y="386" font-size="11" text-anchor="middle" font-weight="normal">pb11</text>
+<circle cx="120" cy="470" r="52" fill="#e6e6e6" stroke="#000" stroke-width="2"/>
+<text x="120" y="468" font-size="20" text-anchor="middle" font-weight="bold">OK</text>
+<text x="120" y="490" font-size="11" text-anchor="middle" font-weight="normal">확인</text>
+<text x="120" y="506" font-size="11" text-anchor="middle" font-weight="normal">pb12</text>
+<circle cx="240" cy="470" r="52" fill="#fff" stroke="#000" stroke-width="2"/>
+<text x="240" y="476" font-size="26" text-anchor="middle" font-weight="bold">0</text>
+<text x="240" y="504" font-size="11" text-anchor="middle" font-weight="normal">pb13</text>
+<circle cx="360" cy="470" r="52" fill="#e6e6e6" stroke="#000" stroke-width="2"/>
+<text x="360" y="468" font-size="20" text-anchor="middle" font-weight="bold">BS</text>
+<text x="360" y="490" font-size="11" text-anchor="middle" font-weight="normal">지우기</text>
+<text x="360" y="506" font-size="11" text-anchor="middle" font-weight="normal">pb14</text>
+<circle cx="480" cy="470" r="52" fill="#e6e6e6" stroke="#000" stroke-width="2"/>
+<text x="480" y="468" font-size="20" text-anchor="middle" font-weight="bold">CLR</text>
+<text x="480" y="490" font-size="11" text-anchor="middle" font-weight="normal">전체 지우기</text>
+<text x="480" y="506" font-size="11" text-anchor="middle" font-weight="normal">pb15</text>
+<text x="300" y="590" font-size="13" text-anchor="middle" font-weight="normal">회색은 기능 키, pb11은 쓰지 않는다.</text>
+</svg>
