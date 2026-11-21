@@ -119,3 +119,25 @@ def test_key_figure_matches_table():
     svg = (FIG / "키배치.svg").read_text(encoding="utf-8")
     for label in ["CHG", "RST", "OK", "BS", "CLR"] + [str(d) for d in range(10)]:
         assert f">{label}<" in svg, label
+
+
+def test_goal_written():
+    assert "7 Segment" in section("설계 목표") and "Keypad" in section("설계 목표")
+
+
+def test_roles_cover_both_members_and_modules():
+    text = section("조원 역할 분담")
+    for s in ["최승민", "신현준", "door_fsm", "key_input", "seg_driver", "테스트벤치"]:
+        assert s in text, s
+
+
+def test_ta_questions_three():
+    assert len(re.findall(r"^- ", section("조교님께 확인할 사항"), re.M)) == 3
+
+
+def test_no_placeholders():
+    assert "(작성 예정)" not in DOC.read_text(encoding="utf-8")
+
+
+def test_ta_always_honorific():
+    assert not re.search(r"조교(?!님)", DOC.read_text(encoding="utf-8"))
