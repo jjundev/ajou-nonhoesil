@@ -30,7 +30,8 @@ def _publish_locked(stage,destination,root):
         from .workbook_figures import check_redrawn_figures
         errors=check_redrawn_figures(stage,data,require_review=True)
         if errors: raise ValueError('\n'.join(errors))
-    errors=check_bank_import(stage,data,root=root)
+    from scripts.lab.interactive import check_attachment
+    errors=check_bank_import(stage,data,root=root)+check_attachment(stage,data,root=root)
     if errors:raise ValueError('\n'.join(errors))
     expected=root/'복습노트'/config.experiment_folder_name(data['experiment'])
     if dest!=expected or stage==dest or stage.is_relative_to(dest) or dest.is_relative_to(stage):

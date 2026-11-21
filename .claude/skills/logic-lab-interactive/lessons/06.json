@@ -1,0 +1,93 @@
+{
+  "experiment": 6,
+  "topic_id": "t-74hc76",
+  "model_id": "74hc76",
+  "chip": "74HC76",
+  "title": "Q는 언제 바뀔까요?",
+  "link_label": "74HC76 핀과 파형 실험 열기",
+  "free_toggle_pin": "CLK",
+  "pins": [
+    {"number": 1, "label": "CLK", "role": "input"},
+    {"number": 2, "label": "PR", "role": "input", "active_low": true},
+    {"number": 3, "label": "CLR", "role": "input", "active_low": true},
+    {"number": 4, "label": "J", "role": "input"},
+    {"number": 5, "label": "VCC", "role": "power", "value": "+5 V"},
+    {"number": 6, "label": "CLK₂", "role": "unused"},
+    {"number": 7, "label": "PR₂", "role": "unused"},
+    {"number": 8, "label": "CLR₂", "role": "unused"},
+    {"number": 9, "label": "J₂", "role": "unused"},
+    {"number": 10, "label": "Q̅₂", "role": "unused"},
+    {"number": 11, "label": "Q₂", "role": "unused"},
+    {"number": 12, "label": "K₂", "role": "unused"},
+    {"number": 13, "label": "GND", "role": "power", "value": "0 V"},
+    {"number": 14, "label": "Q̅", "role": "output", "complement_of": "Q"},
+    {"number": 15, "label": "Q", "role": "output"},
+    {"number": 16, "label": "K", "role": "input"}
+  ],
+  "traces": ["CLK", "Q", "CLR", "PR", "J", "K", "Q̅"],
+  "default_probes": ["CLK", "Q"],
+  "truth_table": {
+    "title": "T3 · 74HC76 진리표",
+    "reference": "T3",
+    "columns": ["PR", "CLR", "CLK", "J", "K", "Q"],
+    "rows": [
+      {"id": "pr",   "label": "프리셋", "cells": ["0", "1", "X", "X", "X", "1"]},
+      {"id": "clr",  "label": "리셋", "cells": ["1", "0", "X", "X", "X", "0"]},
+      {"id": "low",  "label": "이전 Q 유지", "cells": ["1", "1", "0", "X", "X", "이전 Q"]},
+      {"id": "jk00", "label": "이전 Q 유지", "cells": ["1", "1", "1→0", "0", "0", "이전 Q"]},
+      {"id": "jk01", "label": "리셋", "cells": ["1", "1", "1→0", "0", "1", "0"]},
+      {"id": "jk10", "label": "세트", "cells": ["1", "1", "1→0", "1", "0", "1"]},
+      {"id": "jk11", "label": "반전", "cells": ["1", "1", "1→0", "1", "1", "반전"]}
+    ]
+  },
+  "presets": {
+    "edge": {"CLK": 0, "J": 1, "K": 1, "PR": 1, "CLR": 1, "Q": 0},
+    "reset": {"CLK": 0, "J": 1, "K": 1, "PR": 1, "CLR": 1, "Q": 1},
+    "challenge": {"CLK": 0, "J": 1, "K": 0, "PR": 1, "CLR": 1, "Q": 0}
+  },
+  "tasks": [
+    {
+      "id": "edge",
+      "title": "하강 엣지 찾기",
+      "prompt": "CLK를 0에 유지한 뒤 올렸다가 내려요. Q는 어느 때 처음 바뀔까요?",
+      "options": ["0 유지", "0 → 1", "1 → 0"],
+      "answer": 2,
+      "feedback": "J=K=1이므로 하강 엣지(1→0)에서 이전 Q가 뒤집혀요.",
+      "steps": [
+        {"pin": "CLK", "value": 0, "label": "CLK 0 유지"},
+        {"pin": "CLK", "value": 1, "label": "CLK 올리기 ↑"},
+        {"pin": "CLK", "value": 0, "label": "CLK 내리기 ↓"}
+      ]
+    },
+    {
+      "id": "reset",
+      "title": "클럭 없이 Q 바꾸기",
+      "prompt": "CLK는 0에 두고 CLR만 0으로 내렸다가 1로 올려요. Q는 어느 때 0이 될까요?",
+      "options": ["CLR을 0으로 내릴 때", "CLR을 1로 올릴 때", "다음 하강 엣지"],
+      "answer": 0,
+      "feedback": "CLR을 0으로 내리는 순간 Q가 0이 돼요. CLR을 1로 올려도 Q는 0을 유지해요.",
+      "probes": ["CLK", "Q", "CLR"],
+      "steps": [
+        {"pin": "CLR", "value": 0, "label": "CLR 내리기 ↓"},
+        {"pin": "CLR", "value": 1, "label": "CLR 올리기 ↑"}
+      ]
+    },
+    {
+      "id": "challenge",
+      "title": "새 파형에서 예측하기",
+      "prompt": "J=1, K=0이고 Q는 0에서 시작해요. Q가 처음 1이 되는 위치를 고르세요.",
+      "options": ["① 상승 엣지", "② 하강 엣지", "두 엣지 뒤에도 0"],
+      "answer": 1,
+      "feedback": "②에서 JK=10이 반영되어 Q가 1이 돼요. ①에서는 Q가 0을 유지해요.",
+      "steps": [
+        {"pin": "CLK", "value": 1, "label": "① 상승"},
+        {"pin": "CLK", "value": 0, "label": "② 하강"}
+      ],
+      "challenge": true
+    }
+  ],
+  "sources": [
+    {"path": "보고서/실험06/체크리스트/명세.md", "section": "교안 p11 · T3 진리표"},
+    {"path": "보고서/실험06/결선도/netlist.md", "section": "핀아웃 출처 · C3"}
+  ]
+}

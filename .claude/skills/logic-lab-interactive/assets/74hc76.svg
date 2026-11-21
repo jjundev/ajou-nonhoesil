@@ -1,0 +1,43 @@
+<svg viewBox="0 0 352 435" role="group" aria-labelledby="c3-title c3-description">
+  <title id="c3-title">74HC76 DIP-16 결선</title>
+  <desc id="c3-description">위에서 본 칩이에요. 5번은 +5 V, 13번은 접지이고, 15번 Q와 14번 Q̅는 각각 저항과 LED로 이어져요.</desc>
+  <g data-net="CLK"><path class="fig-ink" d="M24 52H96"/><circle class="fig-ink" cx="21" cy="52" r="3"/></g>
+  <g data-net="PR"><path class="fig-ink" d="M24 100H96"/><circle class="fig-ink" cx="21" cy="100" r="3"/></g>
+  <g data-net="CLR"><path class="fig-ink" d="M24 148H96"/><circle class="fig-ink" cx="21" cy="148" r="3"/></g>
+  <g data-net="J"><path class="fig-ink" d="M24 196H96"/><circle class="fig-ink" cx="21" cy="196" r="3"/></g>
+  <g class="sym">
+    <path class="fig-ink" d="M96 244H51V236M44 236H58"/>
+    <text class="fig-text" x="51" y="225" text-anchor="middle">+5 V</text>
+  </g>
+
+  <g data-net="K"><path class="fig-ink" d="M256 52H328"/><circle class="fig-ink" cx="331" cy="52" r="3"/></g>
+  <g data-net="Q">
+    <path class="fig-ink" d="M256 100H268M294 100H305M326 100H338V112"/>
+    <g class="sym">
+      <path class="fig-ink" d="M268 100l3 -4 4 8 4 -8 4 8 4 -8 4 8 3 -4"/>
+      <text class="fig-muted" x="281" y="90" text-anchor="middle">330 Ω</text>
+    </g>
+    <g class="sym" data-led="Q">
+      <circle class="fig-ink led-body" cx="315.5" cy="100" r="10"/>
+      <path class="fig-ink" d="M305 100h5m0 -4v8l9 -4zM319 96v8m0 -4h7M316 87l4 -4m-1 0h1v1m2 4 4 -4m-1 0h1v1"/>
+    </g>
+    <path class="fig-ink sym" d="M332 112h12m-10 3h8m-6 3h4"/>
+  </g>
+  <g data-net="Q̅">
+    <path class="fig-ink" d="M256 148H268M294 148H305M326 148H338V160"/>
+    <g class="sym">
+      <path class="fig-ink" d="M268 148l3 -4 4 8 4 -8 4 8 4 -8 4 8 3 -4"/>
+      <text class="fig-muted" x="281" y="138" text-anchor="middle">330 Ω</text>
+    </g>
+    <g class="sym" data-led="Q̅">
+      <circle class="fig-ink led-body" cx="315.5" cy="148" r="10"/>
+      <path class="fig-ink" d="M305 148h5m0 -4v8l9 -4zM319 144v8m0 -4h7M316 135l4 -4m-1 0h1v1m2 4 4 -4m-1 0h1v1"/>
+    </g>
+    <path class="fig-ink sym" d="M332 160h12m-10 3h8m-6 3h4"/>
+  </g>
+  <path class="fig-ink sym" d="M256 196H322V207m-7 0h14m-11 4h8m-6 4h4"/>
+
+  <path class="fig-ink chip-package" d="M118 24Q118 18 124 18H163Q176 39 189 18H228Q234 18 234 24V410Q234 416 228 416H124Q118 416 118 410Z"/>
+  <text class="chip-mark" x="176" y="267" text-anchor="middle">74HC76</text>
+  <g data-dip data-first-y="52" data-pitch="48" data-left="118" data-right="234"></g>
+</svg>

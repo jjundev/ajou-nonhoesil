@@ -1786,11 +1786,14 @@
     ".pack/실험06_문제설명.md",
     ".pack/실험06_실험설명.md",
     ".pack/원문과_저작안내.md",
+    ".pack/자료_인터랙티브/74hc76/lesson.json",
+    ".pack/자료_인터랙티브/74hc76/verification.json",
     ".pack/출처와_문항목록.md",
     "실험06_기출문제.pdf",
     "실험06_기출풀이.pdf",
     "실험06_문제설명.html",
-    "실험06_실험설명.html"
+    "실험06_실험설명.html",
+    "실험06_인터랙티브_74HC76.html"
   ],
   "workbook_delivery": "pdf"
 }

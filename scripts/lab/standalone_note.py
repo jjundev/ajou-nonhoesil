@@ -118,7 +118,10 @@ def build(note_dir, kind, linked=frozenset()):
         href = re.search(r'\bhref="([^"]*)"', attrs)
         hit = sib.fullmatch(urllib.parse.unquote(href.group(1))) if href else None
         if not hit:
-            return m.group(0)
+            if not href or not re.search(r'\bdata-interactive-lab="[^"]+"', attrs):
+                return m.group(0)
+            attrs = (attrs[:href.start()] + attrs[href.end():]).rstrip()
+            return f'<span{attrs}>{content}</span>'
         if hit.group(2) == 'html' and hit.group(1) in linked:
             new = urllib.parse.quote(out_name(note_dir.name, hit.group(1))) + (hit.group(3) or "")
             return f'<a{attrs[:href.start()]}href="{new}"{attrs[href.end():]}>{content}</a>'

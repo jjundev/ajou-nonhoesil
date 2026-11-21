@@ -103,4 +103,6 @@ def check_pack(folder):
             if re.search(r'@import\s+[\x22\x27]https?:',text):errors.append('remote CSS import: '+str(css))
     from .explanation_checks import check_explanations
     errors.extend(check_explanations(folder,m))
+    from scripts.lab.interactive import check_attachment
+    errors.extend(check_attachment(folder,m))
     return errors

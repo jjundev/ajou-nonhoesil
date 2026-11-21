@@ -49,6 +49,8 @@ def main(argv=None):
             if data.get('review_presentation_version') == 2:
                 data['workbook_delivery'] = 'pdf'
             paths=assemble(data,args.run,args.stage,assets)
+            from scripts.lab.interactive import attach
+            attach(args.root, args.stage, data, reviewed_only=True)
             convert_pack(paths['note_html'],paths.get('review_html'),manifest=data)
             if data.get('workbook_delivery') == 'pdf':
                 from scripts.lab.workbook_pdf import export_pair
