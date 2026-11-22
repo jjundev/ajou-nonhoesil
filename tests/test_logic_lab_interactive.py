@@ -51,9 +51,19 @@ def test_74hc76_transition_against_t3():
     """], cwd=ROOT, check=True)
 
 
-def test_lab_attachment_and_standalone_note(tmp_path):
+def only_legacy_registration(interactive, monkeypatch):
+    # The fixture manifest has only the original lesson's topic.
+    def legacy_only(directory, manifest):
+        author = directory / f"{manifest['experiment']:02d}.json"
+        yield author, interactive.Attachment(interactive.load_lesson(author, manifest), None)
+
+    monkeypatch.setattr(interactive, 'registered_lessons', legacy_only)
+
+
+def test_lab_attachment_and_standalone_note(tmp_path, monkeypatch):
     from scripts.lab import interactive
 
+    only_legacy_registration(interactive, monkeypatch)
     folder = tmp_path / '실험06'
     folder.mkdir()
     note = folder / '실험06_실험설명.html'
@@ -76,13 +86,14 @@ def test_lab_attachment_and_standalone_note(tmp_path):
 
 
 @pytest.mark.parametrize('width,theme', [(1440, 'light'), (1440, 'dark'), (375, 'light'), (375, 'dark')])
-def test_lab_runs_offline_with_keyboard(tmp_path, width, theme):
+def test_lab_runs_offline_with_keyboard(tmp_path, width, theme, monkeypatch):
     from scripts.lab import interactive
 
+    only_legacy_registration(interactive, monkeypatch)
     playwright = pytest.importorskip('playwright.sync_api')
     note = tmp_path / '실험06_실험설명.html'
     note.write_text('<article class="topic" id="t-74hc76"><h3>JK</h3></article>', encoding='utf-8')
-    path = interactive.attach(ROOT, tmp_path, {'experiment': 6, 'topics': [{'id': 't-74hc76'}]})
+    path, = interactive.attach(ROOT, tmp_path, {'experiment': 6, 'topics': [{'id': 't-74hc76'}]})
     with playwright.sync_playwright() as runner:
         if not Path(runner.chromium.executable_path).exists():
             pytest.skip('Playwright Chromium is needed for the offline interaction check')
@@ -103,8 +114,9 @@ def test_lab_runs_offline_with_keyboard(tmp_path, width, theme):
             wave = page.locator('#traces svg')
             waveform = page.locator('#traces')
             fixed = page.locator('#fixed-inputs')
-            hovered = page.locator('#trace-hover')
-            details = page.locator('#trace-detail')
+            popup = page.locator('#trace-popup')
+            hovered = popup.and_(page.locator('[aria-hidden="true"]'))
+            details = popup.and_(page.locator(':not([aria-hidden])'))
             event = page.locator('#event')
             circuit = page.locator('#circuit svg')
             t3 = page.locator('#truth-table [aria-current="true"]')
@@ -182,6 +194,8 @@ def test_lab_runs_offline_with_keyboard(tmp_path, width, theme):
             expect(t3).to_have_attribute('data-rule', 'jk11')
             expect(circuit.locator('[data-led="Q"]')).to_have_attribute('data-level', '1')
             expect(page.locator('#feedback')).to_contain_text('맞았어요')
+            expect(page.locator('#advance')).to_be_hidden()
+            expect(waveform).to_be_focused()
             if mobile:
                 right.press('Enter')
                 expect(shell).to_have_attribute('data-drawer', 'right')
@@ -200,6 +214,8 @@ def test_lab_runs_offline_with_keyboard(tmp_path, width, theme):
                 page.keyboard.press('Escape')
                 expect(hovered).to_be_hidden()
             inspect('Q', 2)
+            expect(popup).to_have_css('position', 'absolute')
+            expect(page.locator('.plot-wrap > .trace-card')).to_have_count(0)
             expect(details.locator('[data-trace-value]')).to_have_css('color', colors['Q'])
             expect(details).to_contain_text('15번 핀 Q = 0')
             expect(details).to_contain_text('조작 2 · CLK 올리기 ↑')
@@ -219,6 +235,10 @@ def test_lab_runs_offline_with_keyboard(tmp_path, width, theme):
             expect(details).not_to_contain_text('T3')
             waveform.press('Escape')
             expect(details).to_be_hidden()
+            waveform.press('Enter')
+            page.get_by_role('button', name='파형 설명 닫기').press('Enter')
+            expect(popup).to_be_hidden()
+            expect(waveform).to_be_focused()
             waveform.press('ArrowLeft')
             open_left()
             page.get_by_role('button', name='K 입력, 현재 1', exact=True).press('Space')
@@ -303,6 +323,7 @@ def test_lab_runs_offline_with_keyboard(tmp_path, width, theme):
             expect(details).not_to_contain_text('T3')
             expect(details).not_to_contain_text('0 → 1')
             if not mobile:
+                waveform.press('Escape')
                 trace('Q', 1).hover()
                 expect(hovered).to_contain_text('예측 후 공개')
                 expect(hovered).not_to_contain_text('상승 엣지')
@@ -350,7 +371,7 @@ def test_checked_attachment_rejects_missing_or_stale_receipt(tmp_path):
 
     repo = tmp_path / 'repo'
     skill = repo / interactive.SKILL
-    shutil.copytree(ROOT / interactive.SKILL, skill)
+    shutil.copytree(ROOT / interactive.SKILL, skill, ignore=shutil.ignore_patterns('06'))
     font_folder = interactive.FONT_VENDOR / 'pretendard'
     shutil.copytree(ROOT / font_folder, repo / font_folder)
     author = skill / 'lessons/06.json'
@@ -365,9 +386,9 @@ def test_checked_attachment_rejects_missing_or_stale_receipt(tmp_path):
     note = folder / '실험06_실험설명.html'
     note.write_text('<article class="topic" id="t-74hc76"><h3>JK</h3></article>', encoding='utf-8')
     manifest = {'experiment': 6, 'topics': [{'id': 't-74hc76'}]}
-    with pytest.raises(ValueError, match='검증을 마친 실험'):
+    with pytest.raises(ValueError, match='74hc76: .*검증 기록'):
         interactive.attach(repo, folder, manifest, reviewed_only=True)
-    path = interactive.attach(repo, folder, manifest)
+    path, = interactive.attach(repo, folder, manifest)
     assert interactive.check_attachment(folder, manifest)
     evidence = folder / '.pack/자료_인터랙티브/74hc76/verification.json'
     interactive.write_json(receipt, {
@@ -380,3 +401,191 @@ def test_checked_attachment_rejects_missing_or_stale_receipt(tmp_path):
     assert '현재 파일과 일치' in interactive.check_attachment(folder, manifest)[0]
     shutil.rmtree(evidence.parent)
     assert '검증 기록' in interactive.check_attachment(folder, manifest)[0]
+
+
+def test_multiple_registered_lessons_rebuild_and_publish_gate(tmp_path):
+    import shutil
+
+    from scripts.lab import interactive
+
+    repo = tmp_path / 'repo'
+    skill = repo / interactive.SKILL
+    shutil.copytree(ROOT / interactive.SKILL, skill, ignore=shutil.ignore_patterns('06'))
+    shutil.copytree(ROOT / interactive.FONT_VENDOR, repo / interactive.FONT_VENDOR)
+    lessons = skill / 'lessons'
+    legacy = interactive.read_json(lessons / '06.json')
+    for source in legacy['sources']:
+        destination = repo / source['path']
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / source['path'], destination)
+
+    authors = lessons / '06'
+    authors.mkdir()
+    for lesson_id in ('edge-practice', 'reset-practice'):
+        interactive.write_json(authors / f'{lesson_id}.json', {**legacy, 'title': lesson_id})
+
+    folder = tmp_path / 'pack'
+    folder.mkdir()
+    note = folder / '실험06_실험설명.html'
+    note.write_text('<article class="topic" id="t-74hc76"><p>본문</p></article>', encoding='utf-8')
+    manifest = {'experiment': 6, 'topics': [{'id': 't-74hc76'}]}
+    evidence_dir = folder / '.pack/자료_인터랙티브'
+    paths = interactive.attach(repo, folder, manifest)
+    assert {path.name for path in paths} == {
+        '실험06_인터랙티브_74HC76.html',
+        '실험06_인터랙티브_edge-practice.html',
+        '실험06_인터랙티브_reset-practice.html',
+    }
+    assert interactive.digest(folder / '실험06_인터랙티브_74HC76.html') == (
+        interactive.read_json(lessons / '06.verification.json')['basis']['html_sha256']
+    )
+    first_note = note.read_bytes()
+    assert first_note.count(b'data-interactive-lab=') == 3
+    for lesson_id in ('edge-practice', 'reset-practice'):
+        assert f'data-interactive-lab="{lesson_id}"'.encode() in first_note
+        with pytest.raises(ValueError, match=lesson_id):
+            interactive.attach(repo, folder, manifest, reviewed_only=True)
+        assert note.read_bytes() == first_note
+        interactive.write_json(authors / f'{lesson_id}.verification.json', {
+            'basis': interactive.read_json(evidence_dir / lesson_id / 'verification.json'),
+            'checks': {name: {'status': 'pass'} for name in interactive.REQUIRED_CHECKS},
+        })
+    interactive.attach(repo, folder, manifest, reviewed_only=True)
+    assert note.read_bytes() == first_note
+    assert interactive.check_attachment(folder, manifest, root=repo) == []
+
+    (authors / 'edge-practice.json').unlink()
+    assert '등록 원고' in interactive.check_attachment(folder, manifest, root=repo)[0]
+    interactive.attach(repo, folder, manifest, reviewed_only=True)
+    assert not (folder / '실험06_인터랙티브_edge-practice.html').exists()
+    assert not (evidence_dir / 'edge-practice').exists()
+    assert b'edge-practice' not in note.read_bytes()
+    assert interactive.check_attachment(folder, manifest, root=repo) == []
+
+
+def test_d_latch_prediction_moves_without_resetting_the_experiment(tmp_path):
+    from scripts.lab import interactive
+
+    playwright = pytest.importorskip('playwright.sync_api')
+    assets = ROOT / interactive.SKILL / 'assets'
+    lesson = interactive.read_json(ROOT / interactive.SKILL / 'lessons/06/d-latch.json')
+    path = tmp_path / 'd-latch.html'
+    path.write_text(interactive.render(lesson, assets, '실험06_실험설명.html', ROOT / interactive.FONT_VENDOR),
+                    encoding='utf-8')
+    with playwright.sync_playwright() as runner:
+        if not Path(runner.chromium.executable_path).exists():
+            pytest.skip('Playwright Chromium is needed for the offline interaction check')
+        with runner.chromium.launch() as browser:
+            page = browser.new_page(viewport={'width': 1024, 'height': 900}, offline=True)
+            page.set_default_timeout(3000)
+            page.goto(path.as_uri())
+            expect = playwright.expect
+            card = page.locator('#prediction')
+            center = page.locator('#stage #prediction')
+            sidebar = page.locator('#panel-right #prediction')
+            right = page.get_by_role('button', name='설명 패널', exact=True)
+            wave = page.locator('#traces')
+
+            expect(sidebar).to_be_visible()
+            advance = page.locator('#advance')
+            hint = page.locator('#prediction-next')
+            expect(hint).to_be_hidden()
+            first_answer = page.get_by_role('radio', name='0 → 1 → 0')
+            first_answer.focus()
+            first_answer.press('Space')
+            expect(first_answer).to_be_focused()
+            expect(hint).to_contain_text('D를 1로 올리기')
+            advance.press('Enter')
+            expect(advance).to_have_text('D를 0으로 내리기')
+            expect(hint).to_contain_text('D를 0으로 내리기')
+            advance.press('Enter')
+            expect(advance).to_be_hidden()
+            expect(hint).to_be_hidden()
+            expect(wave).to_be_focused()
+            expect(page.locator('#position')).to_have_text('2 / 2')
+            page.locator('#previous').press('Enter')
+            expect(advance).to_have_text('D를 0으로 내리기')
+            expect(hint).to_contain_text('D를 0으로 내리기')
+            page.get_by_role('button', name='E=0에서 Q 유지하기', exact=True).click()
+            page.get_by_role('radio', name='1', exact=True).check()
+            expect(hint).to_contain_text('E를 0으로 내리기')
+            advance.press('Enter')
+            expect(hint).to_contain_text('D를 0으로 내리기')
+            halfway = wave.inner_html()
+            card.get_by_role('button', name='예측 건너뛰기', exact=True).click()
+            expect(card).to_be_hidden()
+            expect(page.locator('#position')).to_have_text('1 / 1')
+            assert wave.inner_html() == halfway
+            advance.press('Enter')
+            expect(page.locator('#position')).to_have_text('2 / 2')
+            page.get_by_role('button', name='E를 다시 열기 전에 예측하기', exact=True).click()
+            answer = page.get_by_role('radio', name='② E를 1로 올릴 때')
+            answer.check()
+            masked = wave.inner_html()
+
+            right.click()
+            expect(center).to_be_visible()
+            expect(answer).to_be_checked()
+            assert wave.inner_html() == masked
+            right.click()
+            expect(sidebar).to_be_visible()
+            answer.focus()
+            page.set_viewport_size({'width': 1023, 'height': 900})
+            expect(center).to_be_visible()
+            expect(answer).to_be_focused()
+            page.set_viewport_size({'width': 1024, 'height': 900})
+            expect(sidebar).to_be_visible()
+            expect(answer).to_be_focused()
+            expect(answer).to_be_checked()
+
+            card.get_by_role('button', name='파형 펼쳐서 확인', exact=True).click()
+            expect(wave).to_be_focused()
+            expect(page.locator('#feedback')).to_contain_text('맞았어요')
+            expect(page.locator('[data-led="Q"]')).to_have_attribute('data-level', '0')
+            revealed = wave.inner_html()
+            assert revealed != masked
+            right.click()
+            expect(center).to_be_visible()
+            expect(page.locator('#feedback')).to_contain_text('맞았어요')
+            assert wave.inner_html() == revealed
+            right.click()
+            expect(sidebar).to_be_visible()
+            expect(card).to_have_count(1)
+
+            page.get_by_role('button', name='E를 다시 열기 전에 예측하기', exact=True).click()
+            expect(page.locator('#submit')).to_be_disabled()
+            card.get_by_role('button', name='예측 없이 파형 보기', exact=True).click()
+            expect(card).to_be_hidden()
+            expect(wave).to_be_focused()
+            expect(page.locator('#position')).to_have_text('2 / 2')
+            expect(page.locator('[data-led="Q"]')).to_have_attribute('data-level', '0')
+            assert wave.inner_html() == revealed
+            page.locator('#previous').press('Enter')
+            expect(page.locator('[data-led="Q"]')).to_have_attribute('data-level', '1')
+
+
+def test_d_latch_transition_matches_every_handout_row():
+    subprocess.run(['node', '--input-type=module', '-e', '''
+        import assert from 'node:assert/strict';
+        import {transition} from './.claude/skills/logic-lab-interactive/assets/d-latch.mjs';
+
+        for (const E of [0, 1]) {
+          for (const D of [0, 1]) {
+            for (const Q of [0, 1]) {
+              for (const pin of ['D', 'E']) {
+                for (const value of [0, 1]) {
+                  const previous = {E, D, Q};
+                  const result = transition(previous, {pin, value});
+                  const nextE = pin === 'E' ? value : E;
+                  const nextD = pin === 'D' ? value : D;
+                  assert.equal(result.accepted, true);
+                  assert.deepEqual(result.next, {E: nextE, D: nextD, Q: nextE ? nextD : Q});
+                  assert.equal(result.rule, nextE ? (nextD ? 'set' : 'reset') : 'hold');
+                  assert.deepEqual(previous, {E, D, Q});
+                }
+              }
+            }
+          }
+        }
+        assert.equal(transition({E: 0, D: 0, Q: 0}, {pin: 'Q', value: 1}).accepted, false);
+    '''], cwd=ROOT, check=True)

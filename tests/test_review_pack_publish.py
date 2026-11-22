@@ -85,9 +85,10 @@ def ready_v2(tmp_path):
     (dest/'사용자메모.md').write_text('보존',encoding='utf-8')
     return stage,dest
 
-def test_v2_user_explanation_collision_refused(tmp_path):
+@pytest.mark.parametrize('suffix', ['html', 'HTML'])
+def test_v2_user_explanation_collision_refused(tmp_path, suffix):
     stage,dest = ready_v2(tmp_path)
-    path = dest/'실험04_문제설명.html'
+    path = dest/f'실험04_문제설명.{suffix}'
     path.write_bytes(b'user original')
     with pytest.raises(ValueError,match='User file collision'):
         publish(stage,dest,tmp_path)

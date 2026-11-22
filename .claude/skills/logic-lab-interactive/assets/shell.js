@@ -15,7 +15,7 @@ let drawer = null;
 function syncPanels() {
   labRoot.dataset.drawer = drawer ?? 'none';
   scrim.classList.toggle('is-on', drawer !== null);
-  document.getElementById('stage').inert = drawer !== null;
+@@SYNC_PREDICTION@@  document.getElementById('stage').inert = drawer !== null;
   topbar.inert = drawer !== null;
   for (const [side, {panel, toggle, open}] of panelControls) {
     const visible = narrowLayout.matches ? drawer === side : open;

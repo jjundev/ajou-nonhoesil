@@ -1,0 +1,89 @@
+{
+  "experiment": 6,
+  "topic_id": "t-d-latch",
+  "model_id": "d-latch",
+  "prediction_sidebar": true,
+  "guided_prediction": true,
+  "chip": "74HC00",
+  "title": "D 래치의 Q는 언제 D를 따라갈까요?",
+  "link_label": "D 래치의 Enable과 파형 실험 열기",
+  "circuit_hint": "74HC00의 1번 D, 2번 E, 8번 Q, 11번 Q′를 파형에서 확인해요.",
+  "free_toggle_pin": "D",
+  "pins": [
+    {"number": 1, "label": "D", "role": "input"},
+    {"number": 2, "label": "E", "role": "input"},
+    {"number": 3, "label": "A", "role": "unused"},
+    {"number": 4, "label": "E 연결", "role": "unused"},
+    {"number": 5, "label": "D′", "role": "unused"},
+    {"number": 6, "label": "B", "role": "unused"},
+    {"number": 7, "label": "GND", "role": "power", "value": "0 V"},
+    {"number": 8, "label": "Q", "role": "output"},
+    {"number": 9, "label": "A 연결", "role": "unused"},
+    {"number": 10, "label": "Q′ 되먹임", "role": "unused"},
+    {"number": 11, "label": "Q′", "role": "output", "complement_of": "Q"},
+    {"number": 12, "label": "Q 되먹임", "role": "unused"},
+    {"number": 13, "label": "B 연결", "role": "unused"},
+    {"number": 14, "label": "VCC", "role": "power", "value": "+5 V"}
+  ],
+  "traces": ["D", "E", "Q", "Q′"],
+  "default_probes": ["D", "E", "Q"],
+  "truth_table": {
+    "title": "T2 · Enable이 있는 D 래치",
+    "reference": "T2",
+    "columns": ["E", "D", "Q(t)"],
+    "rows": [
+      {"id": "hold", "label": "이전 Q 유지", "cells": ["0", "X", "이전 Q"]},
+      {"id": "reset", "label": "리셋", "cells": ["1", "0", "0"]},
+      {"id": "set", "label": "세트", "cells": ["1", "1", "1"]}
+    ]
+  },
+  "presets": {
+    "follow": {"E": 1, "D": 0, "Q": 0},
+    "hold": {"E": 1, "D": 1, "Q": 1},
+    "reopen": {"E": 0, "D": 0, "Q": 1}
+  },
+  "tasks": [
+    {
+      "id": "follow",
+      "title": "E=1에서 D 따라가기",
+      "prompt": "E를 1에 두고 D를 0 → 1 → 0으로 바꾸면 Q는 어떻게 움직일까요?",
+      "options": ["0 → 1 → 0", "0 → 0 → 0", "0 → 1 → 1"],
+      "answer": 0,
+      "feedback": "E=1인 구간에는 D가 바뀔 때마다 Q도 같은 값으로 바뀌어요.",
+      "steps": [
+        {"pin": "D", "value": 1, "label": "D를 1로 올리기"},
+        {"pin": "D", "value": 0, "label": "D를 0으로 내리기"}
+      ]
+    },
+    {
+      "id": "hold",
+      "title": "E=0에서 Q 유지하기",
+      "prompt": "Q=1에서 E를 먼저 0으로 내리고 D도 0으로 내리면 마지막 Q는 무엇일까요?",
+      "options": ["0", "1"],
+      "answer": 1,
+      "feedback": "E를 닫을 때의 Q는 1이에요. 그 뒤의 D=0은 Q에 반영되지 않아요.",
+      "steps": [
+        {"pin": "E", "value": 0, "label": "E를 0으로 내리기"},
+        {"pin": "D", "value": 0, "label": "D를 0으로 내리기"}
+      ]
+    },
+    {
+      "id": "reopen",
+      "title": "E를 다시 열기 전에 예측하기",
+      "prompt": "D=0인데 Q=1을 유지하고 있어요. ① D를 0에 두고 ② E를 1로 올리면 Q는 어느 때 0이 될까요?",
+      "options": ["① D를 0에 둘 때", "② E를 1로 올릴 때", "두 조작 뒤에도 1"],
+      "answer": 1,
+      "feedback": "②에서 E가 1이 되면 그때의 D=0이 Q에 반영돼요.",
+      "steps": [
+        {"pin": "D", "value": 0, "label": "① D=0 유지"},
+        {"pin": "E", "value": 1, "label": "② E를 1로 올리기"}
+      ],
+      "challenge": true
+    }
+  ],
+  "sources": [
+    {"path": "강의노트/실험6. Latch & Flip-Flop.pdf", "section": "p8 · 실험 2-1 회로도와 진리표"},
+    {"path": "보고서/실험06/체크리스트/명세.md", "section": "E6.P2-1 · T2 진리표"},
+    {"path": "보고서/실험06/결선도/netlist.md", "section": "C2 · 74HC00/74HC04 핀 연결, Q·Q′ LED"}
+  ]
+}

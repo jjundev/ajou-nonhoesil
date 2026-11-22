@@ -1,0 +1,2 @@
+.panel-right .predict-card { margin-bottom: var(--s4); }
+.predict-slot:has(> .predict-card[hidden]) { display: none; }

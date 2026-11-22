@@ -7,12 +7,14 @@ const outputs = lesson.pins.filter(pin => pin.role === 'output' && !pin.compleme
 const traces = byId('traces');
 const traceArea = traces.closest('.trace-area');
 const traceStage = byId('stage');
-const traceHover = byId('trace-hover');
-const traceDetail = byId('trace-detail');
+const tracePopup = byId('trace-popup');
+const traceClose = tracePopup.querySelector('button');
 const traceAnnouncement = byId('trace-announcement');
 const advance = byId('advance');
 const submit = byId('submit');
 const prediction = byId('prediction');
+const predictionNext = byId('prediction-next');
+const guidedPrediction = lesson.guided_prediction === true;
 const feedback = byId('feedback');
 const dip = byId('circuit').querySelector('[data-dip]');
 const nets = new Map(Array.from(byId('circuit').querySelectorAll('[data-net]'), net => [net.dataset.net, net]));
@@ -269,7 +271,7 @@ traces.addEventListener('keydown', event => {
     event.preventDefault();
     const row = visibleTraces.indexOf(tracePin) + (event.key === 'ArrowUp' ? -1 : 1);
     tracePin = visibleTraces[Math.max(0, Math.min(row, visibleTraces.length - 1))];
-    renderTraceDetail();
+    renderTraceSelection();
     announceTrace();
   } else if (tracePin && (event.key === 'Enter' || event.key === ' ')) {
     event.preventDefault();
@@ -294,23 +296,35 @@ traceArea.addEventListener('pointermove', event => {
   updateTraceHover(event.target);
 });
 traceArea.addEventListener('pointerleave', hideTraceHover);
-traces.addEventListener('scroll', repositionTraceHover);
-traceStage.addEventListener('scroll', repositionTraceHover);
-traceDetail.querySelector('button').addEventListener('click', () => {
-  closeTraceDetail();
+traces.addEventListener('scroll', repositionTracePopup);
+traceStage.addEventListener('scroll', repositionTracePopup);
+traceClose.addEventListener('click', () => {
+  closeTracePopup();
   traces.focus({preventScroll: true});
 });
 document.addEventListener('keydown', event => {
   if (event.key !== 'Escape' || event.defaultPrevented) return;
   hideTraceHover();
   if (tracePinned) {
-    const returnFocus = traceDetail.contains(document.activeElement);
-    closeTraceDetail();
+    const returnFocus = tracePopup.contains(document.activeElement);
+    closeTracePopup();
     if (returnFocus) traces.focus({preventScroll: true});
   }
 });
+function revealPrediction(state) {
+  predictionState = state;
+  cursor = history.length - 1;
+  render();
+  traces.focus({preventScroll: true});
+}
+
 byId('skip').addEventListener('click', () => {
   if (isPreview()) {
+    if (guidedPrediction) {
+      revealPrediction('dismissed');
+      traces.scrollIntoView({block: 'nearest', inline: 'nearest'});
+      return;
+    }
     history = [{...initialFrame(task), progress: null}];
     cursor = 0;
     tracePinned = false;
@@ -320,30 +334,13 @@ byId('skip').addEventListener('click', () => {
   render();
   traces.focus({preventScroll: true});
 });
-submit.addEventListener('click', () => {
-  predictionState = 'revealed';
-  cursor = history.length - 1;
-  render();
-  traces.focus({preventScroll: true});
-});
+submit.addEventListener('click', () => revealPrediction('revealed'));
 advance.addEventListener('click', () => {
+  if (advance.hidden) return;
   const current = history[cursor];
   const toggle = freeToggleAction(current);
-  if (toggle) {
-    apply(toggle, null);
-    return;
-  }
-  const {progress} = current;
-  if (progress < task.steps.length) {
-    apply(task.steps[progress], progress + 1);
-    return;
-  }
-  const next = lesson.tasks[lesson.tasks.indexOf(task) + 1];
-  if (next) {
-    start(next);
-    const target = byId('options').querySelector('input');
-    target.focus();
-  }
+  apply(toggle ?? task.steps[current.progress], toggle ? null : current.progress + 1);
+  if (advance.hidden) traces.focus({preventScroll: true});
 });
 
 function signalValue(state, label) {
@@ -421,20 +418,23 @@ function traceStep(index) {
   return index === 0 ? '시작' : '조작 ' + index + ' · ' + history[index].label;
 }
 
-function renderTraceCard(card, label, index) {
+function showTracePopup(label, index, pinned) {
   const {value, reason, truth} = describeTrace(label, index);
-  card.style.setProperty('--signal-color', traceColors.get(label));
-  card.querySelector('[data-trace-value]').textContent = value;
-  card.querySelector('[data-trace-step]').textContent = traceStep(index);
-  card.querySelector('[data-trace-reason]').textContent = reason;
-  const reference = card.querySelector('[data-trace-truth]');
+  tracePopup.style.setProperty('--signal-color', traceColors.get(label));
+  tracePopup.querySelector('[data-trace-value]').textContent = value;
+  tracePopup.querySelector('[data-trace-step]').textContent = traceStep(index);
+  tracePopup.querySelector('[data-trace-reason]').textContent = reason;
+  const reference = tracePopup.querySelector('[data-trace-truth]');
   reference.textContent = truth ?? '';
   reference.hidden = !truth;
-  card.hidden = false;
+  if (pinned) tracePopup.removeAttribute('aria-hidden');
+  else tracePopup.setAttribute('aria-hidden', 'true');
+  traceClose.hidden = !pinned;
+  tracePopup.hidden = false;
 }
 
 function updateTraceHover(target, reposition = false) {
-  if (!hoverPoint || traceHover.contains(target)) return;
+  if (tracePinned || !hoverPoint) return;
   const cell = target?.closest('[data-trace-pin]');
   if (!cell) {
     hideTraceHover();
@@ -442,29 +442,39 @@ function updateTraceHover(target, reposition = false) {
   }
   if (cell === hoveredTraceCell && !reposition) return;
   if (cell !== hoveredTraceCell) {
-    renderTraceCard(traceHover, cell.dataset.tracePin, Number(cell.dataset.traceIndex));
+    showTracePopup(cell.dataset.tracePin, Number(cell.dataset.traceIndex), false);
     hoveredTraceCell = cell;
   }
-  const graph = traces.getBoundingClientRect();
-  const stage = traceStage.getBoundingClientRect();
-  const height = traceHover.offsetHeight;
-  const below = stage.bottom - graph.bottom;
-  const above = graph.top - stage.top;
-  traceHover.style.left = Math.max(0, Math.min(hoverPoint.x - graph.left, graph.width - traceHover.offsetWidth)) + 'px';
-  traceHover.style.top = (below < height && above > below ? -height : traces.offsetHeight) + 'px';
+  positionTracePopup(hoverPoint.x);
 }
 
-function repositionTraceHover() {
-  if (hoverPoint) updateTraceHover(document.elementFromPoint(hoverPoint.x, hoverPoint.y), true);
+function positionTracePopup(x) {
+  const graph = traces.getBoundingClientRect();
+  const stage = traceStage.getBoundingClientRect();
+  const height = tracePopup.offsetHeight;
+  const below = stage.bottom - graph.bottom;
+  const above = graph.top - stage.top;
+  const preferred = below < height && above > below ? -height : graph.height;
+  tracePopup.style.left = Math.max(0, Math.min(x - graph.left, graph.width - tracePopup.offsetWidth)) + 'px';
+  tracePopup.style.top = Math.max(-above, Math.min(preferred, graph.height + below - height)) + 'px';
+}
+
+function repositionTracePopup() {
+  if (tracePinned && activeTraceCell) {
+    const cell = activeTraceCell.getBoundingClientRect();
+    positionTracePopup(cell.left + cell.width / 2);
+  } else if (hoverPoint) {
+    updateTraceHover(document.elementFromPoint(hoverPoint.x, hoverPoint.y), true);
+  }
 }
 
 function hideTraceHover() {
-  traceHover.hidden = true;
+  if (!tracePinned) tracePopup.hidden = true;
   hoveredTraceCell = null;
   hoverPoint = null;
 }
 
-function renderTraceDetail() {
+function renderTraceSelection() {
   activeTraceCell?.classList.remove('is-active', 'is-inspected');
   activeTraceCell = tracePin && traces.querySelector(
     '[data-trace-pin="' + CSS.escape(tracePin) + '"][data-trace-index="' + cursor + '"]'
@@ -472,10 +482,9 @@ function renderTraceDetail() {
   activeTraceCell?.classList.add('is-active');
   if (activeTraceCell && tracePinned) {
     activeTraceCell.classList.add('is-inspected');
-    renderTraceCard(traceDetail, tracePin, cursor);
-  } else {
-    traceDetail.hidden = true;
-  }
+    showTracePopup(tracePin, cursor, true);
+    repositionTracePopup();
+  } else if (!hoveredTraceCell) tracePopup.hidden = true;
 }
 
 function announceTrace() {
@@ -492,17 +501,17 @@ function inspectTrace(label, index) {
   tracePin = label;
   tracePinned = true;
   hideTraceHover();
-  if (index === cursor) renderTraceDetail();
+  if (index === cursor) renderTraceSelection();
   else selectFrame(index);
   traces.focus({preventScroll: true});
-  traceDetail.scrollIntoView({block: 'nearest', inline: 'nearest'});
   announceTrace();
 }
 
-function closeTraceDetail() {
+function closeTracePopup() {
   tracePinned = false;
+  hideTraceHover();
   traceAnnouncement.textContent = '';
-  renderTraceDetail();
+  renderTraceSelection();
 }
 
 function renderCircuit(current, preview) {
@@ -551,13 +560,24 @@ function render() {
   const complete = current.progress === task.steps.length;
   const graded = task.challenge ? predictionState === 'revealed' : complete;
   prediction.hidden = predictionState === 'dismissed';
-  byId('skip').textContent = graded ? '닫기' : '건너뛰기';
+  let skipLabel = '건너뛰기';
+  if (guidedPrediction) skipLabel = preview ? '예측 없이 파형 보기' : '예측 건너뛰기';
+  byId('skip').textContent = graded ? '닫기' : skipLabel;
   byId('choices').disabled = graded;
   submit.hidden = !preview;
   submit.disabled = choice === null;
-  const toggle = freeToggleAction(current);
-  advance.hidden = !toggle && (task.challenge || current.progress === null);
-  advance.textContent = toggle?.label ?? (complete ? '다음 실험 →' : task.steps[current.progress ?? 0].label);
+  if (guidedPrediction) submit.textContent = '파형 펼쳐서 확인';
+  const step = task.challenge ? undefined : task.steps[current.progress];
+  const action = freeToggleAction(current) ?? step;
+  advance.hidden = !action;
+  advance.textContent = action?.label ?? '';
+  if (guidedPrediction) {
+    const hint = step && choice !== null && !prediction.hidden
+      ? '파형에서 ‘' + action.label + '’를 눌러보세요.'
+      : '';
+    predictionNext.hidden = !hint;
+    if (predictionNext.textContent !== hint) predictionNext.textContent = hint;
+  }
   feedback.hidden = !graded || choice === null;
   feedback.textContent = feedback.hidden ? '' : (choice === task.answer ? '맞았어요. ' : '') + task.feedback;
   feedback.classList.toggle('is-wrong', choice !== task.answer);
@@ -566,7 +586,10 @@ function render() {
   byId('next').disabled = cursor >= history.length - 1;
   byId('position').textContent = cursor + ' / ' + (history.length - 1);
   const currentOutputs = outputs.map(pin => pin.label + '=' + current.state[pin.label]).join(', ');
-  byId('event').textContent = preview ? '예측을 제출하면 출력 파형이 펼쳐져요.' :
+  const previewMessage = guidedPrediction
+    ? '답을 고른 뒤 ‘파형 펼쳐서 확인’을 누르거나 ‘예측 없이 파형 보기’를 누르세요.'
+    : '예측을 제출하면 출력 파형이 펼쳐져요.';
+  byId('event').textContent = preview ? previewMessage :
     (error || current.reason) + ' 현재 ' + currentOutputs + '.';
   for (const [id, {row}] of truthRows) {
     if (!preview && current.rule === id) row.setAttribute('aria-current', 'true');
@@ -581,7 +604,7 @@ function drawTraces() {
     const message = document.createElement('p');
     message.textContent = '칩 핀을 선택해 파형을 표시하세요.';
     traces.replaceChildren(message);
-    renderTraceDetail();
+    renderTraceSelection();
     return;
   }
   const preview = isPreview();
@@ -648,7 +671,7 @@ function drawTraces() {
   else if (right > traces.scrollLeft + traces.clientWidth - 8) {
     traces.scrollLeft = right - traces.clientWidth + 8;
   }
-  renderTraceDetail();
+  renderTraceSelection();
 }
 
 start(lesson.tasks[0]);

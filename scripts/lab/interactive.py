@@ -1,5 +1,6 @@
 """Build and attach a self-contained digital logic lesson to a review pack."""
 import argparse
+from dataclasses import dataclass
 from base64 import b64encode
 from hashlib import sha256
 import html
@@ -14,9 +15,66 @@ from .review_pack.manifest import DATA, VENDOR_DIR, load_manifest, output_names,
 
 SKILL = Path('.claude/skills/logic-lab-interactive')
 FONT_VENDOR = Path('.claude/skills/logic-lab-review-pack/assets/vendor')
-MODELS = {'74hc76': '74hc76.mjs'}
+MODELS = {'74hc76': '74hc76.mjs', 'd-latch': 'd-latch.mjs'}
 EVIDENCE = '자료_인터랙티브'
 REQUIRED_CHECKS = {'logic', 'browser', 'visual'}
+LESSON_ID = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*')
+LESSON_LINK = re.compile(r'\n?<p><a data-interactive-lab="[a-z0-9-]+" [^>]*>[^<]*</a></p>')
+
+
+@dataclass
+class Attachment:
+    lesson: dict
+    lesson_id: str | None
+
+    @property
+    def key(self):
+        return self.lesson_id or self.lesson['model_id']
+
+    @property
+    def filename(self):
+        prefix = experiment_folder_name(self.lesson['experiment'])
+        suffix = self.lesson_id or self.lesson['chip']
+        return f'{prefix}_인터랙티브_{suffix}.html'
+
+    def link(self, text):
+        return with_link(text, self.lesson['topic_id'], self.key, self.filename, self.lesson['link_label'])
+
+
+def registered_lessons(directory, manifest):
+    code = f"{manifest['experiment']:02d}"
+    legacy = directory / f'{code}.json'
+    if legacy.is_file():
+        yield legacy, Attachment(load_lesson(legacy, manifest), None)
+    for author in sorted((directory / code).glob('*.json')):
+        if author.name.endswith('.verification.json'):
+            continue
+        if not LESSON_ID.fullmatch(author.stem):
+            raise ValueError('인터랙티브 자료 ID를 확인하세요: ' + author.stem)
+        yield author, Attachment(load_lesson(author, manifest), author.stem)
+
+
+def published_attachment(entry, manifest):
+    lesson = load_lesson(entry / 'lesson.json', manifest)
+    evidence = read_json(entry / 'verification.json')
+    lesson_id = evidence.get('lesson_id')
+    if lesson_id is not None and not LESSON_ID.fullmatch(lesson_id):
+        raise ValueError('인터랙티브 자료 ID를 확인하세요: ' + entry.name)
+    attachment = Attachment(lesson, lesson_id)
+    if entry.name != attachment.key:
+        raise ValueError('인터랙티브 검증 경로가 자료 ID와 달라요: ' + entry.name)
+    return attachment, evidence
+
+
+def validate_attachment_names(attachments):
+    keys, filenames = set(), set()
+    for attachment in attachments:
+        filename = attachment.filename.casefold()
+        if attachment.key in keys or filename in filenames:
+            raise ValueError('인터랙티브 자료 ID 또는 파일명이 겹쳐요: ' + attachment.key)
+        keys.add(attachment.key)
+        filenames.add(filename)
+
 
 
 def read_json(path):
@@ -90,25 +148,35 @@ def render(lesson, assets, note_name, vendor):
         return (assets / name).read_text(encoding='utf-8')
 
     payload = {key: value for key, value in lesson.items() if key != 'sources'}
+    prediction_sidebar = payload.pop('prediction_sidebar', False)
+    css = read('lesson.css')
+    sync_prediction = ''
+    if prediction_sidebar:
+        css += read('prediction-sidebar.css')
+        sync_prediction = "  syncPredictionPlacement(!narrowLayout.matches && panelControls.get('right').open);\n"
+    default_hint = '바뀐 입력과 출력 핀에서 파형을 선택해요.'
+    if lesson['model_id'] == '74hc76':
+        default_hint += ' PR·CLR은 0에서 작동해요.'
     values = {
         'TITLE': html.escape(lesson['title']),
         'CHIP': html.escape(lesson['chip']),
+        'CIRCUIT_HINT': html.escape(lesson.get('circuit_hint', default_hint)),
         'EXPERIMENT': f"{lesson['experiment']:02d}",
         'NOTE': html.escape(note_name + '#' + lesson['topic_id']),
         'FONTS': embedded_fonts(vendor),
-        'CSS': read('lesson.css'),
+        'CSS': css,
         'CIRCUIT': read(lesson['model_id'] + '.svg'),
         'LESSON': json.dumps(payload, ensure_ascii=False, separators=(',', ':')).replace('<', r'\u003c'),
         'MODEL': read(MODELS[lesson['model_id']]),
         'RUNTIME': read('lesson.js'),
-        'SHELL': read('shell.js'),
+        'PREDICTION_LAYOUT': read('prediction-sidebar.js') + '\n' if prediction_sidebar else '',
+        'SHELL': read('shell.js').replace('@@SYNC_PREDICTION@@', sync_prediction),
     }
-    return re.sub(r'@@([A-Z]+)@@', lambda match: values[match[1]], read('lesson.html'))
+    return re.sub(r'@@([A-Z_]+)@@', lambda match: values[match[1]], read('lesson.html'))
 
 
-def with_link(text, topic, model_id, filename, label):
-    marker = 'data-interactive-lab="' + model_id + '"'
-    text = re.sub(r'\n?<p><a ' + re.escape(marker) + r' [^>]*>[^<]*</a></p>', '', text)
+def with_link(text, topic, key, filename, label):
+    marker = 'data-interactive-lab="' + key + '"'
     article = re.compile(r'(<article class="topic" id="' + re.escape(html.escape(topic))
                          + r'">.*?)(</article>)', re.S)
     link = (f'\n<p><a {marker} href="{html.escape(filename)}">'
@@ -126,54 +194,86 @@ def has_required_checks(checks):
     )
 
 
-def attach(root, folder, manifest, *, reviewed_only=False):
-    """Attach a registered lesson to a stage before converting the note to Markdown."""
-    root, folder = Path(root), Path(folder)
-    skill = root / SKILL
-    code = f"{manifest['experiment']:02d}"
-    author = skill / 'lessons' / f'{code}.json'
-    if not author.is_file():
-        return None
-    lesson = load_lesson(author, manifest)
-    note = folder / output_names(lesson['experiment'])['note_html']
-    filename = f"{experiment_folder_name(lesson['experiment'])}_인터랙티브_{lesson['chip']}.html"
-    model = lesson['model_id']
+def build_attachment(root, skill, note_name, author, attachment, *, reviewed_only):
+    lesson = attachment.lesson
     sources = []
     for source in lesson['sources']:
         if not safe_relative(source['path']):
             raise ValueError('자료 근거는 저장소 안의 상대 경로여야 해요.')
         candidate = (root / source['path']).resolve()
-        if not candidate.is_relative_to(root.resolve()):
+        if not candidate.is_relative_to(root):
             raise ValueError('자료 근거가 저장소 밖을 가리켜요.')
         sources.append({**source, 'sha256': digest(candidate)})
 
-    document = render(lesson, skill / 'assets', note.name, root / FONT_VENDOR)
-    linked = with_link(note.read_text(encoding='utf-8'), lesson['topic_id'], model, filename, lesson['link_label'])
+    document = render(lesson, skill / 'assets', note_name, root / FONT_VENDOR)
     evidence = {
         'topic_id': lesson['topic_id'],
         'html_sha256': sha256(document.encode('utf-8')).hexdigest(),
         'lesson_sha256': digest(author),
         'sources': sources,
     }
-    receipt = skill / 'lessons' / f'{code}.verification.json'
-    if receipt.is_file():
-        reviewed = read_json(receipt)
-        if reviewed['basis'] != evidence:
-            raise ValueError('실험 파일이나 근거가 바뀌었어요. 인터랙티브 검증을 다시 실행하세요.')
-        if not has_required_checks(reviewed['checks']):
-            raise ValueError('논리·브라우저·화면 검증 결과가 모두 필요해요.')
+    if attachment.lesson_id is not None:
+        evidence['lesson_id'] = attachment.lesson_id
+    receipt = author.with_suffix('.verification.json')
+    reviewed = read_json(receipt) if receipt.is_file() else {}
+    if reviewed.get('basis') == evidence and has_required_checks(reviewed.get('checks')):
         evidence['checks'] = reviewed['checks']
     elif reviewed_only:
-        raise ValueError('학습팩 빌드에는 검증을 마친 실험만 연결할 수 있어요.')
+        raise ValueError(f'{attachment.key}: 현재 원고와 근거에 맞는 논리·브라우저·화면 검증 기록이 필요해요.')
+    return document, evidence
 
-    path = folder / filename
-    provenance = folder / DATA / EVIDENCE / model
-    provenance.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(author, provenance / 'lesson.json')
-    write_json(provenance / 'verification.json', evidence)
-    path.write_bytes(document.encode('utf-8'))
+
+def attach(root, folder, manifest, *, reviewed_only=False):
+    """Rebuild all registered lessons in a stage before converting the note to Markdown."""
+    root, folder = Path(root).resolve(), Path(folder)
+    skill = root / SKILL
+    registered = list(registered_lessons(skill / 'lessons', manifest))
+    registered.sort(key=lambda item: item[1].key)
+    validate_attachment_names(attachment for _, attachment in registered)
+    directory = folder / DATA / EVIDENCE
+    previous = []
+    if directory.exists():
+        previous = [published_attachment(entry, manifest)[0] for entry in sorted(directory.iterdir())]
+    if not registered and not previous:
+        return []
+
+    note = folder / output_names(manifest['experiment'])['note_html']
+    linked = LESSON_LINK.sub('', note.read_text(encoding='utf-8'))
+    generated = []
+    for author, attachment in registered:
+        try:
+            document, evidence = build_attachment(
+                root, skill, note.name, author, attachment, reviewed_only=reviewed_only,
+            )
+            linked = attachment.link(linked)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            raise ValueError(f'{author.name}: {exc}') from exc
+        generated.append((author, attachment, document, evidence))
+
+    filenames = {attachment.filename for _, attachment in registered}
+    keys = {attachment.key for _, attachment in registered}
+    previous_filenames = {attachment.filename.casefold() for attachment in previous}
+    new_filenames = {name.casefold() for name in filenames} - previous_filenames
+    for path in folder.iterdir():
+        if path.name.casefold() in new_filenames:
+            raise ValueError('인터랙티브 출력 파일명이 기존 파일과 겹쳐요: ' + path.name)
+    for old in previous:
+        if old.filename not in filenames:
+            (folder / old.filename).unlink(missing_ok=True)
+        if old.key not in keys:
+            shutil.rmtree(directory / old.key)
+
+    paths = []
+    for author, attachment, document, evidence in generated:
+        path = folder / attachment.filename
+        provenance = directory / attachment.key
+        provenance.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(author, provenance / 'lesson.json')
+        write_json(provenance / 'verification.json', evidence)
+        path.write_bytes(document.encode('utf-8'))
+        paths.append(path)
     note.write_bytes(linked.encode('utf-8'))
-    return path
+    return paths
 
 
 def check_attachment(folder, manifest, root=None):
@@ -181,36 +281,43 @@ def check_attachment(folder, manifest, root=None):
     note = folder / output_names(manifest['experiment'])['note_html']
     try:
         text = note.read_text(encoding='utf-8') if note.is_file() else ''
-        linked = set(re.findall(r'\bdata-interactive-lab="([a-z0-9-]+)"', text))
+        linked = LESSON_LINK.sub('', text)
         entries = sorted(directory.iterdir()) if directory.exists() else []
-        verified = set()
-        for entry in entries:
-            lesson_path = entry / 'lesson.json'
-            lesson = load_lesson(lesson_path, manifest)
-            evidence = read_json(entry / 'verification.json')
-            filename = f"{experiment_folder_name(lesson['experiment'])}_인터랙티브_{lesson['chip']}.html"
+        records = [published_attachment(entry, manifest) for entry in entries]
+        validate_attachment_names(attachment for attachment, _ in records)
+        if root is not None:
+            root = Path(root).resolve()
+            skill = root / SKILL
+            registered = list(registered_lessons(skill / 'lessons', manifest))
+            validate_attachment_names(attachment for _, attachment in registered)
+            expected = {attachment.key: (author, attachment) for author, attachment in registered}
+            differences = sorted(expected.keys() ^ {attachment.key for attachment, _ in records})
+            if differences:
+                raise ValueError('스테이지와 등록 원고의 자료 목록이 달라요: ' + ', '.join(differences))
+        for entry, (attachment, evidence) in zip(entries, records, strict=True):
+            lesson = attachment.lesson
+            filename = attachment.filename
             if (evidence['topic_id'] != lesson['topic_id']
-                    or evidence['lesson_sha256'] != digest(lesson_path)
+                    or evidence['lesson_sha256'] != digest(entry / 'lesson.json')
                     or evidence['html_sha256'] != digest(folder / filename)
                     or not has_required_checks(evidence.get('checks'))):
                 raise ValueError('현재 파일과 일치하는 검증 기록이 필요해요: ' + filename)
-            if text != with_link(text, lesson['topic_id'], lesson['model_id'], filename, lesson['link_label']):
-                raise ValueError('실험설명에 인터랙티브 링크가 필요해요: ' + filename)
-            verified.add(lesson['model_id'])
+            linked = attachment.link(linked)
             if root is not None:
-                for source, recorded in zip(lesson['sources'], evidence['sources'], strict=True):
-                    path = (root / source['path']).resolve()
-                    if (not path.is_relative_to(root) or source['path'] != recorded['path']
-                            or digest(path) != recorded['sha256']):
-                        raise ValueError('인터랙티브 원문이 바뀌었어요: ' + source['path'])
-        if linked != verified:
-            raise ValueError('링크와 함께 검증 기록이 필요해요.')
+                author, registered_attachment = expected[attachment.key]
+                _, current_evidence = build_attachment(
+                    root, skill, note.name, author, registered_attachment, reviewed_only=True,
+                )
+                if registered_attachment.filename != filename or current_evidence != evidence:
+                    raise ValueError('스테이지의 기록이 등록 원고 및 검증 기록과 달라요: ' + filename)
+        if text != linked or text.count('data-interactive-lab=') != len(records):
+            raise ValueError('실험설명 링크의 대상·위치와 검증 기록을 확인하세요.')
     except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
         return ['인터랙티브 자료: ' + str(exc)]
     return []
 
 
-def prepare_existing(root, target, stage):
+def prepare_existing(root, target, stage, *, reviewed_only=False):
     """Copy pack-owned files and update the note, its Markdown and the lesson in a stage."""
     from .review_pack.html2md import convert_pack
 
@@ -226,15 +333,16 @@ def prepare_existing(root, target, stage):
         destination = stage / name
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
-    path = attach(root, stage, manifest)
-    if path is None:
+    had_lessons = (stage / DATA / EVIDENCE).is_dir()
+    paths = attach(root, stage, manifest, reviewed_only=reviewed_only)
+    if not paths and not had_lessons:
         raise ValueError('등록된 실험 원고가 없어요.')
     names = output_names(manifest['experiment'], review_presentation_version=manifest.get('review_presentation_version'))
     review = None if manifest.get('review_presentation_version') == 2 else stage / names['review_html']
     convert_pack(stage / names['note_html'], review, manifest)
     manifest['generated_files'] = sorted(p.relative_to(stage).as_posix() for p in stage.rglob('*') if p.is_file())
     write_json(stage / manifest_path, manifest)
-    return path
+    return paths
 
 
 def main(argv=None):
@@ -255,21 +363,20 @@ def main(argv=None):
         with pack_write_lock(target):
             if args.stage:
                 stage = args.stage.resolve()
-                path = prepare_existing(root, target, stage)
+                paths = prepare_existing(root, target, stage)
                 vendor = stage.parent / VENDOR_DIR
                 if not vendor.exists():
                     sync_shared_vendor(target.parent / VENDOR_DIR, vendor)
-                print(path)
+                for path in paths:
+                    print(path)
             else:
-                receipt = root / SKILL / 'lessons' / f'{args.experiment:02d}.verification.json'
-                if not receipt.is_file():
-                    raise ValueError('검증 기록이 필요해요. 먼저 스테이지에서 실험을 검증하세요.')
                 with TemporaryDirectory(prefix='logic-lab-interactive-') as tmp:
                     stage = Path(tmp) / 'stage'
                     sync_shared_vendor(target.parent / VENDOR_DIR, stage.parent / VENDOR_DIR)
-                    path = prepare_existing(root, target, stage)
+                    paths = prepare_existing(root, target, stage, reviewed_only=True)
                     backup = _publish_locked(stage, target, root)
-                print(target / path.name)
+                for path in paths:
+                    print(target / path.name)
                 print('백업: ' + str(backup))
     except (OSError, ValueError, KeyError, TypeError) as exc:
         parser.exit(1, f'실패: {exc}\n')

@@ -249,11 +249,14 @@ button, input, select { font-family: inherit; color: inherit; }
 
 .plot-wrap {
   flex: none; width: 100%; max-width: 760px; margin: 0 auto; min-width: 0;
-  padding: var(--s3); border-radius: var(--radius);
+  padding: var(--s3) var(--s4); border-radius: var(--radius);
   background: var(--surface); border: 1px solid var(--line);
-  display: flex; flex-direction: column; gap: var(--s2);
+  display: flex; flex-direction: column; gap: var(--s3);
 }
-.plot-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s2); font-size: var(--fs-label); }
+.plot-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); font-size: var(--fs-label); }
+@media (max-width: 480px) {
+  .plot-wrap { padding-inline: var(--s3); }
+}
 .plot-wrap svg { width: 100%; height: auto; display: block; color: var(--ink); }
 .plot-axis { stroke: var(--line); stroke-width: 1.5; }
 .plot-guide { stroke: var(--ink-2); stroke-width: 1.2; stroke-dasharray: 3 3; }
@@ -315,14 +318,14 @@ svg :is(.fig-dot, .fig-text)[data-node-color="red"] { fill: var(--danger, #dc262
 [data-led][data-level="unknown"] { opacity: .5; }
 
 #trace-title { margin-bottom: 0; }
-.trace-hint { margin-top: 0; }
+.trace-hint { margin-top: var(--s1); }
 .trace-hint span + span { display: none; }
 @media (hover: none) {
   .trace-hint span:first-child { display: none; }
   .trace-hint span + span { display: inline; }
 }
 .history { display: flex; flex: none; align-items: center; gap: var(--s2); margin-inline-start: auto; }
-.plot-head #advance { align-self: center; }
+.plot-head #advance { align-self: center; max-inline-size: 100%; padding: var(--s1) var(--s3); }
 #fixed-inputs { margin: 0; white-space: nowrap; overflow-x: auto; }
 #fixed-inputs strong { color: var(--ink); margin-inline-end: var(--s1); }
 .trace-area { position: relative; }
@@ -346,11 +349,12 @@ svg :is(.fig-dot, .fig-text)[data-node-color="red"] { fill: var(--danger, #dc262
 .trace-card small { display: block; font-size: var(--fs-label); }
 .trace-card [data-trace-step] { margin-bottom: var(--s1); color: var(--ink-2); }
 .trace-card [data-trace-truth] { margin-top: var(--s1); color: var(--signal-color); }
-#trace-hover {
+#trace-popup {
   position: absolute; z-index: 1; width: min(300px, 100%);
   border: 1px solid var(--line); border-inline-start: 3px solid var(--signal-color);
 }
-#trace-detail { padding-inline-end: calc(var(--tap) + var(--s2)); scroll-margin-block: var(--s3); }
+#trace-popup[aria-hidden="true"] { pointer-events: none; }
+#trace-popup:not([aria-hidden]) { padding-inline-end: calc(var(--tap) + var(--s2)); }
 .trace-close {
   position: absolute; inset-block-start: 0; inset-inline-end: 0;
   min-width: var(--tap); min-height: var(--tap); font-size: 20px;

@@ -1,0 +1,39 @@
+<svg viewBox="0 0 368 310" role="group" aria-labelledby="c2-title c2-description">
+  <title id="c2-title">D 래치 C2 결선과 관측 핀</title>
+  <desc id="c2-description">74HC00의 1번에서 D, 2번에서 E, 8번에서 Q, 11번에서 Q′를 관측해요.</desc>
+
+  <style>#c2-dip .pin-hit { y: -19px; height: 38px; }</style>
+
+  <g data-net="D">
+    <path class="fig-ink" d="M27 38H104"/>
+    <circle class="fig-ink" cx="24" cy="38" r="3"/>
+  </g>
+  <g data-net="E">
+    <path class="fig-ink" d="M27 76H104"/>
+    <circle class="fig-ink" cx="24" cy="76" r="3"/>
+  </g>
+  <path class="fig-ink" d="M104 266H63V277m-8 0h16m-13 4h10m-7 4h4"/>
+  <path class="fig-ink" d="M262 38H337V26m-7 0h14"/>
+  <text class="fig-text" x="337" y="18" text-anchor="middle">+5 V</text>
+
+  <g data-net="Q′">
+    <path class="fig-ink" d="M262 152h12l3-4 4 8 4-8 4 8 4-8 3 4h12m20 0h21v11m-7 0h14m-11 4h8m-6 4h4"/>
+    <text class="fig-muted" x="301" y="139" text-anchor="middle">330 Ω</text>
+    <g data-led="Q′">
+      <circle class="fig-ink led-body" cx="318" cy="152" r="10"/>
+      <path class="fig-ink" d="M308 152h5m0-4v8l9-4zM322 148v8m0-4h6"/>
+    </g>
+  </g>
+  <g data-net="Q">
+    <path class="fig-ink" d="M262 266h12l3-4 4 8 4-8 4 8 4-8 3 4h12m20 0h21v11m-7 0h14m-11 4h8m-6 4h4"/>
+    <text class="fig-muted" x="301" y="253" text-anchor="middle">330 Ω</text>
+    <g data-led="Q">
+      <circle class="fig-ink led-body" cx="318" cy="266" r="10"/>
+      <path class="fig-ink" d="M308 266h5m0-4v8l9-4zM322 262v8m0-4h6"/>
+    </g>
+  </g>
+
+  <path class="fig-ink chip-package" d="M126 18H170Q183 39 196 18H240V295H126Z"/>
+  <text class="chip-mark" x="183" y="146" text-anchor="middle">74HC00</text>
+  <g id="c2-dip" data-dip data-first-y="38" data-pitch="38" data-left="126" data-right="240"></g>
+</svg>

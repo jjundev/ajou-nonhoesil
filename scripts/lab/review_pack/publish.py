@@ -54,7 +54,9 @@ def _publish_locked(stage,destination,root):
             raise ValueError('PDF 학습팩의 stage를 다시 build하세요')
         old_owned=set(previous.get('generated_files',[]))
     user_files=[p for p in dest.rglob('*') if p.is_file() and p.relative_to(dest).as_posix() not in old_owned] if dest.exists() else []
-    if any(p.relative_to(dest).as_posix() in new_owned for p in user_files):raise ValueError('User file collision')
+    new_names={name.casefold() for name in new_owned}
+    if any(p.relative_to(dest).as_posix().casefold() in new_names for p in user_files):
+        raise ValueError('User file collision')
     dest.parent.mkdir(parents=True,exist_ok=True)
     repo_vendor=root/'.claude/skills/logic-lab-review-pack/assets/vendor'
     src_vendor=repo_vendor if repo_vendor.is_dir() else stage.parent/VENDOR_DIR

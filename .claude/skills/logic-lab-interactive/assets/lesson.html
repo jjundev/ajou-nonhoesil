@@ -33,7 +33,7 @@
         </section>
       </div>
     </aside>
-    <main class="stage" id="stage" aria-label="74HC76 회로 실험실">
+    <main class="stage" id="stage" aria-label="@@CHIP@@ 회로 실험실">
       <div class="predict-slot">
         <section class="predict-card" id="prediction" aria-label="예측 확인">
           <div class="predict-head">
@@ -44,13 +44,14 @@
             <button class="predict-skip" id="skip" type="button">건너뛰기</button>
           </div>
           <fieldset id="choices"><legend class="visually-hidden">예측 답안</legend><div class="predict-opts" id="options"></div></fieldset>
+          <p class="sub" id="prediction-next" role="status" hidden></p>
           <button type="button" class="predict-btn submit" id="submit" hidden>예측 확인</button>
           <p class="predict-feedback" id="feedback" role="status" hidden></p>
         </section>
       </div>
-      <section class="lab-stage-wrap" aria-label="74HC76 결선 회로도">
+      <section class="lab-stage-wrap" aria-label="@@CHIP@@ 결선 회로도">
         <div class="lab-stage"><div class="circuit-scroll" id="circuit">@@CIRCUIT@@</div></div>
-        <p class="sub circuit-hint">바뀐 입력과 출력 핀에서 파형을 선택해요. PR·CLR은 0에서 작동해요.</p>
+        <p class="sub circuit-hint">@@CIRCUIT_HINT@@</p>
       </section>
       <div class="plot-slot">
         <section class="plot-wrap" aria-labelledby="trace-title">
@@ -70,19 +71,13 @@
           <p id="trace-keys" class="visually-hidden">좌우 화살표로 조작 시점을, 위아래 화살표로 핀을 선택해요. Enter로 설명을 열고 Escape로 닫아요.</p>
           <div class="trace-area">
             <div id="traces" tabindex="0" role="region" aria-label="조작 순서별 신호 파형" aria-describedby="trace-keys"></div>
-            <div id="trace-hover" class="trace-card diagnosis" aria-hidden="true" hidden>
+            <div id="trace-popup" class="trace-card diagnosis" hidden>
+              <button type="button" class="text-btn trace-close" aria-label="파형 설명 닫기" hidden>×</button>
               <b data-trace-value></b>
               <small data-trace-step></small>
               <span data-trace-reason></span>
               <small data-trace-truth></small>
             </div>
-          </div>
-          <div id="trace-detail" class="trace-card diagnosis" hidden>
-            <button type="button" class="text-btn trace-close" aria-label="파형 설명 닫기">×</button>
-            <b data-trace-value></b>
-            <small data-trace-step></small>
-            <span data-trace-reason></span>
-            <small data-trace-truth></small>
           </div>
           <p id="trace-announcement" class="visually-hidden" role="status"></p>
           <p id="event" role="status"></p>
@@ -109,7 +104,7 @@
 <script type="application/json" id="lesson">@@LESSON@@</script>
 <script type="module">
 @@MODEL@@
-@@SHELL@@
+@@PREDICTION_LAYOUT@@@@SHELL@@
 @@RUNTIME@@
 </script>
 </body>
