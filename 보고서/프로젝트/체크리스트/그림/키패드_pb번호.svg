@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 710 600" width="710" height="600" font-family="Malgun Gothic, sans-serif">
+<rect width="710" height="600" fill="#fff"/>
+<rect x="68" y="40" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="130" y="102" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb0</text>
+<rect x="218" y="40" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="280" y="102" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb1</text>
+<rect x="368" y="40" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="430" y="102" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb2</text>
+<rect x="518" y="40" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="580" y="102" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb3</text>
+<rect x="68" y="165" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="130" y="227" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb4</text>
+<rect x="218" y="165" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="280" y="227" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb5</text>
+<rect x="368" y="165" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="430" y="227" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb6</text>
+<rect x="518" y="165" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="580" y="227" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb7</text>
+<rect x="68" y="290" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="130" y="352" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb8</text>
+<rect x="218" y="290" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="280" y="352" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb9</text>
+<rect x="368" y="290" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="430" y="352" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb10</text>
+<rect x="518" y="290" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="580" y="352" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb11</text>
+<rect x="68" y="415" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="130" y="477" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb12</text>
+<rect x="218" y="415" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="280" y="477" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb13</text>
+<rect x="368" y="415" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="430" y="477" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb14</text>
+<rect x="518" y="415" width="124" height="100" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="580" y="477" font-size="34" fill="#111" text-anchor="middle" font-weight="bold">pb15</text>
+<text x="355" y="560" font-size="18" fill="#555" text-anchor="middle" font-weight="normal">케이블 커넥터</text>
+<rect x="120" y="530" width="470" height="46" rx="4" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-dasharray="6 4"/>
+</svg>
