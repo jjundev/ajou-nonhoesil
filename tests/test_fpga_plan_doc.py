@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DOC = ROOT / "보고서/프로젝트/output/FPGA_설계_계획서.md"
 TITLE = "FPGA 설계 Digital Door Lock 설계 계획서"
 SECTIONS = ["설계 목표", "과제 요구사항 분석 및 구현 방안", "예상 문제점 및 해결 방안",
-            "프로젝트 동작 블록 다이어그램", "조원 역할 분담", "조교님께 확인할 사항", "출처 및 참고문헌"]
+            "프로젝트 동작 블록 다이어그램", "조원 역할 분담", "조교님께 확인한 사항", "출처 및 참고문헌"]
 
 
 def section(name: str) -> str:
@@ -133,8 +133,21 @@ def test_roles_cover_both_members_and_modules():
         assert s in text, s
 
 
-def test_ta_questions_three():
-    assert len(re.findall(r"^- ", section("조교님께 확인할 사항"), re.M)) == 3
+def test_ta_answers_recorded():
+    # 2026-11-23 조교님 답변 여섯 가지
+    assert len(tables(section("조교님께 확인한 사항"))[0].rows) == 6
+
+
+def test_empty_ok_counts_as_wrong():
+    # 조교님 답변 4: 빈 입력 OK 도 오답
+    assert "오답 1회로 센" in _eval_row(5)
+    assert "세지 않" not in _eval_row(5)
+
+
+def test_overflow_keeps_last_six():
+    # 조교님 답변 5: 마지막으로 입력된 6개의 숫자를 받는다
+    assert "마지막" in _eval_row(8) and "234567" in _eval_row(8)
+    assert "7번째 숫자부터" not in DOC.read_text(encoding="utf-8")
 
 
 def test_no_placeholders():
@@ -161,8 +174,18 @@ def test_roles_cover_every_module():
         assert s in text, s
 
 
+def test_every_task_and_date_has_work_for_both():
+    # 담당·일정 표에서 두 조원의 칸이 모두 채워져 있어야 한다
+    found = [t for t in tables(section("조원 역할 분담")) if any("최승민" in h for h in t.header)]
+    assert len(found) == 2
+    for t in found:
+        for r in t.rows:
+            assert len(r) == len(t.header), r
+            assert all(c.strip() not in ("", "-") for c in r), r
+
+
 def test_e4_covers_both_readings():
-    # 조교님께 묻는 두 해석(변경 후 옛 값 / 변경 도중 옛 값) 모두 동작이 적혀 있어야 한다
+    # 조교님께 여쭌 두 해석(변경 후 옛 값 / 변경 도중 옛 값) 모두 동작이 적혀 있어야 한다
     assert "도중" in _eval_row(4)
 
 
@@ -195,3 +218,103 @@ def test_png_matches_svg():
     for name in ["블록다이어그램", "상태도", "키배치"]:
         digest = hashlib.sha256((FIG / f"{name}.svg").read_bytes()).hexdigest()
         assert png_text(FIG / f"{name}.png").get("svg-sha256") == digest, name
+
+# ---- 2026-11-23 검토 반영 -------------------------------------------------
+def test_screen_table_is_six_cells():
+    # 테스트벤치 기대값이 되는 표: 화면마다 여섯 자리가 모두 정해져 있어야 한다
+    t = next(t for t in tables(section(REQ)) if t.header[0].strip() == "화면")
+    assert [h.strip() for h in t.header[1:]] == list("123456")
+    shown = {}
+    for r in t.rows:
+        cells = [c.strip() for c in r[1:]]
+        assert len(cells) == 6 and all(c == "끔" or len(c) == 1 for c in cells), r
+        shown[r[0]] = "".join(" " if c == "끔" else c for c in cells)
+    assert set(v.rstrip() for v in shown.values()) == {
+        "------", "12----", "OPEn", "Error", "nonE", "donE", "InIt", "nEW", "AGAIn", "LOCK09"}
+
+
+def test_third_wrong_goes_to_lock_in_r4():
+    # R4 와 E2 가 3회째 오답을 다르게 말하지 않는다
+    r4 = next(r for t in tables(section(REQ)) for r in t.rows if r[0].strip() == "R4")
+    assert "3회째" in r4[2] and "LOCK" in r4[2]
+
+
+def test_e9_keeps_notice_wording():
+    assert "코드에 입력한 시간까지" in _eval_row(9) and "LOCK_SEC=10" in _eval_row(9)
+
+
+def test_buffer_clear_points_written():
+    assert "IDLE, NEW_PW, NEW_CONFIRM에 들어갈 때마다 비운다" in section(REQ)
+
+
+def test_fsm_to_display_signals_named():
+    for s in ["메시지 종류", "24비트", "십진 두 자리"]:
+        assert s in section(BLOCK), s
+    svg = (FIG / "블록다이어그램.svg").read_text(encoding="utf-8")
+    assert "메시지" in svg
+
+def test_lock_end_and_timer_written():
+    text = section(REQ)
+    assert '"LOCK01"을 1초 띄운 뒤 "LOCK00" 없이' in text
+    assert "0부터 50MHz 클록을 세어" in text
+    # 시간은 door_fsm 카운터로 재므로 100ms 틱은 본문·그림 어디에도 없다
+    assert "100ms" not in DOC.read_text(encoding="utf-8")
+    assert "100ms" not in (FIG / "블록다이어그램.svg").read_text(encoding="utf-8")
+
+
+def test_undefined_keys_and_simultaneous_keys_written():
+    assert "표에 없는 키는 모두 무시한다" in section(REQ)
+    assert "모두 뗄 때까지 받지 않는다" in section(PROB)
+
+
+def test_board_pass_criteria_written():
+    assert "통과로 본다" in section(PROB) and "pb에 넣어" in section(PROB)
+
+# ---- 2026-11-23 최종본 검토 반영 ------------------------------------------
+def _row(sec, key):
+    return next(r for t in tables(section(sec)) for r in t.rows if r[0].strip() == key)
+
+
+def test_change_states_edit_buffer_and_compare_length():
+    # "표에 없는 키는 무시"와 A1(변경 중 BS·CLR)이 부딪히지 않는다
+    for s in ["NEW_PW", "NEW_CONFIRM"]:
+        assert "BS, CLR은 버퍼를 고친다" in _row(REQ, s)[2], s
+    confirm = _row(REQ, "NEW_CONFIRM")[2]
+    assert "OK를 누르면" in confirm and "길이까지 비교" in confirm
+    assert "그 길이" in section(REQ)
+
+
+def test_ta_answers_not_widened():
+    # 답변 칸에는 조교님이 답하신 내용만 적는다
+    rows = tables(section("조교님께 확인한 사항"))[0].rows
+    assert rows[1][1].startswith("그대로 진행하면 된다") and "열린 상태(OPEN)로 돌아가" in rows[1][1]
+    assert rows[3][0].startswith("입력 대기에서")
+
+
+def test_por_counter_has_initial_value():
+    assert "선언할 때 초기값 0" in section(PROB)
+
+
+def test_extra_features_simulated_and_separated():
+    assert "E1~E10과 추가 구현 A1~A3" in section(PROB)
+    assert "A1~A3" in section("조원 역할 분담")
+    assert "추가 구현 A3" in _row(REQ, "R6")[2]
+    assert "LOCK40" in _row(REQ, "A2")[3] and "맞히지 않고" in _row(REQ, "A2")[3]
+
+
+def test_table_captions_follow_format():
+    # 표 캡션 규칙: 소절 제목이 표 제목을 겸하지 못하면 불릿 제목 + 탭 들여쓰기
+    lines = DOC.read_text(encoding="utf-8").splitlines()
+    for name in ["상태별 표시와 전이", "화면 여섯 자리", "조교님 답변과 반영"]:
+        i = lines.index(f"- **{name}**")
+        assert lines[i + 1].startswith("	|"), name
+
+
+def test_block_figure_draws_ticks_and_reset():
+    svg = (FIG / "블록다이어그램.svg").read_text(encoding="utf-8")
+    for s in [">10ms 틱<", ">1kHz 틱<", ">rst<", "clock_50m은 모든 모듈"]:
+        assert s in svg, s
+
+
+def test_schedule_has_report():
+    assert "12/23" in section("조원 역할 분담")

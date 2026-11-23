@@ -8,6 +8,22 @@
       "url": "https://app.notion.com/p/FPGA-Digital-Door-Lock-v1-sync-42a3a7cdbd5443ad97e7f040458a4fd0-41fb06d263bc818b86c1fcd0e2b359b1",
       "source": "FPGA_설계_계획서.md",
       "uploaded_at": "2026-11-21T21:47:43.916513+09:00"
+    },
+    {
+      "kind": "예비보고서",
+      "version": 2,
+      "page_id": "421b06d2-63bc-810f-b537-e14ff03082df",
+      "url": "https://app.notion.com/p/FPGA-Digital-Door-Lock-v2-sync-5816d526d56240149bc931971c874649-421b06d263bc810fb537e14ff03082df",
+      "source": "FPGA_설계_계획서.md",
+      "uploaded_at": "2026-11-23T22:49:02.041582+09:00"
+    },
+    {
+      "kind": "예비보고서",
+      "version": 3,
+      "page_id": "421b06d2-63bc-81b6-a9a7-ff60d9f39a16",
+      "url": "https://app.notion.com/p/FPGA-Digital-Door-Lock-v3-sync-63f1fc0e4f32447795ea7475bf35f8e7-421b06d263bc81b6a9a7ff60d9f39a16",
+      "source": "FPGA_설계_계획서.md",
+      "uploaded_at": "2026-11-23T23:22:58.351363+09:00"
     }
   ]
 }
