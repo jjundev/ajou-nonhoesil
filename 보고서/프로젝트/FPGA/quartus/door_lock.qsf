@@ -1,0 +1,83 @@
+set_global_assignment -name FAMILY "Cyclone IV E"
+set_global_assignment -name DEVICE EP4CE22F17C6
+set_global_assignment -name TOP_LEVEL_ENTITY door_lock
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name VERILOG_INPUT_VERSION VERILOG_2001
+set_global_assignment -name SEARCH_PATH ../rtl
+set_global_assignment -name NUM_PARALLEL_PROCESSORS ALL
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
+set_global_assignment -name SDC_FILE door_lock.sdc
+set_global_assignment -name VERILOG_FILE ../rtl/door_lock.v
+set_global_assignment -name VERILOG_FILE ../rtl/key_decode.v
+set_global_assignment -name VERILOG_FILE ../rtl/door_fsm.v
+set_global_assignment -name VERILOG_FILE ../rtl/display_ctrl.v
+set_global_assignment -name VERILOG_FILE ../rtl/por.v
+set_global_assignment -name VERILOG_FILE ../rtl/tick_gen.v
+set_global_assignment -name VERILOG_FILE ../rtl/key_input.v
+set_global_assignment -name VERILOG_FILE ../rtl/seg_driver.v
+
+set_location_assignment PIN_R8 -to clock_50m
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to clock_50m
+set_location_assignment PIN_N16 -to fnd_d[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_d[7]
+set_location_assignment PIN_R14 -to fnd_d[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_d[6]
+set_location_assignment PIN_P16 -to fnd_d[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_d[5]
+set_location_assignment PIN_P15 -to fnd_d[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_d[4]
+set_location_assignment PIN_L15 -to fnd_d[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_d[3]
+set_location_assignment PIN_R16 -to fnd_d[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_d[2]
+set_location_assignment PIN_K16 -to fnd_d[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_d[1]
+set_location_assignment PIN_L16 -to fnd_d[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_d[0]
+set_location_assignment PIN_L13 -to fnd_s[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_s[5]
+set_location_assignment PIN_M10 -to fnd_s[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_s[4]
+set_location_assignment PIN_N14 -to fnd_s[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_s[3]
+set_location_assignment PIN_L14 -to fnd_s[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_s[2]
+set_location_assignment PIN_P14 -to fnd_s[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_s[1]
+set_location_assignment PIN_N15 -to fnd_s[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fnd_s[0]
+set_location_assignment PIN_D11 -to pb[15]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[15]
+set_location_assignment PIN_A12 -to pb[14]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[14]
+set_location_assignment PIN_B11 -to pb[13]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[13]
+set_location_assignment PIN_C11 -to pb[12]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[12]
+set_location_assignment PIN_E10 -to pb[11]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[11]
+set_location_assignment PIN_E11 -to pb[10]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[10]
+set_location_assignment PIN_D9 -to pb[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[9]
+set_location_assignment PIN_C9 -to pb[8]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[8]
+set_location_assignment PIN_E9 -to pb[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[7]
+set_location_assignment PIN_F9 -to pb[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[6]
+set_location_assignment PIN_F8 -to pb[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[5]
+set_location_assignment PIN_E8 -to pb[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[4]
+set_location_assignment PIN_D8 -to pb[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[3]
+set_location_assignment PIN_E7 -to pb[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[2]
+set_location_assignment PIN_E6 -to pb[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[1]
+set_location_assignment PIN_C8 -to pb[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pb[0]
+
+set_global_assignment -name LAST_QUARTUS_VERSION "22.1std.0 Lite Edition"
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
