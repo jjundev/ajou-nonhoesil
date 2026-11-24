@@ -35,6 +35,29 @@
     if (card.mode === 'ambiguous') return 'ambiguous';
     return selected === card.answer ? 'correct' : 'incorrect';
   }
+  function historyStore(win) {
+    const history = win.history;
+    const key = 'od-concept-check:v1';
+    const previous = history.state?.[key];
+    const returning = win.performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
+    const values = new Map(Object.entries(returning ? previous || {} : {}));
+    function save() {
+      // Hash navigation creates additional history entries for the same quiz.
+      const state = {...history.state};
+      if (values.size) state[key] = Object.fromEntries(values);
+      else if (Object.hasOwn(state, key)) delete state[key];
+      else return;
+      try { history.replaceState(state, ''); } catch {}
+    }
+    if (previous && !returning) save();
+    win.document.addEventListener('od:screen', save);
+    win.addEventListener('pagehide', save);
+    return {
+      getItem(name) { return values.get(name) ?? null; },
+      setItem(name, value) { values.set(name, value); save(); },
+      removeItem(name) { values.delete(name); save(); }
+    };
+  }
   function storageKey(documentId, cardId) {
     return 'od-review-attempt:v1:' + encodeURIComponent(documentId) + ':' + encodeURIComponent(cardId);
   }
@@ -173,16 +196,21 @@
         const reset = element('button', 'review-reset text-btn', '다시 풀기'); reset.type = 'button';
         card.querySelector('.short-input').append(status, reset);
         input.value = ''; input.autocomplete = 'off';
+        const key = storageKey(model.documentId, id);
+        const saved = readAttempt(storage, key, data);
         selectedById[id] = null;
         solution.hidden = true; reset.hidden = true;
-        const reveal = () => {
-          if (!input.value.trim() || input.disabled) return;
+        function showAnswer(restored) {
           selectedById[id] = input.value;
           const result = grade(data, input.value);
           input.disabled = true; check.hidden = true; reset.hidden = false;
           status.textContent = result === 'correct' ? '자동 일치' : '자기채점 대기';
           solution.hidden = false; solution.open = true;
-          emit(id, input.value, result);
+          if (!restored) writeAttempt(storage, key, data, input.value);
+          emit(id, input.value, result, restored);
+        }
+        const reveal = () => {
+          if (input.value.trim() && !input.disabled) showAnswer(false);
         };
         check.addEventListener('click', reveal);
         input.addEventListener('keydown', e => {if (e.key === 'Enter') {e.preventDefault(); reveal();}});
@@ -190,9 +218,17 @@
           selectedById[id] = null; input.disabled = false; input.value = '';
           check.hidden = false; reset.hidden = true; status.textContent = '';
           solution.hidden = true; solution.open = false;
+          writeAttempt(storage, key, data, null);
           emit(id, null, null); input.focus();
         });
         card.classList.add('review-ready');
+        if (saved !== null) {
+          input.value = saved;
+          showAnswer(true);
+        } else if (storage && storage.getItem(key) !== null) {
+          writeAttempt(storage, key, data, null);
+          emit(id, null, null, true);
+        }
         continue;
       }
 // short-support:end
@@ -399,7 +435,7 @@
     if (prompt && exportCards.length && pager && !pager.querySelector('.review-export-bar')) {
       const ids = exportCards.map(el => el.id);
       const bar = element('div', 'review-export-bar');
-      bar.hidden = true;
+      bar.hidden = selectedById[ids.at(-1)] == null;
       const button = element('button', 'btn btn-ghost review-export', '복기 열기');
       button.type = 'button';
       button.setAttribute('aria-haspopup', 'dialog');
@@ -441,7 +477,7 @@
       });
     }
   }
-  const api = {stripDiagnosticPrefix, grade, storageKey, readAttempt, readUnsure, writeAttempt, mount,
+  const api = {stripDiagnosticPrefix, grade, storageKey, readAttempt, readUnsure, writeAttempt, historyStore, mount,
     captureCardText, buildPromptRecord};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else scope.ReviewInteraction = api;
