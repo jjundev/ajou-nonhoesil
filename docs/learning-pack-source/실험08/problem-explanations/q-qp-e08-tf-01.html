@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>둘째 단이 바뀌는 순간을 판단해요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">FFB는 A의 하강 엣지에서 반전해요.</p><p>FFB의 CLK에 A가 연결되므로 A의 전환 방향을 먼저 확인해요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>AB=00의 첫 외부 CLK 하강에서 A의 방향을 표시해요.</p><p><a href="{{NOTE_HREF}}#t-async">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>F예요. A의 0→1은 FFB를 트리거하지 않아요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>실제로 첫 하강 후 AB=10이며, 두 번째 외부 하강에서야 A가 떨어져 AB=01이에요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>FFB에는 외부 CLK의 하강을 그대로 세지 않아요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>연속 두 하강에서 A와 B를 차례로 추적해요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> FFB는 A의 하강 엣지에서 반전해요.</p><p data-summary="recall">FFB의 CLK에 A가 연결되므로 A의 전환 방향을 먼저 확인해요.</p><p>AB=00의 첫 외부 CLK 하강에서 A의 방향을 표시해요.</p><p>F예요. A의 0→1은 FFB를 트리거하지 않아요.</p><p>실제로 첫 하강 후 AB=10이며, 두 번째 외부 하강에서야 A가 떨어져 AB=01이에요.</p><p>FFB에는 외부 CLK의 하강을 그대로 세지 않아요.</p></div>

@@ -1,15 +1,14 @@
 {
   "schema_version": 1,
   "html": "실험09_문제설명.html",
-  "html_sha256": "db12310cce1e7f9e09a5ed4bd5fb115147d7574a558b65f1e68a5de02dac1758",
-  "audit_path": "problem-explanations/summary-audit.md",
-  "audit_sha256": "d8af7e21c018877801a36140bffee1e4144d899148378b405de1b5f85c49e51f",
+  "html_sha256": "9c03e3655cde0bc6188fb51d7e793b237dd35f96de202be4148d97a4246eba38",
+  "audit_path": "problem-explanations/summary-audit-compact.md",
+  "audit_sha256": "18dd7cd2d10a96c597709838758aa2516d18d2f754da8c27db47092ace6ac0f1",
   "semantic_status": "pass",
   "browser_status": "pass",
   "evidence": [
-    "problem-explanations/browser-results.json",
-    "problem-explanations/panel-results.json",
-    "problem-explanations/calculation-results.json"
+    "problem-explanations/축약-브라우저.json",
+    "problem-explanations/검증결과.md"
   ],
   "unresolved": [
     "q-74670·q-online-74670 원문 부분 판독으로 보류(은행에서 해결 후 다시 가져와야 해요)",

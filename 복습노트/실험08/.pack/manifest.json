@@ -2723,6 +2723,7 @@
     ".pack/problem-explanations/검증결과.md",
     ".pack/problem-explanations/문제설명-summary-validation.json",
     ".pack/problem-explanations/실험설명-summary-validation.json",
+    ".pack/problem-explanations/축약-브라우저.json",
     ".pack/sections/table-layout.json",
     ".pack/workbook-answers.json",
     ".pack/workbook-problems.json",

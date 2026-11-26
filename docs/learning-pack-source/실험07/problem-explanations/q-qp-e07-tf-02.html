@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>Q1에 들어가는 값의 시점을 판정해요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">공통 엣지 직전의 값</p><p>입력 시간 조건을 만족하면 같은 유효 엣지의 각 칸은 직전 입력을 저장해요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>엣지 전 Q0와 엣지 후 Q0를 구분해요.</p><p><a href="{{NOTE_HREF}}#t-shift">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>참(T)이에요. Q1다음은 이전 Q0예요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>이전 상태 1000에 S=0을 넣으면 0100이에요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>각 Q가 다음 칸의 클록이 되는 비동기 카운터와 구분해요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>이전 Q0=1, 다음 Q0=0일 때 Q1다음을 써요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 공통 엣지 직전의 값</p><p data-summary="recall">입력 시간 조건을 만족하면 같은 유효 엣지의 각 칸은 직전 입력을 저장해요.</p><p>첫 실행: 엣지 전 Q0와 엣지 후 Q0를 구분해요.</p><p>결론: 참(T)이에요. Q1다음은 이전 Q0예요.</p><p>검산: 이전 상태 1000에 S=0을 넣으면 0100이에요.</p><p>주의: 각 Q가 다음 칸의 클록이 되는 비동기 카운터와 구분해요.</p></div>

@@ -1,15 +1,14 @@
 {
   "schema_version": 1,
   "html": "실험08_문제설명.html",
-  "html_sha256": "d3ad5ad82cd492e19286e4a3ba4ceaaf6ceb3b472089bbccb3511b6f91345a2d",
-  "audit_path": "problem-explanations/summary-audit.md",
-  "audit_sha256": "d2914eb8358cee145cd6c1e0812b0992006c2c72743bf19f585a86819d0d5b86",
+  "html_sha256": "bf0f5a07995d4643a969fa2d08c9d1ad2ed56b1a018169c8004c63bf92c525b5",
+  "audit_path": "problem-explanations/검증결과.md",
+  "audit_sha256": "3ee3208f05fef569250799dfec0d0cc34f231fa1f884b7b415fc425790fdd8c9",
   "semantic_status": "pass",
   "browser_status": "pass",
   "evidence": [
-    "problem-explanations/browser-results.json",
-    "problem-explanations/panel-results.json",
-    "problem-explanations/calculation-results.json"
+    "problem-explanations/축약-브라우저.json",
+    "problem-explanations/검증결과.md"
   ],
   "unresolved": [
     "q-mod-and-double 2배 방법 제공 답 네 갈래, 출제 의도 미확정",

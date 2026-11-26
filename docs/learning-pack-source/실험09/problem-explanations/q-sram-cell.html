@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>SRAM 한 비트의 저장 회로를 말해요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">엇갈린 되먹임으로 한 비트 저장</p><p>입력이 쉬는 동안에도 Q가 남으려면 서로의 출력을 되먹임해야 해요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>2bit RAM 회로에서 칸 A의 NAND 두 개를 찾아요.</p><p><a href="{{NOTE_HREF}}#t-latch">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>답은 플립플롭(래치)이에요. 교안 실험에서는 74HC00의 NAND 두 개를 교차 연결한 NAND SR 래치예요. 반도체 SRAM 셀은 인버터 두 개를 교차 연결해 설명하기도 해요(보충).</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>S′=R′=1을 넣고 초기 Q=0과 Q=1이 모두 유지되는지 확인해요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>레지스터는 저장 소자를 묶은 것이고 이 문항은 한 비트의 저장 소자를 물어요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>되먹임 한 쌍을 따라가며 회로 이름을 적어요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 엇갈린 되먹임으로 한 비트 저장</p><p data-summary="recall">입력이 쉬는 동안에도 Q가 남으려면 서로의 출력을 되먹임해야 해요.</p><p>첫 실행: 2bit RAM 회로에서 칸 A의 NAND 두 개를 찾아요.</p><p>교안의 한 칸은 NAND SR 래치예요. 교차 인버터 래치는 일반 SRAM 셀의 보충 예예요.</p><p>S′=R′=1을 넣고 초기 Q=0과 Q=1이 모두 유지되는지 확인해요.</p><p>레지스터는 저장 소자를 묶은 것이고 이 문항은 한 비트의 저장 소자를 물어요.</p></div>

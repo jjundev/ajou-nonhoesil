@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>지연 문제의 보완점을 써요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">동기식은 모든 F/F에 공통 CLK를 줘요.</p><p>같은 엣지가 두 단에 도착하면 뒷단이 앞 단의 전환을 기다릴 필요가 없어요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>비동기식의 앞 Q→뒤 CLK 경로를 적어요.</p><p><a href="{{NOTE_HREF}}#t-sync">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>비동기식에는 이 경로를 따라 전달 지연이 누적돼요. 동기식은 각 CLK를 공통선에 묶어 그 누적을 없애고 더 빠른 클럭에 유리해요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>AB=11→00에서 비동기식은 앞 단이 먼저 바뀌어 01을 지나고, 동기식은 두 단이 같은 엣지를 받아요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>제공 답의 ‘지연이 없다’는 단별 누적을 뜻해요. F/F 개별 전달 지연은 남아요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>클럭 경로와 지연이 쌓이는 지점을 연결해 설명해요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 동기식은 모든 F/F에 공통 CLK를 줘요.</p><p data-summary="recall">같은 엣지가 두 단에 도착하면 뒷단이 앞 단의 전환을 기다릴 필요가 없어요.</p><p>비동기식의 앞 Q→뒤 CLK 경로를 적어요.</p><p>비동기식에는 이 경로를 따라 전달 지연이 누적돼요. 동기식은 각 CLK를 공통선에 묶어 그 누적을 없애고 더 빠른 클럭에 유리해요.</p><p>AB=11→00에서 비동기식은 앞 단이 먼저 바뀌어 01을 지나고, 동기식은 두 단이 같은 엣지를 받아요.</p><p>제공 답의 ‘지연이 없다’는 단별 누적을 뜻해요. F/F 개별 전달 지연은 남아요.</p></div>

@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "tables": [
+    {
+      "key": "q-qp-e10-board-01/explanation/0",
+      "expected_headers": [
+        "넷",
+        "핀"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-qp-e10-board-01/conditions/0",
+      "expected_headers": [
+        "핀",
+        "이름",
+        "역할"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>이동 뒤의 벡터와 LED 각각의 상태를 써요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">정상 이동 후 Q=0인 LED만 켜짐</p><p>preset 해제 후에는 SER가 QA로 들어가고 이전 QA·QB는 QB·QC로 가요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>11000의 앞에 SER=0을 넣고 끝의 한 칸을 버려요.</p><p><a href="{{NOTE_HREF}}#t-7496">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>QA…QE=01100이에요. Negative Logic이므로 A·D·E가 켜지고 B·C가 꺼져요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>이전 상태 11000과 비교하면 B·D·E는 그대로고 A는 켜지며 C는 꺼져요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>교안의 CLR·엣지 표기가 갈리므로 문제는 유효 엣지로 지정해요. 실제 극성·엣지는 미확정이에요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>상태 벡터를 먼저 구한 뒤 0을 켜짐으로 표시해요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 정상 이동 후 Q=0인 LED만 켜짐</p><p data-summary="recall">preset 해제 후에는 SER가 QA로 들어가고 이전 QA·QB는 QB·QC로 가요.</p><p>첫 실행: 11000의 앞에 SER=0을 넣고 끝의 한 칸을 버려요.</p><p>결론: QA…QE=01100이에요. Negative Logic이므로 A·D·E가 켜지고 B·C가 꺼져요.</p><p>검산: 이전 상태 11000과 비교하면 B·D·E는 그대로고 A는 켜지며 C는 꺼져요.</p><p>주의: 교안의 CLR·엣지 표기가 갈리므로 문제는 유효 엣지로 지정해요. 실제 극성·엣지는 미확정이에요.</p></div>

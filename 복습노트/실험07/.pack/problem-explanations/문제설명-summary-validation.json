@@ -1,15 +1,14 @@
 {
   "schema_version": 1,
   "html": "실험07_문제설명.html",
-  "html_sha256": "a5be2d821916fe51ce6872fd1bcd8a7d095d9f7a243024d91b032df225fea571",
-  "audit_path": "problem-explanations/summary-audit.md",
-  "audit_sha256": "0382f8b101c0b8f4f15d944b6017fe32a80307eef51e0bd1b49b5f2a67b6ffe7",
+  "html_sha256": "2d1980cb3f165679d1772c6fbc6177c8cfeb6f6b8504fd887fd51d47d278f229",
+  "audit_path": "problem-explanations/검증결과.md",
+  "audit_sha256": "5d0b5950432f365dd9f5e150829155229e7c68575231f0c919e7072754323a9b",
   "semantic_status": "pass",
   "browser_status": "pass",
   "evidence": [
-    "problem-explanations/browser-results.json",
-    "problem-explanations/panel-results.json",
-    "problem-explanations/calculation-results.json"
+    "problem-explanations/축약-브라우저.json",
+    "problem-explanations/검증결과.md"
   ],
   "unresolved": [
     "존슨NAND 배선 부재·제공답충돌",

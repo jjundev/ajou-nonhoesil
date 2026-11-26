@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>SIPO의 기능과 최종 출력이 만들어지는 과정을 써요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">순차 입력을 네 칸에 저장</p><p>엣지마다 새 입력이 Q0에 들어가고 이전 비트는 다음 칸으로 가요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>초기값 0000에 첫 입력 1을 넣어 1000을 적어요.</p><p><a href="{{NOTE_HREF}}#t-convert">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>Q0…Q3는 1000→0100→1010→1101이에요. 네 Q를 동시에 읽으면 시간순으로 들어온 네 비트가 병렬 출력으로 나와요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 Q0는 마지막 입력, Q3는 첫 입력이에요. 서로 다른 가운데 비트도 Q1=1, Q2=0 순인지 확인해요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>같은 인과를 쓰더라도 벡터의 칸 순서를 밝혀요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입력마다 상태 한 줄을 쓰고 마지막 줄을 병렬로 읽어요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 순차 입력을 네 칸에 저장</p><p data-summary="recall">엣지마다 새 입력이 Q0에 들어가고 이전 비트는 다음 칸으로 가요.</p><p>첫 실행: 초기값 0000에 첫 입력 1을 넣어 1000을 적어요.</p><p>결론: Q0…Q3는 1000→0100→1010→1101이에요. 네 Q를 동시에 읽으면 시간순으로 들어온 네 비트가 병렬 출력으로 나와요.</p><p>검산: 최종 Q0는 마지막 입력, Q3는 첫 입력이에요. 서로 다른 가운데 비트도 Q1=1, Q2=0 순인지 확인해요.</p><p>주의: 같은 인과를 쓰더라도 벡터의 칸 순서를 밝혀요.</p></div>

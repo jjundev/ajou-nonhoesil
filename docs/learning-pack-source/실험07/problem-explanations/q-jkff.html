@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>JK로 앞 단계의 값을 복사하는 입력을 정해요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">JK의 Reset과 Set</p><p>다음 Q가 이전 Q와 무관하게 D=0이면 Reset, D=1이면 Set이어야 해요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>D=0에 JK=01, D=1에 JK=10을 대응시켜요.</p><p><a href="{{NOTE_HREF}}#t-jk">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>비동기 SET·RESET을 비활성으로 두고 J=D, K=NOT D로 연결하면 유효 엣지에서 Q다음=D예요. 첫 칸 D에는 SER, 이후에는 앞 단계 Q를 넣어요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>D와 이전 Q의 네 조합에서 다음 Q는 (0, 0, 1, 1)이에요. D=0의 두 경우부터 세어요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>보충 예상문항이에요. J=K=1은 반전 동작이에요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>D를 0·1로 두고 이전 Q에 상관없이 복사하도록 JK를 정해요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> JK의 Reset과 Set</p><p data-summary="recall">다음 Q가 이전 Q와 무관하게 D=0이면 Reset, D=1이면 Set이어야 해요.</p><p>첫 실행: D=0에 JK=01, D=1에 JK=10을 대응시켜요.</p><p>결론: 비동기 SET·RESET을 비활성으로 두고 J=D, K=NOT D로 연결하면 유효 엣지에서 Q다음=D예요. 첫 칸 D에는 SER, 이후에는 앞 단계 Q를 넣어요.</p><p>검산: D와 이전 Q의 네 조합에서 다음 Q는 (0, 0, 1, 1)이에요. D=0의 두 경우부터 세어요.</p><p>주의: 보충 예상문항이에요. J=K=1은 반전 동작이에요.</p></div>

@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>유효 엣지 뒤의 6비트 벡터를 써요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">새 입력은 Q0로</p><p>Q0가 첫 칸이므로 이전 상태를 오른쪽으로 한 칸 옮기고 첫 칸에 새 입력을 써요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>Q0에 SER 값 0을 적어요.</p><p><a href="{{NOTE_HREF}}#t-shift">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>이전 101100에서 끝의 0을 버리고 나머지를 한 칸 옮기면 ① 010110이에요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>다음 Q1은 이전 Q0=1, 다음 Q2는 이전 Q1=0이에요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>Q0…Q5 순서를 지켜요. 반대쪽에 0을 붙이면 결과가 달라져요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입력 0을 넣을 칸과 버릴 비트를 표시한 뒤 벡터를 써요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 새 입력은 Q0로</p><p data-summary="recall">Q0가 첫 칸이므로 이전 상태를 오른쪽으로 한 칸 옮기고 첫 칸에 새 입력을 써요.</p><p>첫 실행: Q0에 SER 값 0을 적어요.</p><p>결론: 이전 101100에서 끝의 0을 버리고 나머지를 한 칸 옮기면 ① 010110이에요.</p><p>검산: 다음 Q1은 이전 Q0=1, 다음 Q2는 이전 Q1=0이에요.</p><p>주의: Q0…Q5 순서를 지켜요. 반대쪽에 0을 붙이면 결과가 달라져요.</p></div>

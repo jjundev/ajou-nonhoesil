@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-27",
+  "browser": "Chrome",
+  "html": "실험09_문제설명.html",
+  "html_sha256": "9c03e3655cde0bc6188fb51d7e793b237dd35f96de202be4148d97a4246eba38",
+  "results": [
+    "9 375 light 19",
+    "9 375 dark 19",
+    "9 1280 light 19",
+    "9 1280 dark 19",
+    "9 no JS 19"
+  ]
+}

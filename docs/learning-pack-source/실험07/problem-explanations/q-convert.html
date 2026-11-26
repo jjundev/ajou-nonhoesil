@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>두 변환에서 데이터를 넣고 읽는 순서를 써요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">직렬 한 선과 병렬 여러 선</p><p>한 비트씩 주고받는 쪽과 여러 선을 동시에 쓰는 쪽을 구분해요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>SIPO의 입력 쪽에 직렬 입력선 하나를 표시해요.</p><p><a href="{{NOTE_HREF}}#t-convert">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>SIPO는 엣지마다 한 비트씩 받아 각 Q를 동시에 읽어요. PISO는 여러 비트를 동시에 적재한 뒤 이동하며 마지막 Q를 한 비트씩 읽어요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>SIPO 0000에 1, 0, 1, 1을 넣으면 Q0…Q3=1101이에요. PISO에 1011을 적재하고 이동 직전에 마지막 Q를 읽으면 1, 1, 0, 1이에요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>입력 시간 순서와 출력의 칸 순서를 밝혀요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>두 변환에서 동시에 값을 다루는 쪽을 각각 표시해요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 직렬 한 선과 병렬 여러 선</p><p data-summary="recall">한 비트씩 주고받는 쪽과 여러 선을 동시에 쓰는 쪽을 구분해요.</p><p>첫 실행: SIPO의 입력 쪽에 직렬 입력선 하나를 표시해요.</p><p>결론: SIPO는 엣지마다 한 비트씩 받아 각 Q를 동시에 읽어요. PISO는 여러 비트를 동시에 적재한 뒤 이동하며 마지막 Q를 한 비트씩 읽어요.</p><p>검산: SIPO 0000에 1, 0, 1, 1을 넣으면 Q0…Q3=1101이에요. PISO에 1011을 적재하고 이동 직전에 마지막 Q를 읽으면 1, 1, 0, 1이에요.</p><p>주의: 입력 시간 순서와 출력의 칸 순서를 밝혀요.</p></div>

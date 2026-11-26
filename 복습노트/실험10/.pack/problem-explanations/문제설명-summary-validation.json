@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "html": "실험10_문제설명.html",
+  "html_sha256": "30d481f4fce1d88eff42257b79400c0d5af65c122fc6d963a527a51ef03c3095",
+  "audit_path": "problem-explanations/검증결과.md",
+  "audit_sha256": "0cc61e6b9fb77d8334ea7af8c692a203729adbbaa600e1b6a4e28d4c99d40ae2",
+  "semantic_status": "pass",
+  "browser_status": "pass",
+  "evidence": [
+    "problem-explanations/축약-브라우저.json",
+    "problem-explanations/검증결과.md"
+  ],
+  "unresolved": [
+    "비교기 제공 답안 극성 충돌"
+  ],
+  "review_type": "self_review; independent not_run"
+}

@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "tables": [
+    {
+      "key": "q-qp-e07-board-01/conditions/0",
+      "expected_headers": [
+        "핀",
+        "이름",
+        "역할"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "bus",
+          "group": "핀 명세"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "핀 명세"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "용도"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-qp-e07-board-01/explanation/0",
+      "expected_headers": [
+        "넷",
+        "핀"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "연결"
+        },
+        {
+          "role": "index",
+          "kind": "bus",
+          "group": "연결"
+        }
+      ],
+      "boundaries": []
+    }
+  ]
+}

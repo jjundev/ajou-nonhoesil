@@ -106,14 +106,14 @@
     {
       "id": "s-spec10",
       "path": "보고서/실험10/체크리스트/명세.md",
-      "sha256": "050b87fbd922abee6fac89259a7b6ede878411ed8b6a6c1e5b1153cb61fa3ef1",
+      "sha256": "34bd95d73346b90421568b9b57be7fc3b27790a227af9584125aa87e1bd7636b",
       "kind": "record",
       "edition": "current"
     },
     {
       "id": "s-netlist10",
       "path": "보고서/실험10/결선도/netlist.md",
-      "sha256": "2c58f0ba5fcd669fd0985f4537373ce253b9ab7beb88184c4fc15e0f15d622f3",
+      "sha256": "cf966785146e8f4fe73da27f6cbb300a8e9040a05e5ed7b6067715fb574fb152",
       "kind": "record",
       "edition": "current"
     }
@@ -1758,6 +1758,9 @@
     ".pack/problem-explanations/q-rf-output.html",
     ".pack/problem-explanations/q-summing-amp.html",
     ".pack/problem-explanations/table-layout.json",
+    ".pack/problem-explanations/검증결과.md",
+    ".pack/problem-explanations/문제설명-summary-validation.json",
+    ".pack/problem-explanations/축약-브라우저.json",
     ".pack/sections/table-layout.json",
     ".pack/workbook-answers.json",
     ".pack/workbook-problems.json",

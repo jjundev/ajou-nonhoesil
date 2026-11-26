@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>2입력 NAND의 역할을 배선별로 판단해요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">NAND 입력과 출력의 연결</p><p>두 입력을 한 신호에 묶으면 반전하고, 서로 다른 상태 신호를 받으면 특정 상태를 검출할 수 있어요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>두 입력이 모두 마지막 Q라면 NAND(Q,Q)=NOT Q를 써요.</p><p><a href="{{NOTE_HREF}}#t-counters">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>그 출력을 첫 칸에 돌려주면 존슨의 반전 되먹임이에요. 상태 신호 두 개를 받아 해당 상태에서 0을 내는 배선이면 active-low 디코더예요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>입력을 묶은 경우 Q=0→출력 1, Q=1→출력 0이에요. 디코딩은 입력 배선이 있어야 검산할 수 있어요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>답안 충돌. 제공 답은 마지막 출력의 반전과 2n개 AND 디코딩으로 갈려요. 원문에 배선이 없어서 단일 역할은 미확정이에요. 2n개 AND가 모든 회로의 필수 조건은 아니에요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>NAND 출력이 첫 칸에 들어가는지 상태 검출에 쓰이는지 나눠 설명해요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> NAND 입력과 출력의 연결</p><p data-summary="recall">두 입력을 한 신호에 묶으면 반전하고, 서로 다른 상태 신호를 받으면 특정 상태를 검출할 수 있어요.</p><p>첫 실행: 두 입력이 모두 마지막 Q라면 NAND(Q,Q)=NOT Q를 써요.</p><p>결론: 그 출력을 첫 칸에 돌려주면 존슨의 반전 되먹임이에요. 상태 신호 두 개를 받아 해당 상태에서 0을 내는 배선이면 active-low 디코더예요.</p><p>검산: 입력을 묶은 경우 Q=0→출력 1, Q=1→출력 0이에요. 디코딩은 입력 배선이 있어야 검산할 수 있어요.</p><p>주의: 답안 충돌. 제공 답은 마지막 출력의 반전과 2n개 AND 디코딩으로 갈려요. 원문에 배선이 없어서 단일 역할은 미확정이에요. 2n개 AND가 모든 회로의 필수 조건은 아니에요.</p></div>

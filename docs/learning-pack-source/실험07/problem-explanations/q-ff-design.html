@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>7476 칩 수와 JK 수를 구하고, D 플립플롭으로 회로를 그려요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">저장 칸 수와 칩 수</p><p>4비트에 저장 칸 4개가 필요하고, 7476 한 칩에는 JK가 두 개예요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>칩 수는 4÷2부터 계산해요.</p><p><a href="{{NOTE_HREF}}#t-jk">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>① JK 4개, 7476 2개예요. ② S→D0, Q0→D1, Q1→D2, Q2→D3을 연결해요. 네 CLK는 공통이고 Q0~Q3가 병렬 출력이에요. 제시된 D 기호는 상승 엣지예요.</p><figure class="figure"><img src=".pack/figures/solutions/shift-complete.png" width="500" alt="4단 SIPO 완성 회로"></figure></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>검산용 초기값 0000에 입력 1, 0을 주면 1000→0100이에요. Q→D 연결은 3개예요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>소문항 ②는 D F/F로 그려요. 원문에 초기 상태는 주어지지 않았어요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>JK 수와 칩 수를 적고 네 D F/F의 데이터선과 공통 클록을 그려요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 저장 칸 수와 칩 수</p><p data-summary="recall">4비트에 저장 칸 4개가 필요하고, 7476 한 칩에는 JK가 두 개예요.</p><p>첫 실행: 칩 수는 4÷2부터 계산해요.</p><p>결론: ① JK 4개, 7476 2개예요. ② S→D0, Q0→D1, Q1→D2, Q2→D3을 연결해요. 네 CLK는 공통이고 Q0~Q3가 병렬 출력이에요. 제시된 D 기호는 상승 엣지예요.</p><p>검산: 검산용 초기값 0000에 입력 1, 0을 주면 1000→0100이에요. Q→D 연결은 3개예요.</p><p>주의: 소문항 ②는 D F/F로 그려요. 원문에 초기 상태는 주어지지 않았어요.</p></div>

@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>쓴 뒤 IN을 0으로 내리는 이유를 설명해요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">읽기 전에 쓰기 경로 차단</p><p>앞단은 NAND라 IN=0이면 쓰기 신호가 래치까지 못 가요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>IN=0을 두 앞단 NAND에 넣어요.</p><p><a href="{{NOTE_HREF}}#t-rules">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>S′=R′=1이라 먼저 쓴 Q가 유지되고, OE=1이면 OUT=OE·Q=Q예요. IN과 OE를 함께 켜 두면 쓰기 중인 WR 값이 출력돼요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>Q=1을 저장하고 WR 쌍을 0 쓰기 조합으로 바꿔요. IN=0이면 OUT=1을 읽고, IN=1까지 켜면 OUT이 0으로 바뀌어요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>OE를 켜는 순서만 쓰면 래치가 이전 값을 유지하는 이유가 빠져요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>쓰기 종료 신호부터 Q, OUT 순으로 따라가요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 읽기 전에 쓰기 경로 차단</p><p data-summary="recall">앞단은 NAND라 IN=0이면 쓰기 신호가 래치까지 못 가요.</p><p>첫 실행: IN=0을 두 앞단 NAND에 넣어요.</p><p>IN=0 → S′=R′=1 → Q 유지. 그 뒤 OE=1에서 OUT=Q예요.</p><p>Q=1을 저장하고 WR 쌍을 0 쓰기 조합으로 바꿔요. IN=0이면 OUT=1을 읽고, IN=1까지 켜면 OUT이 0으로 바뀌어요.</p><p>OE를 켜는 순서만 쓰면 래치가 이전 값을 유지하는 이유가 빠져요.</p></div>
