@@ -106,6 +106,9 @@ def test_docking_navigation_and_fallback(browser, pilot):
         assert toggle.evaluate('node => node.nextElementSibling.id') == 'toggle-right'
         assert panel.get_by_text('문제 읽기', exact=True).is_hidden()
         assert panel.get_by_role('link', name='문제지 PDF', include_hidden=True).count() == 0
+        reading = panel.locator('[data-problem-reading]')
+        heading = reading.locator(':scope > h4').first
+        assert 8 <= heading.bounding_box()['y'] - reading.bounding_box()['y'] <= 16
         panel.get_by_role('button', name='왼쪽에 붙이기').click()
         assert panel.bounding_box()['x'] + panel.bounding_box()['width'] == pytest.approx(content.bounding_box()['x'], abs=1)
         assert toggle.evaluate('node => node.previousElementSibling.id') == 'toggle-left'

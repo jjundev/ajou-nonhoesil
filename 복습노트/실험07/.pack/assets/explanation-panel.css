@@ -29,8 +29,11 @@
   color: var(--accent-ink);
   font-weight: 700;
 }
-#panel-prob [data-problem-reading] { margin-top: var(--s1); overflow-wrap: anywhere; }
+#panel-prob [data-problem-reading] { margin-top: var(--s1); padding-top: var(--s3); overflow-wrap: anywhere; }
 #panel-prob [data-problem-reading] > .layer-title { display: none; }
+#panel-prob [data-problem-reading] > .layer-title + h4 { margin-top: 0; }
+#panel-prob [data-problem-reading] > h4 { margin-bottom: var(--s2); }
+#panel-prob [data-problem-reading] > h4 + p { margin-top: 0; }
 #panel-prob .table-card, #panel-prob .equation-card { max-width: 100%; }
 
 @media screen and (min-width: 1024px) {
