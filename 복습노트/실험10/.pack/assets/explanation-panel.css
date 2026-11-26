@@ -29,8 +29,8 @@
   color: var(--accent-ink);
   font-weight: 700;
 }
-#panel-prob .problem-panel-link { display: inline-block; margin: 0 0 var(--s2); }
 #panel-prob [data-problem-reading] { margin-top: var(--s1); overflow-wrap: anywhere; }
+#panel-prob [data-problem-reading] > .layer-title { display: none; }
 #panel-prob .table-card, #panel-prob .equation-card { max-width: 100%; }
 
 @media screen and (min-width: 1024px) {

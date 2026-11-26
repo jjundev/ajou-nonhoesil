@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from playwright.sync_api import expect
 
 from scripts.lab.review_pack.explanation_stage import prepare_explanation_stage
 from tests.test_review_pack_explanation_browser import browser
@@ -34,7 +35,7 @@ def test_experiment_10_gets_problem_panel_by_default(browser, tmp_path, entry_po
         assert main(['explain-stage', '--folder', str(original), '--author-root', str(author), '--stage', str(stage)]) == 0
 
     for name in ('explanation-panel.css', 'explanation-panel.js'):
-        reference = Path('복습노트/실험09/.pack/assets') / name
+        reference = Path('.claude/skills/logic-lab-problem-explain/assets') / name
         assert (stage / '.pack/assets' / name).read_bytes() == reference.read_bytes()
     page = browser.new_page(viewport={'width': 1280, 'height': 650})
     try:
@@ -98,13 +99,16 @@ def test_docking_navigation_and_fallback(browser, pilot):
         content = page.locator('.content')
         summary = page.locator('#panel-right')
         toggle = page.locator('#toggle-prob')
-        assert panel.bounding_box()['x'] + panel.bounding_box()['width'] == pytest.approx(content.bounding_box()['x'], abs=1)
-        assert toggle.evaluate('node => node.previousElementSibling.id') == 'toggle-left'
-        panel.get_by_role('button', name='오른쪽에 붙이기').click()
         assert summary.is_visible()
+        assert panel.get_by_role('button', name='오른쪽에 붙이기').get_attribute('aria-pressed') == 'true'
         assert content.bounding_box()['x'] + content.bounding_box()['width'] == pytest.approx(panel.bounding_box()['x'], abs=1)
         assert panel.bounding_box()['x'] + panel.bounding_box()['width'] == pytest.approx(summary.bounding_box()['x'], abs=1)
         assert toggle.evaluate('node => node.nextElementSibling.id') == 'toggle-right'
+        assert panel.get_by_text('문제 읽기', exact=True).is_hidden()
+        assert panel.get_by_role('link', name='문제지 PDF', include_hidden=True).count() == 0
+        panel.get_by_role('button', name='왼쪽에 붙이기').click()
+        assert panel.bounding_box()['x'] + panel.bounding_box()['width'] == pytest.approx(content.bounding_box()['x'], abs=1)
+        assert toggle.evaluate('node => node.previousElementSibling.id') == 'toggle-left'
         panel.get_by_role('button', name='띄우기').click()
         assert panel.evaluate('node => getComputedStyle(node).position') == 'fixed'
         move = panel.get_by_role('button', name='문제 창 이동')
@@ -113,7 +117,6 @@ def test_docking_navigation_and_fallback(browser, pilot):
         old_x = panel.bounding_box()['x']
         move.press('ArrowLeft')
         assert panel.bounding_box()['x'] < old_x
-        assert panel.get_by_role('link', name='문제지 PDF').get_attribute('href').endswith('.pdf')
         page.locator('.toc-list a').last.click()
         last_id = page.locator('article.is-current').get_attribute('id')
         assert panel.locator('[data-problem-reading]').get_attribute('data-problem-reading') == last_id
@@ -131,8 +134,13 @@ def test_docking_navigation_and_fallback(browser, pilot):
         page.emulate_media(media='screen')
         panel.locator('[data-problem-reading]').wait_for(state='visible')
         page.set_viewport_size({'width': 375, 'height': 900})
-        assert panel.is_hidden()
-        assert page.locator('article.is-current').get_by_text('문제 보기', exact=True).is_visible()
+        expect(panel).to_be_hidden()
+        article = page.locator('article.is-current')
+        article.get_by_text('문제 보기', exact=True).click()
+        assert article.get_by_text('문제 읽기', exact=True).is_visible()
+        page.set_viewport_size({'width': 1280, 'height': 900})
+        page.reload()
+        assert panel.get_by_role('button', name='오른쪽에 붙이기').get_attribute('aria-pressed') == 'true'
     with browser.new_context(java_script_enabled=False) as context:
         page = context.new_page()
         page.goto(url)

@@ -1,5 +1,4 @@
 (() => {
-  const { questionHref, questionLabel } = document.currentScript.dataset;
   const layout = document.querySelector('.layout');
   const wide = matchMedia('(min-width: 1024px)');
   const printing = matchMedia('print');
@@ -40,16 +39,12 @@
           </button>
         </div>
       </div>
-      <a class="problem-panel-link"></a>
       <div class="problem-panel-body"></div>
     </div>
     <button class="problem-panel-resize" type="button" aria-label="문제 창 크기 조절"
       title="끌거나 화살표를 눌러 크기 조절" hidden></button>`;
   layout.querySelector('.content').before(panel);
   const workspace = panel.querySelector('.problem-panel-body');
-  const link = panel.querySelector('.problem-panel-link');
-  link.href = questionHref;
-  link.textContent = questionLabel;
   const move = panel.querySelector('.problem-panel-move');
   const head = panel.querySelector('.problem-panel-head');
   const sizer = panel.querySelector('.problem-panel-resize');
@@ -66,12 +61,11 @@
   const summaryToggle = document.getElementById('toggle-right');
   const topbar = document.querySelector('.topbar');
   const pager = document.querySelector('.pager');
-  tocToggle.after(toggle);
 
   let current;
   let mounted;
   let open = true;
-  let dock = 'left';
+  let dock;
   let floating;
   let endDrag;
   let printOpen;
@@ -259,5 +253,6 @@
     if (event.matches) preparePrint();
     else finishPrint();
   });
+  setDock('right');
   select(document.querySelector('article.topic.is-current'));
 })();

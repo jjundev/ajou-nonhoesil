@@ -80,7 +80,9 @@ def test_build_publication_and_explanation_output_are_pdf_only(tmp_path, monkeyp
         assert (panel_files & set(files)) == (panel_files if experiment == 10 else set())
         if experiment == 10:
             html = (folder / '실험10_문제설명.html').read_text(encoding='utf-8')
-            assert 'data-question-label="문제지 PDF"' in html
+            assert 'src=".pack/assets/explanation-panel.js"' in html
+            assert 'data-question-label=' not in html
+            assert 'data-question-href=' not in html
 
 
 def test_failed_answer_keeps_existing_pdf_pair(tmp_path, monkeypatch):
