@@ -1393,8 +1393,11 @@ _HTML_TABLE_OPEN = re.compile(r"<table\b", re.IGNORECASE)
 _HTML_TABLE_CLOSE = re.compile(r"</table\b", re.IGNORECASE)
 
 
+_STYLE_TA = re.compile(r"조교(?!님)")
+
+
 def check_body_style(md_text) -> list:
-    """본문 문체 다섯 갈래를 warn 으로 잡는다. 갈래마다 Finding 하나.
+    """본문 문체 여섯 갈래를 warn 으로 잡는다. 갈래마다 Finding 하나.
 
     참고문헌 절(`#` 헤딩에 `참고문헌`)과 표 줄(파이프 표, 노션이 되돌리는 HTML
     `<table>` 표 둘 다), 펜스 코드 블록은 보지 않는다 — 서지에는 `Rev. 9 — 2021`
@@ -1404,8 +1407,10 @@ def check_body_style(md_text) -> list:
     거짓 warn 이 된다). ③ §절대 규칙 21·④ §절대 규칙 18(붙여쓰기),
     ④ §절대 규칙 8(백틱·em dash·첫째) 의 기계 검사판이다. 폭은 실험01 결보
     v5 승인본에서 0건이 나오도록 맞췄다(`tests/test_lab_validate.py::BodyStyle`).
+    호칭 갈래(`조교` 뒤에 `님` 이 없는 것)는 2026-11-21 실험10 결보에서 사용자가
+    격식을 맞춘 데서 왔다(`.claude/보고서서식.md` §호칭). 줄마다 센다.
     """
-    hits = {"백틱": [], "em dash": [], "첫째": [], "조사": [], "단위": []}
+    hits = {"백틱": [], "em dash": [], "첫째": [], "조사": [], "단위": [], "호칭": []}
     in_refs, in_fence, in_html_table = False, False, False
     for n, line in enumerate(md_text.splitlines(), 1):
         if _STYLE_FENCE.match(line):
@@ -1433,12 +1438,14 @@ def check_body_style(md_text) -> list:
             hits["조사"].append(n)
         if _STYLE_UNIT.search(line):
             hits["단위"].append(n)
+        hits["호칭"].extend([n] * len(_STYLE_TA.findall(line)))
     why = {
         "백틱": "본문 백틱 코드 서식 — 노션에서 붉은 고정폭 배경으로 렌더된다 (④ §절대 규칙 8)",
         "em dash": "본문 em dash — 학생이 손으로 쓰지 않는 문장 부호다 (④ §절대 규칙 8)",
         "첫째": "\"첫째 … 둘째 …\" 열거 — 산문 두 문단으로 푼다 (④ §절대 규칙 8)",
         "조사": "숫자·영문 뒤 조사를 띄어 썼다 — `L1이`, `A=B=1에서` 처럼 붙인다 (④ §절대 규칙 18)",
         "단위": "숫자와 단위를 띄어 썼다 — `330Ω`, `9.4mA` 처럼 붙인다 (④ §절대 규칙 18)",
+        "호칭": "조교 호칭에 `님` 이 없다 — `조교님이`, `조교님께` 처럼 높인다 (④ §절대 규칙 20)",
     }
     return [Finding("warn", "본문 문체", f"{why[k]}: {len(v)}곳 (첫 자리 {v[0]}행)")
             for k, v in hits.items() if v]
