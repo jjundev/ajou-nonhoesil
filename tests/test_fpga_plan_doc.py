@@ -68,9 +68,9 @@ def test_display_words_present():
         assert f'"{w}' in text, w
 
 
-def test_extra_features_exactly_four():
+def test_extra_features_exactly_five():
     rows = [r for t in tables(section(REQ)) for r in t.rows if r[0].strip().startswith("A")]
-    assert [r[0].strip() for r in rows] == ["A1", "A2", "A3", "A4"]
+    assert [r[0].strip() for r in rows] == ["A1", "A2", "A3", "A4", "A5"]
 
 
 def test_numbers_match_spec():
@@ -296,8 +296,8 @@ def test_por_counter_has_initial_value():
 
 
 def test_extra_features_simulated_and_separated():
-    assert "E1~E10과 추가 구현 A1~A4" in section(PROB)
-    assert "A1~A4" in section("조원 역할 분담")
+    assert "E1~E10과 추가 구현 A1~A5" in section(PROB)
+    assert "A1~A5" in section("조원 역할 분담")
     assert "추가 구현 A3" in _row(REQ, "R6")[2]
     assert "LOCK40" in _row(REQ, "A2")[3] and "맞히지 않고" in _row(REQ, "A2")[3]
 

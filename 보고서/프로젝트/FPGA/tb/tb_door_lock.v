@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-// 도어락 전체 검증. pb를 눌러 평가 항목 E1~E10과 추가 구현 A1~A4를 재생하고
+// 도어락 전체 검증. pb를 눌러 평가 항목 E1~E10과 추가 구현 A1~A5를 재생하고
 // 화면에 나가는 신호에서 여섯 글자를 복원해 비교한다.
 module tb_door_lock;
     localparam CPS = 20000, T = CPS/100;
@@ -135,6 +135,14 @@ module tb_door_lock;
                      keys("1357K"); check("Error "); wait_msg;
                      keys("1234K"); keys("Z1357K"); wait_msg; keys("1234K"); keys("C4321K"); keys("4321K"); wait_msg;
                      keys("1357K"); check("Error "); wait_msg; keys("4321K"); check("OPEn  ");
+        tag = "A5";  keys("K"); keys("543216"); check("543216"); keys("K"); check("OPEn  "); keys("K");
+                     keys("54326K"); check("Error "); wait_msg;
+                     keys("4321567"); check("321567"); keys("K"); check("Error "); wait_msg;
+                     keys("9994321"); check("994321"); keys("K"); check("OPEn  ");
+                     keys("Z2468K"); check("donE  "); wait_msg; check("------");
+                     keys("124689"); check("124689"); keys("K"); check("OPEn G"); keys("K");
+                     keys("4321K"); keys("Z54321K"); check("Error "); wait_msg; check("OPEn  "); keys("K");
+                     check("------");
 
         if (errors == 0) $display("RESULT PASS tb_door_lock");
         else $display("RESULT FAIL tb_door_lock errors=%0d", errors);

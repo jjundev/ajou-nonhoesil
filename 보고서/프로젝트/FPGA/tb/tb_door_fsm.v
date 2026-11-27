@@ -143,12 +143,12 @@ module tb_door_fsm;
         is(S_IDLE, "idle after Error"); is_buf(0, 0, "keys during message ignored");
         p(5); is_buf(24'h500000, 1, "key right after message");
 
-        // ---- 비교: 길이, 0이 든 비밀번호
-        do_reset; enter(24'h123400, 5); is_msg(M_ERROR, "12340 is not 1234"); msg_end;
+        // ---- 비교: 길이, 0이 든 비밀번호(뒤에 붙은 숫자는 허수라 열린다)
+        do_reset; enter(24'h123400, 5); is(S_OPEN, "12340 contains 1234"); p(K_OK);
         enter(24'h123000, 3); is_msg(M_ERROR, "123 is not 1234"); msg_end;
         open_default; p(K_OK); is(S_IDLE, "close"); is_buf(0, 0, "close clears");
         enter(24'h123400, 4); change(24'h000000, 4);
-        enter(24'h000000, 5); is_msg(M_ERROR, "00000 is not 0000"); msg_end;
+        enter(24'h000000, 5); is(S_OPEN, "00000 contains 0000"); p(K_OK);
         enter(24'h000000, 0); is_msg(M_NONE, "empty is not 0000"); msg_end;
         enter(24'h000000, 4); is(S_OPEN, "0000 opens");
         change(24'h012345, 6); enter(24'h912345, 6); is_msg(M_ERROR, "first digit matters"); msg_end;
@@ -227,6 +227,38 @@ module tb_door_fsm;
         do_reset; open_default; p(K_GST); enter(24'h246800, 4); msg_end;
         wrong; wrong; enter(24'h246800, 4); is(S_OPEN, "guest after 2 wrong"); p(K_OK);
         wrong; wrong; is(S_IDLE, "guest success resets streak");
+
+        // ---- 허수 입력(A5): 마지막 여섯 숫자 안에 비밀번호가 끊기지 않고 들어 있으면 연다
+        do_reset;
+        enter(24'h512346, 6); is(S_OPEN, "front and back"); p(K_OK);
+        enter(24'h991234, 6); is(S_OPEN, "front two"); p(K_OK);
+        enter(24'h123477, 6); is(S_OPEN, "back two"); p(K_OK);
+        enter(24'h912340, 5); is(S_OPEN, "five digits, offset 1"); p(K_OK);
+        enter(24'h125340, 5); is_msg(M_ERROR, "broken by a digit"); msg_end;
+        enter(24'h123000, 3); is_msg(M_ERROR, "prefix only"); msg_end;
+        type_n(24'h999123, 6); p(4); p(K_OK); is(S_OPEN, "seven digits keep 991234"); p(K_OK);  // 실패 0으로
+        type_n(24'h123456, 6); p(7); p(K_OK); is_msg(M_ERROR, "pushed-out digit not used"); msg_end;
+        type_n(24'h512346, 6); p(K_BS); p(K_BS); p(K_OK); is_msg(M_ERROR, "BS cuts pw"); msg_end;
+        // 6자리 비밀번호에는 허수가 들어갈 자리가 없다
+        open_default; change(24'h135791, 6);
+        enter(24'h135791, 6); is(S_OPEN, "6-digit pw"); p(K_OK);
+        type_n(24'h135791, 6); p(2); p(K_OK); is_msg(M_ERROR, "no room for 6-digit pw"); msg_end;
+        // 5자리 비밀번호: 허수 한 자리
+        enter(24'h135791, 6); change(24'h246800, 5);
+        enter(24'h924680, 6); is(S_OPEN, "5-digit pw with one"); p(K_OK);
+        enter(24'h024680, 6); is(S_OPEN, "5-digit pw ending 0"); p(K_OK);
+        // 방문자 번호도 허수, 둘 다 들어 있으면 주인으로
+        do_reset; open_default; p(K_GST); enter(24'h246800, 4); msg_end;
+        enter(24'h124689, 6); is(S_OPEN, "guest with filler"); if (is_guest !== 1'b1) err("guest filler is_guest");
+        p(K_OK); enter(24'h124689, 6); is_msg(M_ERROR, "guest filler once"); msg_end;
+        open_default; p(K_GST); enter(24'h345600, 4); msg_end;
+        enter(24'h123456, 6); is(S_OPEN, "both inside"); if (is_guest !== 1'b0) err("owner wins");
+        p(K_OK); enter(24'h345600, 4); is(S_OPEN, "guest kept after owner"); if (is_guest !== 1'b1) err("guest still valid");
+        p(K_OK);
+        // 주인 비밀번호가 들어 있는 방문자 번호는 거부
+        open_default; p(K_GST); enter(24'h512340, 5); is_msg(M_ERROR, "guest contains owner"); msg_end;
+        is(S_OPEN, "back to OPEN gc"); p(K_GST); enter(24'h123456, 6); is_msg(M_ERROR, "guest starts with owner"); msg_end;
+        p(K_OK); enter(24'h512340, 5); is(S_OPEN, "owner via filler"); if (is_guest !== 1'b0) err("not a guest");
 
         if (errors == 0) $display("RESULT PASS tb_door_fsm");
         else $display("RESULT FAIL tb_door_fsm errors=%0d", errors);

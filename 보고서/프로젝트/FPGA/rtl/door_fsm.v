@@ -76,10 +76,26 @@ module door_fsm #(
         end
     end
 
-    // 빈 자리가 항상 0이므로 값과 길이를 한 번에 비교할 수 있다.
-    wire pw_ok    = (pw_in == pw)    && (len == pw_len);
-    wire first_ok = (pw_in == first) && (len == first_len);
-    wire guest_ok = guest_valid && (pw_in == guest) && (len == guest_len);
+    // 허수 입력: 입력한 숫자(마지막 여섯 개) 안에 pat이 끊기지 않고 들어 있는가.
+    // 버퍼와 pat 모두 왼쪽부터 채우고 빈 자리는 0이다. pat은 4~6자리라 k번째 자리에서
+    // 시작하는 경우는 k=0, 1, 2뿐이다. 버퍼를 k자리 왼쪽으로 밀고 앞 plen자리만 비교한다.
+    function contains(input [23:0] buf_v, input [2:0] blen,
+                      input [23:0] pat,   input [2:0] plen);
+        integer k;
+        reg [23:0] mask;
+        begin
+            mask = ~24'd0 << (4 * (6 - plen));
+            contains = 1'b0;
+            for (k = 0; k <= 2; k = k + 1)
+                if (k + plen <= blen && (((buf_v << (4 * k)) ^ pat) & mask) == 24'd0)
+                    contains = 1'b1;
+        end
+    endfunction
+
+    wire pw_hit    = contains(pw_in, len, pw, pw_len);
+    wire guest_hit = guest_valid && contains(pw_in, len, guest, guest_len);
+    // 새 비밀번호 확인은 허수 없이 값과 길이가 그대로 같아야 한다(빈 자리가 0이라 한 번에 비교).
+    wire first_ok  = (pw_in == first) && (len == first_len);
 
     // 입력을 받는 상태로 갈 때는 버퍼를 비운다.
     task go_entry(input [2:0] next);
@@ -144,12 +160,12 @@ module door_fsm #(
                     end
 
                 S_CHECK:
-                    if (pw_ok || guest_ok) begin
+                    if (pw_hit || guest_hit) begin
                         state    <= S_OPEN;
                         fail     <= 2'd0;
                         level    <= 2'd0;
-                        is_guest <= !pw_ok;             // 주인 비밀번호와 같을 수 없으니 둘 중 하나다
-                        if (!pw_ok) guest_valid <= 1'b0;    // 방문자 번호는 한 번 쓰면 지운다
+                        is_guest <= !pw_hit;            // 둘 다 들어 있으면 주인으로 연다
+                        if (!pw_hit) guest_valid <= 1'b0;   // 방문자 번호는 한 번 쓰면 지운다
                     end else if (fail == 2'd2)
                         go_lock;                        // 세 번째 오답은 메시지 없이 잠근다
                     else begin
@@ -211,13 +227,13 @@ module door_fsm #(
                             if (len == 3'd0) begin
                                 guest_valid <= 1'b0;    // 빈 입력은 방문자 번호 삭제
                                 go_msg(M_DEL, 1'b0);
-                            end else if (len >= 3'd4 && !pw_ok) begin
+                            end else if (len >= 3'd4 && !pw_hit) begin
                                 guest       <= pw_in;
                                 guest_len   <= len;
                                 guest_valid <= 1'b1;
                                 go_msg(M_DONE, 1'b0);
                             end else
-                                go_msg(M_ERROR, 1'b1);  // 1~3자리이거나 주인 비밀번호와 같다
+                                go_msg(M_ERROR, 1'b1);  // 1~3자리이거나 주인 비밀번호가 들어 있다
                         end else begin
                             pw_in <= edit_pw;
                             len   <= edit_len;
