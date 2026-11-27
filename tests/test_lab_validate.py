@@ -2149,6 +2149,16 @@ class BodyStyle(unittest.TestCase):
         self.assertEqual(len(msgs), 1, msgs)
         self.assertIn("조사", msgs[0])
 
+    def test_조교_호칭을_잡는다(self):
+        # 2026-11-21 실험10 결보에서 사용자가 "조교 → 조교님"으로 격식을 맞췄다.
+        msgs = self._msgs("# 실험 결과\n조교가 진행하지 말라고 했다. 조교에게 물었다.\n")
+        self.assertEqual(len(msgs), 1, msgs)
+        self.assertIn("호칭", msgs[0])
+        self.assertIn("2곳", msgs[0])
+
+    def test_조교님은_잡지_않는다(self):
+        self.assertEqual(self._msgs("# 고찰\n조교님이 확인해 주셨고 조교님께 다시 여쭈었다.\n"), [])
+
     def test_붙여_쓴_조사는_잡지_않는다(self):
         self.assertEqual(self._msgs("# 실험 결과\n앞단 출력 L1이 A·B다. C 하나만 1이어도 켜진다.\n"), [])
 
