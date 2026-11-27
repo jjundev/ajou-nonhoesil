@@ -196,10 +196,10 @@ def body(g, p):
     o.append(record_page(checks.T2, g) + record_page(checks.T3, g) + "</section>")
     # C3
     o.append('<section class="circuit">' + FIT_PLAIN
-             + head("C3", "도어락 점검 · 기록: T4, T5, T6", "준비 — door_lock.sof · 시간이 모자라면 12/4에 이어서")
+             + head("C3", "도어락 점검 · 기록: T4, T5, T6, T7", "준비 — door_lock.sof · 시간이 모자라면 12/4에 이어서")
              + '<img class="sketch-key" src="../그림/키배치.png"></div>')
     o.append(stage("단계 1 · door_lock.sof", load_steps("door_lock.sof"), "여섯 자리에 가운데 획이 떴나요?"))
-    o += [record_page(t, g) for t in (checks.T4, checks.T5, checks.T6)]
+    o += [record_page(t, g) for t in (checks.T4, checks.T5, checks.T6, checks.T7)]
     o.append(stage("단계 2 · 마치기 전", steps([
         ("어긋난 행 다시 보기", "표·순서·누른 키·실제 화면을 메모에 적어요"),
         ("사진·영상 옮기기", "사진 파일명대로 저장"),

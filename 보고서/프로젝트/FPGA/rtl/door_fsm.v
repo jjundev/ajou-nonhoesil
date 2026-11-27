@@ -8,11 +8,12 @@ module door_fsm #(
     input  key_valid,                   // 1클록
     input  [3:0] key,
     output reg [2:0]  state,
-    output reg [1:0]  msg,
+    output reg [2:0]  msg,
     output reg [23:0] pw_in,            // 입력 버퍼. [23:20]이 첫 숫자, 빈 자리는 항상 0
     output reg [2:0]  len,              // 입력한 자릿수 0~6
     output reg [3:0]  sec10,            // 잠금 남은 초의 십의 자리
-    output reg [3:0]  sec1              // 일의 자리
+    output reg [3:0]  sec1,             // 일의 자리
+    output reg        is_guest          // OPEN이 방문자 번호로 열렸다
 );
     `include "door_defs.vh"
 
@@ -34,6 +35,9 @@ module door_fsm #(
     reg [1:0]  level;       // 잠금 단계 0~2 (1, 2, 4배)
     reg        ret_open;    // 메시지가 끝나면 1: OPEN, 0: IDLE
     reg [31:0] timer;       // LOCK의 1초, MSG의 1.5초
+    reg [23:0] guest;       // 1회용 방문자 번호
+    reg [2:0]  guest_len;
+    reg        guest_valid;
 
     // ------------------------------------------------ 입력 버퍼 편집
     // 숫자, BS, CLR을 눌렀을 때의 다음 버퍼. 그 밖의 키면 그대로다.
@@ -75,6 +79,7 @@ module door_fsm #(
     // 빈 자리가 항상 0이므로 값과 길이를 한 번에 비교할 수 있다.
     wire pw_ok    = (pw_in == pw)    && (len == pw_len);
     wire first_ok = (pw_in == first) && (len == first_len);
+    wire guest_ok = guest_valid && (pw_in == guest) && (len == guest_len);
 
     // 입력을 받는 상태로 갈 때는 버퍼를 비운다.
     task go_entry(input [2:0] next);
@@ -85,7 +90,7 @@ module door_fsm #(
         end
     endtask
 
-    task go_msg(input [1:0] m, input to_open);
+    task go_msg(input [2:0] m, input to_open);
         begin
             state    <= S_MSG;
             msg      <= m;
@@ -123,6 +128,10 @@ module door_fsm #(
             level     <= 2'd0;
             ret_open  <= 1'b0;
             timer     <= 0;
+            guest     <= 24'd0;
+            guest_len <= 3'd0;
+            guest_valid <= 1'b0;
+            is_guest  <= 1'b0;
         end else
             case (state)
                 S_IDLE:
@@ -135,10 +144,12 @@ module door_fsm #(
                     end
 
                 S_CHECK:
-                    if (pw_ok) begin
-                        state <= S_OPEN;
-                        fail  <= 2'd0;
-                        level <= 2'd0;
+                    if (pw_ok || guest_ok) begin
+                        state    <= S_OPEN;
+                        fail     <= 2'd0;
+                        level    <= 2'd0;
+                        is_guest <= !pw_ok;             // 주인 비밀번호와 같을 수 없으니 둘 중 하나다
+                        if (!pw_ok) guest_valid <= 1'b0;    // 방문자 번호는 한 번 쓰면 지운다
                     end else if (fail == 2'd2)
                         go_lock;                        // 세 번째 오답은 메시지 없이 잠근다
                     else begin
@@ -147,13 +158,17 @@ module door_fsm #(
                     end
 
                 S_OPEN:
-                    if (key_valid)
+                    if (key_valid && is_guest) begin
+                        if (key == K_OK) go_entry(S_IDLE);  // 방문자는 닫기만 한다
+                    end else if (key_valid)
                         case (key)
                             K_OK:    go_entry(S_IDLE);
                             K_CHG:   go_entry(S_NEW_PW);
+                            K_GST:   go_entry(S_GUEST_PW);
                             K_RST: begin
                                 pw     <= DEFAULT_PW;
                                 pw_len <= DEFAULT_LEN;
+                                guest_valid <= 1'b0;
                                 go_msg(M_INIT, 1'b0);
                             end
                             default: ;                  // 나머지 키는 무시
@@ -180,9 +195,29 @@ module door_fsm #(
                             if (first_ok) begin
                                 pw     <= first;
                                 pw_len <= first_len;
+                                guest_valid <= 1'b0;    // 비밀번호가 바뀌면 방문자 번호도 지운다
                                 go_msg(M_DONE, 1'b0);
                             end else
                                 go_msg(M_ERROR, 1'b1);
+                        end else begin
+                            pw_in <= edit_pw;
+                            len   <= edit_len;
+                        end
+                    end
+
+                S_GUEST_PW:
+                    if (key_valid) begin
+                        if (key == K_OK) begin
+                            if (len == 3'd0) begin
+                                guest_valid <= 1'b0;    // 빈 입력은 방문자 번호 삭제
+                                go_msg(M_DEL, 1'b0);
+                            end else if (len >= 3'd4 && !pw_ok) begin
+                                guest       <= pw_in;
+                                guest_len   <= len;
+                                guest_valid <= 1'b1;
+                                go_msg(M_DONE, 1'b0);
+                            end else
+                                go_msg(M_ERROR, 1'b1);  // 1~3자리이거나 주인 비밀번호와 같다
                         end else begin
                             pw_in <= edit_pw;
                             len   <= edit_len;

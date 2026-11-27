@@ -37,7 +37,8 @@
 <text x="360" y="356" font-size="26" text-anchor="middle" font-weight="bold">9</text>
 <text x="360" y="384" font-size="11" text-anchor="middle" font-weight="normal">pb10</text>
 <circle cx="480" cy="350" r="52" fill="#e6e6e6" stroke="#000" stroke-width="2"/>
-<text x="480" y="370" font-size="11" text-anchor="middle" font-weight="normal">예비</text>
+<text x="480" y="348" font-size="20" text-anchor="middle" font-weight="bold">GST</text>
+<text x="480" y="370" font-size="11" text-anchor="middle" font-weight="normal">방문자</text>
 <text x="480" y="386" font-size="11" text-anchor="middle" font-weight="normal">pb11</text>
 <circle cx="120" cy="470" r="52" fill="#e6e6e6" stroke="#000" stroke-width="2"/>
 <text x="120" y="468" font-size="20" text-anchor="middle" font-weight="bold">OK</text>
@@ -54,5 +55,5 @@
 <text x="480" y="468" font-size="20" text-anchor="middle" font-weight="bold">CLR</text>
 <text x="480" y="490" font-size="11" text-anchor="middle" font-weight="normal">전체 지우기</text>
 <text x="480" y="506" font-size="11" text-anchor="middle" font-weight="normal">pb15</text>
-<text x="300" y="590" font-size="13" text-anchor="middle" font-weight="normal">회색은 기능 키, pb11은 쓰지 않는다.</text>
+<text x="300" y="590" font-size="13" text-anchor="middle" font-weight="normal">회색은 기능 키다.</text>
 </svg>

@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-// 도어락 전체 검증. pb를 눌러 평가 항목 E1~E10과 추가 구현 A1~A3을 재생하고
+// 도어락 전체 검증. pb를 눌러 평가 항목 E1~E10과 추가 구현 A1~A4를 재생하고
 // 화면에 나가는 신호에서 여섯 글자를 복원해 비교한다.
 module tb_door_lock;
     localparam CPS = 20000, T = CPS/100;
@@ -25,7 +25,7 @@ module tb_door_lock;
             "O": g=8'h3F; "P": g=8'h73; "E": g=8'h79; "n": g=8'h54; "r": g=8'h50;
             "o": g=8'h5C; "d": g=8'h5E; "I": g=8'h30; "t": g=8'h78; "W": g=8'h7E;
             "A": g=8'h77; "G": g=8'h3D; "L": g=8'h38; "C": g=8'h39; "K": g=8'h75;
-            "-": g=8'h40; default: g=8'h00;
+            "-": g=8'h40; "U": g=8'h3E; "S": g=8'h6D; default: g=8'h00;
         endcase
     endfunction
     task check(input [47:0] s);
@@ -80,7 +80,7 @@ module tb_door_lock;
                      keys("4"); check("1234--"); keys("5"); check("12345-"); keys("Z"); check("12345-");
                      keys("6"); check("123456"); keys("7890"); check("567890"); keys("X"); check("------");
                      keys("Z"); check("------"); keys("CR"); check("------");
-        tag = "E1";  keys("1234K"); check("OPEn  "); keys("5BXZ"); check("OPEn  "); keys("K"); check("------");
+        tag = "E1";  keys("1234K"); check("OPEn  "); keys("5BX"); check("OPEn  "); keys("K"); check("------");
                      wrong;
                      keys("1234K"); check("OPEn  "); keys("K");
         tag = "E5";  keys("K"); check("nonE  "); wait_msg; check("------");
@@ -122,6 +122,19 @@ module tb_door_lock;
                      keys("8765K"); check("OPEn  "); keys("K");
         tag = "A1";  keys("123"); check("123---"); keys("B"); check("12----"); keys("X"); check("------");
                      keys("B"); check("------"); keys("87659B"); check("8765--"); keys("K"); check("OPEn  ");
+        tag = "A4";  keys("Z"); check("GUESt "); keys("2468"); check("2468--"); keys("B"); check("246---");
+                     keys("X"); check("GUESt "); keys("2468K"); check("donE  "); wait_msg; check("------");
+                     keys("2468K"); check("OPEn G"); keys("CRZ5BX"); check("OPEn G"); keys("K"); check("------");
+                     keys("2468K"); check("Error "); wait_msg;
+                     keys("8765K"); check("OPEn  ");
+                     keys("Z8765K"); check("Error "); wait_msg; check("OPEn  ");
+                     keys("Z123K"); check("Error "); wait_msg; check("OPEn  ");
+                     keys("Z1357K"); wait_msg; keys("8765K"); keys("ZK"); check("dEL   "); wait_msg; check("------");
+                     keys("1357K"); check("Error "); wait_msg;
+                     keys("8765K"); keys("Z1357K"); wait_msg; keys("8765K"); keys("R"); wait_msg;
+                     keys("1357K"); check("Error "); wait_msg;
+                     keys("1234K"); keys("Z1357K"); wait_msg; keys("1234K"); keys("C4321K"); keys("4321K"); wait_msg;
+                     keys("1357K"); check("Error "); wait_msg; keys("4321K"); check("OPEn  ");
 
         if (errors == 0) $display("RESULT PASS tb_door_lock");
         else $display("RESULT FAIL tb_door_lock errors=%0d", errors);

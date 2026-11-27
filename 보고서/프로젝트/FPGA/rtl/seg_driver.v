@@ -37,6 +37,7 @@ module seg_driver #(parameter BLANK_CLK = 2500) (   // 50us @ 50MHz
             G_I: seg = 8'h30;   G_t: seg = 8'h78;   G_W: seg = 8'h7E;
             G_A: seg = 8'h77;   G_G: seg = 8'h3D;   G_L: seg = 8'h38;
             G_C: seg = 8'h39;   G_K: seg = 8'h75;   G_DASH: seg = 8'h40;
+            G_U: seg = 8'h3E;
             default: seg = 8'h00;
         endcase
 

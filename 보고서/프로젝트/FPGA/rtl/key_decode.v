@@ -26,6 +26,6 @@ module key_decode (
             4'd13:   key = 4'd0;
             4'd14:   key = K_BS;
             4'd15:   key = K_CLR;
-            default: key = K_NONE;      // pb11
+            default: key = K_GST;       // pb11
         endcase
 endmodule

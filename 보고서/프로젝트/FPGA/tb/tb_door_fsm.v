@@ -6,7 +6,8 @@ module tb_door_fsm;
     reg clk = 0, rst = 1, key_valid = 0;
     reg [3:0] key = 0;
     wire [2:0] state, len;
-    wire [1:0] msg;
+    wire [2:0] msg;
+    wire is_guest;
     wire [23:0] pw_in;
     wire [3:0] sec10, sec1;
     integer errors = 0, s, k, i, want_s, want_l, n, sec, q;
@@ -15,7 +16,7 @@ module tb_door_fsm;
     always #10 clk = ~clk;
     door_fsm #(.CLK_PER_SEC(CPS), .LOCK_SEC(10)) dut (.clk(clk), .rst(rst),
         .key_valid(key_valid), .key(key), .state(state), .msg(msg),
-        .pw_in(pw_in), .len(len), .sec10(sec10), .sec1(sec1));
+        .pw_in(pw_in), .len(len), .sec10(sec10), .sec1(sec1), .is_guest(is_guest));
 
     task err(input [8*40-1:0] m);
         begin
@@ -25,7 +26,7 @@ module tb_door_fsm;
         end
     endtask
     task is(input [2:0] st, input [8*40-1:0] m); if (state !== st) err(m); endtask
-    task is_msg(input [1:0] mm, input [8*40-1:0] m); if (state !== S_MSG || msg !== mm) err(m); endtask
+    task is_msg(input [2:0] mm, input [8*40-1:0] m); if (state !== S_MSG || msg !== mm) err(m); endtask
     task is_buf(input [23:0] v, input [2:0] l, input [8*40-1:0] m);
         if (pw_in !== v || len !== l) err(m);
     endtask
@@ -57,6 +58,7 @@ module tb_door_fsm;
                 S_NEW_CONFIRM: begin open_default; p(K_CHG); enter(24'h567800, 4); end
                 S_MSG: enter(24'h999900, 4);
                 S_LOCK: begin wrong; wrong; wrong; end
+                S_GUEST_PW: begin open_default; p(K_GST); end
                 default: ;
             endcase
             is(st, "goto_state");
@@ -94,12 +96,12 @@ module tb_door_fsm;
         do_reset; is(S_IDLE, "reset"); is_buf(0, 0, "reset empty");
         if (sec10 !== 0 || sec1 !== 0) err("reset seconds");
 
-        // ---- 6개 상태 x 키 16종
-        for (s = 0; s <= 6; s = s + 1) if (s != S_CHECK)
+        // ---- 7개 상태 x 키 16종
+        for (s = 0; s <= 7; s = s + 1) if (s != S_CHECK)
             for (k = 0; k < 16; k = k + 1) begin
                 goto_state(s);
                 want_s = s; want_l = -1;
-                if (s == S_IDLE || s == S_NEW_PW || s == S_NEW_CONFIRM) begin
+                if (s == S_IDLE || s == S_NEW_PW || s == S_NEW_CONFIRM || s == S_GUEST_PW) begin
                     want_l = (k <= 9) ? 1 : 0;
                     if (k == K_OK) begin want_s = S_MSG; want_l = -1; end
                 end
@@ -107,17 +109,18 @@ module tb_door_fsm;
                     if (k == K_OK)  want_s = S_IDLE;
                     if (k == K_CHG) want_s = S_NEW_PW;
                     if (k == K_RST) want_s = S_MSG;
+                    if (k == K_GST) want_s = S_GUEST_PW;
                 end
                 p(k);
                 if (state !== want_s) err("state x key");
                 if (want_l == 1) is_buf({k[3:0], 20'd0}, 1, "digit stored");
                 if (want_l == 0) is_buf(0, 0, "buffer unchanged");
                 if (want_s == S_MSG && s != S_MSG)
-                    if (msg !== (s == S_IDLE ? M_NONE : s == S_OPEN ? M_INIT : M_ERROR)) err("message kind");
+                    if (msg !== (s == S_IDLE ? M_NONE : s == S_OPEN ? M_INIT : s == S_GUEST_PW ? M_DEL : M_ERROR)) err("message kind");
             end
 
         // ---- 버퍼 편집(입력을 받는 세 상태 모두)
-        for (s = 0; s <= 4; s = s + 1) if (s == S_IDLE || s == S_NEW_PW || s == S_NEW_CONFIRM) begin
+        for (s = 0; s <= 7; s = s + 1) if (s == S_IDLE || s == S_NEW_PW || s == S_NEW_CONFIRM || s == S_GUEST_PW) begin
             goto_state(s);
             p(K_BS); is_buf(0, 0, "BS on empty");
             type_n(24'h123456, 6); is_buf(24'h123456, 6, "six digits");
@@ -126,7 +129,7 @@ module tb_door_fsm;
             p(K_BS); is_buf(24'h345000, 3, "BS 4"); p(K_BS); is_buf(24'h340000, 2, "BS 3");
             p(K_BS); is_buf(24'h300000, 1, "BS 2"); p(K_BS); is_buf(0, 0, "BS 1");
             type_n(24'h987000, 3); p(K_CLR); is_buf(0, 0, "CLR"); is(s, "still same state");
-            type_n(24'h987000, 3); p(K_NONE); p(K_CHG); p(K_RST); is_buf(24'h987000, 3, "ignored keys");
+            type_n(24'h987000, 3); p(K_GST); p(K_CHG); p(K_RST); is_buf(24'h987000, 3, "ignored keys");
         end
 
         // ---- 메시지 1.5초: 정확히 150클록, 그동안 키 무시, 만료 클록의 키도 무시
@@ -197,6 +200,33 @@ module tb_door_fsm;
         // 변경은 잠금 뒤에도 유지
         do_reset; open_default; change(24'h778899, 6); to_lock(0); lock_run(10);
         enter(24'h778899, 6); is(S_OPEN, "pw kept over lock");
+
+        // ---- 방문자 번호(A4): 한 번만 열리고, 방문자는 닫기만 한다
+        do_reset; open_default;
+        p(K_GST); is(S_GUEST_PW, "guest entry"); enter(24'h246800, 4); is_msg(M_DONE, "guest saved"); msg_end;
+        is(S_IDLE, "idle after guest");
+        enter(24'h246800, 4); is(S_OPEN, "guest opens"); if (is_guest !== 1'b1) err("is_guest");
+        for (k = 0; k < 16; k = k + 1) if (k != K_OK) begin p(k); is(S_OPEN, "guest ignores key"); end
+        p(K_OK); is(S_IDLE, "guest closes");
+        enter(24'h246800, 4); is_msg(M_ERROR, "guest used once"); msg_end;
+        open_default; if (is_guest !== 1'b0) err("owner is not guest");
+        p(K_GST); enter(24'h123400, 4); is_msg(M_ERROR, "guest equals owner"); msg_end; is(S_OPEN, "back to OPEN g");
+        p(K_GST); enter(24'h135000, 3); is_msg(M_ERROR, "guest 3 digits"); msg_end; is(S_OPEN, "back to OPEN g3");
+        p(K_GST); enter(24'h135700, 4); msg_end; open_default;
+        p(K_GST); enter(24'h975310, 6); msg_end; open_default;           // 덮어쓰기
+        p(K_OK); enter(24'h135700, 4); is_msg(M_ERROR, "old guest replaced"); msg_end;
+        enter(24'h975310, 6); is(S_OPEN, "new guest opens"); p(K_OK);
+        open_default; p(K_GST); enter(24'h135700, 4); msg_end; open_default;
+        p(K_GST); p(K_OK); is_msg(M_DEL, "dEL"); msg_end; is(S_IDLE, "idle after dEL");
+        enter(24'h135700, 4); is_msg(M_ERROR, "deleted guest"); msg_end;
+        open_default; p(K_GST); enter(24'h135700, 4); msg_end; open_default;
+        p(K_RST); msg_end; enter(24'h135700, 4); is_msg(M_ERROR, "RST clears guest"); msg_end;
+        open_default; p(K_GST); enter(24'h135700, 4); msg_end; open_default; change(24'h432100, 4);
+        enter(24'h135700, 4); is_msg(M_ERROR, "CHG clears guest"); msg_end;
+        // 방문자 번호 오답도 세고, 방문자 성공은 연속을 끊는다
+        do_reset; open_default; p(K_GST); enter(24'h246800, 4); msg_end;
+        wrong; wrong; enter(24'h246800, 4); is(S_OPEN, "guest after 2 wrong"); p(K_OK);
+        wrong; wrong; is(S_IDLE, "guest success resets streak");
 
         if (errors == 0) $display("RESULT PASS tb_door_fsm");
         else $display("RESULT FAIL tb_door_fsm errors=%0d", errors);

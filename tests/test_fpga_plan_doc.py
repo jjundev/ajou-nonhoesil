@@ -68,9 +68,9 @@ def test_display_words_present():
         assert f'"{w}' in text, w
 
 
-def test_extra_features_exactly_three():
+def test_extra_features_exactly_four():
     rows = [r for t in tables(section(REQ)) for r in t.rows if r[0].strip().startswith("A")]
-    assert [r[0].strip() for r in rows] == ["A1", "A2", "A3"]
+    assert [r[0].strip() for r in rows] == ["A1", "A2", "A3", "A4"]
 
 
 def test_numbers_match_spec():
@@ -230,7 +230,7 @@ def test_screen_table_is_six_cells():
         assert len(cells) == 6 and all(c == "끔" or len(c) == 1 for c in cells), r
         shown[r[0]] = "".join(" " if c == "끔" else c for c in cells)
     assert set(v.rstrip() for v in shown.values()) == {
-        "------", "12----", "OPEn", "Error", "nonE", "donE", "InIt", "nEW", "AGAIn", "LOCK09"}
+        "------", "12----", "OPEn", "Error", "nonE", "donE", "InIt", "nEW", "AGAIn", "LOCK09", "GUESt", "OPEn G", "dEL"}
 
 
 def test_third_wrong_goes_to_lock_in_r4():
@@ -244,7 +244,7 @@ def test_e9_keeps_notice_wording():
 
 
 def test_buffer_clear_points_written():
-    assert "IDLE, NEW_PW, NEW_CONFIRM에 들어갈 때마다 비운다" in section(REQ)
+    assert "IDLE, NEW_PW, NEW_CONFIRM, GUEST_PW에 들어갈 때마다 비운다" in section(REQ)
 
 
 def test_fsm_to_display_signals_named():
@@ -296,8 +296,8 @@ def test_por_counter_has_initial_value():
 
 
 def test_extra_features_simulated_and_separated():
-    assert "E1~E10과 추가 구현 A1~A3" in section(PROB)
-    assert "A1~A3" in section("조원 역할 분담")
+    assert "E1~E10과 추가 구현 A1~A4" in section(PROB)
+    assert "A1~A4" in section("조원 역할 분담")
     assert "추가 구현 A3" in _row(REQ, "R6")[2]
     assert "LOCK40" in _row(REQ, "A2")[3] and "맞히지 않고" in _row(REQ, "A2")[3]
 

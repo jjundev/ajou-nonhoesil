@@ -57,7 +57,7 @@ module tb_seg_driver;
         tbl[5]=8'h6D; tbl[6]=8'h7D; tbl[7]=8'h07; tbl[8]=8'h7F; tbl[9]=8'h67;
         tbl[10]=8'h73; tbl[11]=8'h79; tbl[12]=8'h54; tbl[13]=8'h50; tbl[14]=8'h5C;
         tbl[15]=8'h5E; tbl[16]=8'h30; tbl[17]=8'h78; tbl[18]=8'h7E; tbl[19]=8'h77;
-        tbl[20]=8'h3D; tbl[21]=8'h38; tbl[22]=8'h39; tbl[23]=8'h75; tbl[24]=8'h40;
+        tbl[20]=8'h3D; tbl[21]=8'h38; tbl[22]=8'h39; tbl[23]=8'h75; tbl[24]=8'h40; tbl[26]=8'h3E;
         repeat (100) @(posedge clk);
         #1 rst = 0;
         // 32코드를 여섯 자리 모두에서

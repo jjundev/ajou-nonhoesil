@@ -1,11 +1,12 @@
 // 상태를 화면 여섯 글자로 바꾼다(조합 회로).
 module display_ctrl (
     input  [2:0]  state,
-    input  [1:0]  msg,
+    input  [2:0]  msg,
     input  [23:0] pw_in,
     input  [2:0]  len,
     input  [3:0]  sec10,
     input  [3:0]  sec1,
+    input         is_guest,     // 방문자 번호로 열림
     output reg [29:0] chars     // 5비트 x 6. [29:25]가 맨 왼쪽
 );
     `include "glyphs.vh"
@@ -22,7 +23,12 @@ module display_ctrl (
 
     always @(*)
         case (state)
-            S_OPEN: chars = {G_O, G_P, G_E, G_n, G_OFF, G_OFF};
+            S_OPEN:
+                if (is_guest) chars = {G_O, G_P, G_E, G_n, G_OFF, G_G};
+                else          chars = {G_O, G_P, G_E, G_n, G_OFF, G_OFF};
+            S_GUEST_PW:
+                if (len == 3'd0) chars = {G_G, G_U, G_E, 5'd5, G_t, G_OFF};
+                else             chars = typed;
             S_NEW_PW:
                 if (len == 3'd0) chars = {G_n, G_E, G_W, G_OFF, G_OFF, G_OFF};
                 else             chars = typed;
@@ -34,6 +40,7 @@ module display_ctrl (
                     M_ERROR: chars = {G_E, G_r, G_r, G_o, G_r, G_OFF};
                     M_NONE:  chars = {G_n, G_o, G_n, G_E, G_OFF, G_OFF};
                     M_DONE:  chars = {G_d, G_o, G_n, G_E, G_OFF, G_OFF};
+                    M_DEL:   chars = {G_d, G_E, G_L, G_OFF, G_OFF, G_OFF};
                     default: chars = {G_I, G_n, G_I, G_t, G_OFF, G_OFF};
                 endcase
             S_LOCK: chars = {G_L, G_O, G_C, G_K, 1'b0, sec10, 1'b0, sec1};
