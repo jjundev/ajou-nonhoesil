@@ -2,10 +2,15 @@
 import json
 from pathlib import Path
 from h import p, table
-from recall import QUIZ_RECALL
+from recall import QUIZ_EXPLANATION
 
 MAN = 's-a9792f60486135b0'
 BOARD = 's-df4e3850c9b9d3a3'
+BOARD_NET_TABLE = table(['넷', '연결'], [
+    ['전원', '14: +5V / 7: GND'], ['입력', 'S:1 / E:2·4 / R:5'],
+    ['앞단', '3–9 / 6–13'], ['되먹임', '8–12 / 11–10'], ['관측', 'Q:8 / Q′:11'],
+])
+BOARD_SOLUTION_IMAGE = '<img src="figures/solutions/q-qp-e06-board-01-complete.png" width="270" style="max-width:100%;height:auto" alt="v1 PDF 위 Enable SR 래치 완성 결선도">'
 
 # type, id suffix, title, topic, page, condition, ask, answer, reason, check, pitfall
 ITEMS = [
@@ -90,8 +95,8 @@ def workbook(item):
         steps[0]['html']+=p('채점 요소: '+answer)
         steps.append(dict(label=labels[1],html=p('되먹임/피드백, 유지/저장, High/1, 하강 엣지/1→0처럼 의미가 같은 표현을 인정해요. '+pitfall)))
     if typ=='breadboard':
-        steps[0]['html']+=table(['넷','연결'],[['전원','14: +5V / 7: GND'],['입력','S:1 / E:2·4 / R:5'],['앞단','3–9 / 6–13'],['되먹임','8–12 / 11–10'],['관측','Q:8 / Q′:11']])
-        steps.append(dict(label=labels[1],html='<img src="figures/solutions/q-qp-e06-board-01-complete.png" width="270" style="max-width:100%;height:auto" alt="v1 PDF 위 Enable SR 래치 완성 결선도">'+p('예시는 초기 입력을 0으로 그렸어요. 점퍼의 레일 쪽 끝만 옮겨 입력을 바꿔요. 위치가 달라도 동일 넷이면 인정해요.')))
+        steps[0]['html']+=BOARD_NET_TABLE
+        steps.append(dict(label=labels[1],html=BOARD_SOLUTION_IMAGE+p('예시는 초기 입력을 0으로 그렸어요. 점퍼의 레일 쪽 끝만 옮겨 입력을 바꿔요. 위치가 달라도 동일 넷이면 인정해요.')))
     obj=dict(original=p('자체 출제 · '+title),conditions=p(condition),ask=p(ask),problem_figures=[],
              hints=[dict(label='접근 순서',html=p('활성 조건을 먼저 표시하고 현재 입력과 직전 상태를 구분해요.' if typ!='breadboard' else '전원 핀과 NAND 게이트 묶음을 먼저 찾고, 회로도의 연결점을 넷 단위로 따라가요.'))],
              solution=dict(steps=steps,answer=p(answer)),notes=[check,pitfall])
@@ -116,21 +121,25 @@ SUMMARY_NOTES = {'q-qp-e06-tf-01': '정상 상태로 초기화된 이상 래치�
 
 def explanation(item):
     typ,suffix,title,topic,page,condition,ask,answer,reason,check,pitfall=item
-    cue, concept, first_step = QUIZ_RECALL[suffix]
+    cue, concept, first_step, task, reasoning, retry = QUIZ_EXPLANATION[suffix]
     recall = p(concept)
     start = p(first_step) + f'<p>개념으로 돌아가기: <a href="{{{{NOTE_HREF}}}}#{topic}">해당 동작 원리</a></p>'
-    obj=workbook(item)
-    solve=''.join(p(s['label'])+s['html'].replace('src="figures/','src=".pack/figures/').replace(' style="max-width:100%;height:auto"','') for s in obj['solution']['steps'])
-    if typ=='breadboard':solve=solve.replace('<img ','<figure class="figure"><img ').replace('alt="v1 PDF 위 Enable SR 래치 완성 결선도">','alt="v1 PDF 위 Enable SR 래치 완성 결선도"></figure>')
+    solve = p(reasoning)
+    summary_answer = f'{answer} — {reasoning}' if typ == 'true_false' else answer
+    if typ == 'breadboard':
+        image = BOARD_SOLUTION_IMAGE.replace('src="figures/', 'src=".pack/figures/').replace(' style="max-width:100%;height:auto"', '')
+        solve += BOARD_NET_TABLE + '<figure class="figure">' + image + '</figure>'
+        solve += p('예시 점퍼는 초기 0이에요. 같은 넷이면 칩이나 점퍼 위치는 달라도 돼요.')
+        answer = '완성 연결표의 각 핀과 그림의 관측점을 대조해요.'
     def layer(key,cls,label,html):return f'<div class="layer {cls}" data-explanation="{key}"><span class="layer-title">{label}</span>{html}</div>'
     pid = 'q-qp-e06-' + suffix
     summary_note = p(SUMMARY_NOTES[pid]) if pid in SUMMARY_NOTES else ''
-    return (layer('understand','eli5','이 문제에서 할 일',p(ask)+p('입력의 이름만 외우지 않고 활성 조건에서 출력이 왜 그렇게 되는지 확인해요.'))+
+    return (layer('understand','eli5','이 문제에서 할 일',p(task))+
       layer('recall','formal','이 문제를 봤을 때 떠올릴 개념과 공식',f'<p class="lead cue">{cue}</p>'+recall)+
       layer('start','formal','첫 줄을 이렇게 시작해요',start)+layer('solve','formal','이유를 따라 완성해요',solve)+
       layer('verify','formal','완성 답과 검산',p(answer)+p(check))+layer('pitfall','warn','이 실수를 피하세요',p(pitfall))+
-      layer('retry','formal','설명을 닫고 다시 풀어요','<ol><li>문제의 활성 조건을 표시해요.</li><li>첫 판단에서 정답까지 이유를 써요.</li><li>반대 상태나 경계 조건으로 검산해요.</li></ol>')+
-      f'<div class="sum" hidden><p><strong>떠올릴 것:</strong> {cue}</p><p data-summary="recall">{reason}</p><p>답: {answer}</p><p>검산: {check}</p>{summary_note}</div>')
+      layer('retry','formal','설명을 닫고 다시 풀어요',f'<ol><li>{retry}</li></ol>')+
+      f'<div class="sum" hidden><p><strong>떠올릴 것:</strong> {cue}</p><p data-summary="recall">{concept}</p><p>답: {summary_answer}</p><p>검산: {check}</p>{summary_note}</div>')
 
 E={'q-qp-e06-'+i[1]:explanation(i) for i in ITEMS}
 

@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>11에서 00으로 갈 때의 중간 상태를 설명해요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">A의 하강이 FFB의 클럭이에요.</p><p>AB=11에서 두 비트가 한 번에 바뀌지 않는 이유는 B의 반전이 A의 하강 뒤에 시작되기 때문이에요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>A=1→0을 첫 변화로 적어요.</p><p><a href="{{NOTE_HREF}}#t-async">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>AB는 11→01→00으로 가요. FFB가 A의 하강을 받은 뒤 전달 지연만큼 지나 B=0이 돼요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>반대로 B가 먼저라면 중간값은 10이에요. 이 회로에서 B를 먼저 바꿀 클럭 경로가 없어요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>01은 A를 앞에 쓴 중간 상태예요. 자리값은 B가 더 높아요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>상태마다 어느 비트가 바뀌는지 표시해요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> A의 하강이 FFB의 클럭이에요.</p><p data-summary="recall">AB=11에서 두 비트가 한 번에 바뀌지 않는 이유는 B의 반전이 A의 하강 뒤에 시작되기 때문이에요.</p><p>A=1→0을 첫 변화로 적어요.</p><p>AB는 11→01→00으로 가요. FFB가 A의 하강을 받은 뒤 전달 지연만큼 지나 B=0이 돼요.</p><p>반대로 B가 먼저라면 중간값은 10이에요. 이 회로에서 B를 먼저 바꿀 클럭 경로가 없어요.</p><p>01은 A를 앞에 쓴 중간 상태예요. 자리값은 B가 더 높아요.</p></div>

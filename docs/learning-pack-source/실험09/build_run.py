@@ -4,11 +4,11 @@
 reviewed 는 원문·내용·브라우저 검토를 실제로 마친 뒤에만 붙여요.
 """
 from pathlib import Path
-import sys, json, hashlib, html, re
+import sys, json, hashlib, html, re, shutil
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(Path(__file__).parent))
-from h import p, table, sumd, sumparts, pull_layouts, layer
+from h import p, table, sumparts, pull_layouts, layer
 from content import TOPICS
 from questions import Q, ORDER, NOT_INCLUDED
 from quiz_content import ITEMS, BOARD_PINS, BOARD_NETS
@@ -79,7 +79,6 @@ for tid, title, pages, body, summ in TOPICS:
 P = {x['id']: x for x in M['problems']}
 assert set(P) == set(ORDER) | set(NOT_INCLUDED), set(P) ^ (set(ORDER) | set(NOT_INCLUDED))
 rows = []
-exp_layout = []
 
 
 def strip(s):
@@ -133,28 +132,11 @@ figures.build(R, M)
 (R / 'problem-explanations').mkdir(exist_ok=True)
 
 
-def sect(key, title, body, cls='formal'):
-    return f'<div class="layer {cls}" data-explanation="{key}"><span class="layer-title">{title}</span>{body}</div>'
-
+explanation_source = Path(__file__).with_name('problem-explanations')
 
 for x, obj, q in rows:
     pid = x['id']
-    topic = q['topic']
-    solve_steps = obj['solution']['steps']
-    solve = ''.join(f"<p><strong>{s['label']}:</strong></p>" + s['html'] for s in solve_steps if s['label'] not in ('검산', '주의'))
-    solve = re.sub(r'<p>(<img[^>]+>)</p>|(<img[^>]+>)', lambda m: '<figure class="figure">' + (m.group(1) or m.group(2)) + '</figure>', solve).replace('src="figures/', 'src=".pack/figures/').replace(' style="max-width:100%;height:auto"', '')
-    e = sect('understand', '이 문제에서 할 일', p(q['understand']), 'eli5')
-    e += sect('recall', '이 문제를 봤을 때 떠올릴 개념과 공식', f'<p class="lead cue">{q["cue"]}</p>' + ''.join(p(t) for t in q['recall']))
-    e += sect('start', '첫 줄을 이렇게 시작해요', p(q['start']) + f'<p><a href="{{{{NOTE_HREF}}}}#{topic}">필요한 개념으로 돌아가요</a></p>')
-    e += sect('solve', '이유를 따라 완성해요', solve)
-    e += sect('verify', '답과 검산을 확인해요', p('최종 답: ' + q['answer']) + p('검산: ' + q['verify']))
-    e += sect('pitfall', '헷갈리기 쉬운 조건을 확인해요', p(q['pitfall']), 'warn')
-    e += sect('retry', '설명을 닫고 다시 해 봐요', '<ol>' + ''.join(f'<li>{t}</li>' for t in q['retry']) + '</ol>')
-    e += sumd(p('<strong>떠올릴 것:</strong> ' + q['cue']) + f'<p data-summary="recall">{q["recall"][0]}</p>' + p('첫 실행: ' + q['start']) + p('핵심: ' + q['sum_key']) + p('결론: ' + q['answer']) + p('검산: ' + q['verify']) + p('주의: ' + q['pitfall']))
-    e, ents = pull_layouts(e, lambda n, i=pid: f'{i}/explanation/{n}')
-    exp_layout += ents
-    conditions, ents = pull_layouts(obj['conditions'], lambda n, i=pid: f'{i}/conditions/{n}')
-    exp_layout += ents
+    conditions = strip(obj['conditions'])
     if x.get('question_type') == 'breadboard':
         conditions = conditions.replace('<table>', '<table class="chip-spec">')
     obj['conditions'] = mark_work_tables(conditions)
@@ -164,14 +146,14 @@ for x, obj, q in rows:
         if q.get('wb_noimg'):
             s['html'] = re.sub(r'<p><img[^>]+></p>', '', s['html'])
     (R / 'workbook' / f'{pid}.json').write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding='utf8')
-    (R / 'problem-explanations' / f'{pid}.html').write_text(e, encoding='utf8')
+    shutil.copyfile(explanation_source / f'{pid}.html', R / 'problem-explanations' / f'{pid}.html')
 
 STAT = {pid: v[1] for pid, v in NOT_INCLUDED.items()}
 for q in I['questions']:
     x = P[q['question_id']]
     q['authoring_status'] = 'ready' if x['status'] == 'included' else STAT[q['question_id']]
     q['selection_reason'] = x['reason']
-(R / 'problem-explanations/table-layout.json').write_text(json.dumps(dict(version=1, tables=exp_layout), ensure_ascii=False, indent=2), encoding='utf8')
+shutil.copyfile(explanation_source / 'table-layout.json', R / 'problem-explanations/table-layout.json')
 (R / 'manifest.json').write_text(json.dumps(M, ensure_ascii=False, indent=2), encoding='utf8')
 (R / 'authoring-index.json').write_text(json.dumps(I, ensure_ascii=False, indent=2), encoding='utf8')
 print('authored', len(rows), 'included')

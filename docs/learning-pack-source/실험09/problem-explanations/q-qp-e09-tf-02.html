@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>IN0=0에서 A가 유지되는지 판정해요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">IN0=0이면 앞단 NAND 둘 다 1</p><p>NAND는 입력 한쪽이 0이면 다른 쪽과 무관하게 1을 내요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>S′ = (IN0·WR1)′을 계산해요.</p><p><a href="{{NOTE_HREF}}#t-2bit">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>참(T)이에요. R′ = (IN0·WR0)′도 1이어서 래치는 초기 Q를 유지해요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>WR0=WR1=1을 넣어도 IN0=0에서는 S′=R′=1이에요. 문항의 초기 Q=1도 남아요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>IN0을 1로 바꾸면 같은 WR 조합이 S′=R′=0을 만들어요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>IN0=0을 두 NAND에 각각 대입해요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> IN0=0이면 앞단 NAND 둘 다 1</p><p data-summary="recall">NAND는 입력 한쪽이 0이면 다른 쪽과 무관하게 1을 내요.</p><p>첫 실행: S′ = (IN0·WR1)′을 계산해요.</p><p>IN0=0 → S′=R′=1 → A 유지(T). WR이 둘 다 1이어도 성립해요.</p><p>WR0=WR1=1을 넣어도 IN0=0에서는 S′=R′=1이에요. 문항의 초기 Q=1도 남아요.</p><p>IN0을 1로 바꾸면 같은 WR 조합이 S′=R′=0을 만들어요.</p></div>

@@ -9,7 +9,7 @@ CLI: browser_check.py <확인문제 html> --src <자료_확인문제 폴더> --o
 - 객관식: 오답 클릭 → 상태 문구·보기별 설명 → 다시 풀기 → 정답 클릭.
 - 값 입력(short): 허용답의 소문자·공백 변형을 넣고 '답 확인' → 맞음 상태('자동 일치').
 - 마지막 문항 제출 뒤 복기 창이 한 번 열리고 미응답 수를 보여 준다.
-- 새로고침하면 선택·입력이 비어야 한다(저장소 null).
+- 풀이 링크에서 뒤로 가면 제출 답안·채점·푼 문제 수를 복원하고, 새로고침하면 초기화한다.
 - 실패는 멈추지 않고 모아 JSON 에 남기며 하나라도 있으면 exit 1.
 """
 from __future__ import annotations
@@ -64,7 +64,9 @@ class Run:
         self.failures: list[str] = []
         self.errors: list[str] = []
         self.blocked: set[str] = set()
-        page.on("pageerror", lambda e: self.errors.append(f"페이지 오류: {e}"))
+        self.round_trip_destination: str | None = None
+        page.on("pageerror", lambda e: self.errors.append(f"페이지 오류: {e}")
+                if page.url != self.round_trip_destination else None)
         page.on("console", lambda m: self.errors.append(f"콘솔 error: {m.text}") if m.type == "error" else None)
         page.on("requestfailed", lambda r: self.errors.append(f"로컬 자원 요청 실패: {r.url}")
                 if r.url.startswith("file:") else None)
@@ -255,6 +257,56 @@ def check_review_dialog(run: Run, item: dict, total: int, shot: Path | None):
     page.locator(f"#{cid} .review-reset").click()
 
 
+def check_note_round_trip(run: Run, cid: str):
+    """채점 뒤 실제 링크를 따라갔다가 뒤로 가도 풀이가 복원되어야 한다."""
+    page = run.page
+    toggle = page.locator("#toggle-right")
+    if toggle.get_attribute("aria-expanded") == "false":
+        toggle.click()
+    link = page.locator(f".aid[data-card-id='{cid}'] details.solution:not([hidden]) .note-link a")
+    origin = page.url
+    destination = link.evaluate("(anchor) => anchor.href")
+
+    def progress():
+        return page.evaluate("""() => ({
+            solved: document.getElementById('progress-n').textContent,
+            answers: Array.from(document.querySelectorAll('article.card'), card => ({
+                choice: card.querySelector('.review-choice[data-selected="true"]')?.closest('li').dataset.choice,
+                short: card.querySelector('.short-input input[type=text]')?.value,
+                grade: card.querySelector('.review-status')?.textContent
+            }))
+        })""")
+
+    before = progress()
+    recap = page.locator(".review-export").locator("..")
+    recap_hidden = recap.get_attribute("hidden")
+
+    def skip_note_assets(route):
+        # The round trip tests the quiz. Linked notes may load CDN assets.
+        request = route.request
+        if request.resource_type != "document" and request.frame.url == destination:
+            return route.fulfill(status=204)
+        return route.fallback()
+
+    run.round_trip_destination = destination
+    page.route("https://**/*", skip_note_assets)
+    try:
+        with page.expect_navigation(wait_until="domcontentloaded") as navigation:
+            link.click()
+        response = navigation.value
+        run.expect(response is not None and response.ok and page.url == destination
+                   and urlsplit(destination).path != urlsplit(origin).path, "풀이 링크로 다른 HTML에 이동하지 않음")
+        page.go_back(wait_until="load")
+    finally:
+        page.unroute("https://**/*", skip_note_assets)
+        run.round_trip_destination = None
+    run.expect(page.url == origin, "뒤로 가기 뒤 원래 문항으로 돌아오지 않음")
+    run.expect(progress() == before, "뒤로 가기 뒤 답안·채점 결과·푼 문제 수가 달라짐")
+    run.expect(recap.get_attribute("hidden") == recap_hidden, "뒤로 가기 뒤 복기 열기 상태가 달라짐")
+    run.expect(not page.locator("dialog.review-prompt-dialog[open]").is_visible(),
+               "뒤로 가기 뒤 복기 창이 자동으로 열림")
+
+
 def check_run(run: Run, url: str, items: list[dict], shots: Path | None, tag: str) -> dict:
     page = run.page
     page.goto(url, wait_until="load")
@@ -301,6 +353,7 @@ def check_run(run: Run, url: str, items: list[dict], shots: Path | None, tag: st
         run.step("힌트 문항 다시 방문", lambda: run.go(first_hint))
         active_aid = page.locator(f".aid[data-card-id='{first_hint}']:not([hidden])")
         run.expect(active_aid.locator("details.hint:not([open])").count() == 1, "다시 방문한 문항의 힌트가 펼쳐져 있음")
+    run.step("풀이 링크 왕복", lambda: check_note_round_trip(run, first_hint or items[-1]["id"]))
     run.step("새로고침", lambda: page.reload(wait_until="load"))
     progress = (page.locator("#progress-n").text_content() or "").strip()
     run.expect(progress == "0", f"새로고침 뒤 푼 문제 수가 {progress} (기대 0)")

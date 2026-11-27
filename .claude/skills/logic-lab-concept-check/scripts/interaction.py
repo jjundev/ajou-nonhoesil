@@ -140,7 +140,6 @@ ANSWER_EVENT = """        document.addEventListener('od:answer', ({detail}) => {
           if (detail.restored && detail.selected !== null) return;
           if (detail.selected === null) solved.delete(detail.id);
           else solved.add(detail.id);
-          // 저장하지 않는다: 새로고침하면 진행이 초기화된다(ds-review-pack 템플릿엔 tabStore 가 없다).
           if (curId) paintBtn();
           markToc(solved, cards.length, '푼 문제');
         });
@@ -181,23 +180,41 @@ def patch_review_shell(source: str) -> str:
         if section.count(needle) != 1:
             raise ValueError('setupReview 완료 상태 연결 구조 불일치')
         section = section.replace(needle, needle + '\n          if (detail.restored && detail.selected !== null) return;')
-    section = drop_solved_persistence(section)
+    section = patch_solved_history(section)
     return source[:begin] + section + source[end:]
 
 
-SOLVED_LOAD = "new Set(store.get(KEY, []).filter("
+SOLVED_LOAD = "new Set(store.get(KEY, []).filter((id) => cards.some((c) => c.id === id)))"
+LEGACY_SOLVED_LOAD = "new Set([].filter((id) => cards.some((c) => c.id === id)))"
 SOLVED_SAVE = "          store.set(KEY, Array.from(solved));\n"
-SOLVED_MARK = "// concept-check: 푼 문제 기록은 저장하지 않는다"
+LEGACY_SOLVED_SAVE = "          // concept-check: 푼 문제 기록은 저장하지 않는다\n"
+STORAGE_EVENT = """        let storage;
+        const saveSolved = () => storage?.setItem(KEY, JSON.stringify(Array.from(solved)));
+        document.addEventListener('od:review-storage', ({detail}) => {
+          storage = detail;
+          const saved = JSON.parse(storage.getItem(KEY) || '[]');
+          cards.forEach(card => { if (saved.includes(card.id)) solved.add(card.id); });
+          markToc(solved, cards.length, '푼 문제');
+          if (curId) paintBtn();
+        }, {once: true});
+"""
 
 
-def drop_solved_persistence(section: str) -> str:
-    """setupReview 의 '푼 문제' 기록을 메모리에만 둔다(새로고침하면 진행 초기화). 테마 저장은 그대로."""
-    if SOLVED_MARK in section:
+def patch_solved_history(section: str) -> str:
+    """Use the quiz history entry for progress instead of persistent preferences."""
+    if "od:review-storage" in section:
         return section
-    if section.count(SOLVED_LOAD) != 1 or section.count(SOLVED_SAVE) != 1:
+    load = LEGACY_SOLVED_LOAD if LEGACY_SOLVED_LOAD in section else SOLVED_LOAD
+    save = LEGACY_SOLVED_SAVE if LEGACY_SOLVED_SAVE in section else SOLVED_SAVE
+    button = "        btn.addEventListener('click', () => {"
+    answered = "          else solved.add(detail.id);\n"
+    if any(section.count(anchor) != 1 for anchor in (load, save, button, answered)):
         raise ValueError('setupReview 푼 문제 저장 구조 불일치')
-    section = section.replace(SOLVED_LOAD, "new Set([].filter(")
-    return section.replace(SOLVED_SAVE, "          " + SOLVED_MARK + "\n")
+    section = section.replace(load, "new Set()").replace(save, "          saveSolved();\n")
+    section = re.sub(r"^          // 저장하지 않는다: 새로고침하면 진행이 초기화된다[^\n]*\n",
+                     "", section, flags=re.M)
+    section = section.replace(answered, answered + "          saveSolved();\n")
+    return section.replace(button, STORAGE_EVENT + button)
 
 
 def install(source: str, document_id: str, overrides: dict | None = None, strict: bool = True) -> str:
@@ -217,7 +234,8 @@ def install(source: str, document_id: str, overrides: dict | None = None, strict
     boot = """(function () {
       function start() {
         try {
-          const storage = null;
+          const storage = ReviewInteraction.historyStore(window);
+          document.dispatchEvent(new CustomEvent('od:review-storage', {detail: storage}));
           ReviewInteraction.mount(document, JSON.parse(document.getElementById('review-interaction-model').textContent), storage);
         } catch (error) { console.warn('복습문제 상호작용 초기화 실패:', error); }
       }

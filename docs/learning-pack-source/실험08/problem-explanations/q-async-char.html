@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>클럭 연결과 지연의 관계를 설명해요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">앞 단 출력이 다음 단 CLK로 가요.</p><p>앞 단의 전환이 다음 단의 클럭을 만들면 두 전환 사이에 전달 지연이 생겨요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>첫 F/F의 CLK에만 외부 클럭을 표시해요.</p><p><a href="{{NOTE_HREF}}#t-async">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>이후 단계는 앞 단 출력을 CLK로 받아 차례로 전환하므로 뒤로 갈수록 전달 지연이 쌓여요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>AB=11에서 A가 먼저 떨어져 01을 거쳐 00으로 가요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>앞 단의 출력이 J/K로 들어가는 되먹임만으로는 비동기식이라 판단할 수 없어요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>두 단의 CLK 경로를 따라 지연이 생기는 순서를 적어요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 앞 단 출력이 다음 단 CLK로 가요.</p><p data-summary="recall">앞 단의 전환이 다음 단의 클럭을 만들면 두 전환 사이에 전달 지연이 생겨요.</p><p>첫 F/F의 CLK에만 외부 클럭을 표시해요.</p><p>이후 단계는 앞 단 출력을 CLK로 받아 차례로 전환하므로 뒤로 갈수록 전달 지연이 쌓여요.</p><p>AB=11에서 A가 먼저 떨어져 01을 거쳐 00으로 가요.</p><p>앞 단의 출력이 J/K로 들어가는 되먹임만으로는 비동기식이라 판단할 수 없어요.</p></div>

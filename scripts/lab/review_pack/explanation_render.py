@@ -89,14 +89,17 @@ def write_explanations(manifest: dict, question_data: dict, author_root: Path, f
     for key,value in values.items():document=document.replace('{{'+key+'}}',value)
     if panel_assets:
         css, script = (f'{DATA}/assets/{name}' for name in panel_assets)
-        pdf_delivery = manifest.get('workbook_delivery') == 'pdf'
-        question_href = workbook_pdf_names(manifest['experiment'])['question'] if pdf_delivery else names['question_html']
-        label = '문제지 PDF' if pdf_delivery else '문제지'
+        script_attributes = ''
+        # Older packs carry their own panel script. Preserve its inputs and reproducible HTML.
+        if 'questionHref' in (assets / panel_assets[1]).read_text(encoding='utf-8'):
+            pdf_delivery = manifest.get('workbook_delivery') == 'pdf'
+            question_href = workbook_pdf_names(manifest['experiment'])['question'] if pdf_delivery else names['question_html']
+            label = '문제지 PDF' if pdf_delivery else '문제지'
+            script_attributes = f' data-question-href="{quote(question_href)}" data-question-label="{label}"'
         document = document.replace('</head>', f'  <link rel="stylesheet" href="{css}">\n</head>', 1)
         document = document.replace(
             '</body>',
-            f'  <script defer src="{script}" data-question-href="{quote(question_href)}" '
-            f'data-question-label="{label}"></script>\n</body>', 1,
+            f'  <script defer src="{script}"{script_attributes}></script>\n</body>', 1,
         )
     document=replace_vendor_urls(document)
     if '{{' in document:raise ValueError('Unreplaced explanation placeholder')

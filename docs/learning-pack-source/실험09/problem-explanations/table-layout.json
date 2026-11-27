@@ -1,0 +1,208 @@
+{
+  "version": 1,
+  "tables": [
+    {
+      "key": "q-apart1/explanation/0",
+      "expected_headers": [
+        "OE0",
+        "OE1",
+        "IN0",
+        "IN1",
+        "WR0",
+        "WR1"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 3,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-bpart1/explanation/0",
+      "expected_headers": [
+        "OE0",
+        "OE1",
+        "IN0",
+        "IN1",
+        "WR0",
+        "WR1"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 3,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-bpart0/explanation/0",
+      "expected_headers": [
+        "OE0",
+        "OE1",
+        "IN0",
+        "IN1",
+        "WR0",
+        "WR1"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 3,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-qp-e09-board-01/explanation/0",
+      "expected_headers": [
+        "넷",
+        "핀"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-qp-e09-board-01/conditions/0",
+      "expected_headers": [
+        "핀",
+        "이름",
+        "역할"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    }
+  ]
+}

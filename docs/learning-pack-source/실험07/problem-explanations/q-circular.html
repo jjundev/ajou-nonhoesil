@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>일반 시프트를 순환 시프트로 바꾸는 배선을 써요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">끝 비트를 첫 칸으로</p><p>직렬 입력에 외부 데이터 대신 마지막 Q를 넣으면 비트가 보존돼요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>첫 칸 입력 S에 마지막 Q가 들어오게 표시해요.</p><p><a href="{{NOTE_HREF}}#t-counters">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>마지막 Q를 반전 없이 S에 연결해요. 공통 유효 엣지마다 끝 비트가 첫 칸으로, 나머지는 다음 칸으로 가요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>1001→1100→0110→0011→1001을 확인해요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>주기는 초기 패턴에 따라 달라요. 1111은 한 번 이동해도 같아요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>끝에서 나온 비트를 맨 앞에 옮겨 상태를 한 번 갱신해요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 끝 비트를 첫 칸으로</p><p data-summary="recall">직렬 입력에 외부 데이터 대신 마지막 Q를 넣으면 비트가 보존돼요.</p><p>첫 실행: 첫 칸 입력 S에 마지막 Q가 들어오게 표시해요.</p><p>결론: 마지막 Q를 반전 없이 S에 연결해요. 공통 유효 엣지마다 끝 비트가 첫 칸으로, 나머지는 다음 칸으로 가요.</p><p>검산: 1001→1100→0110→0011→1001을 확인해요.</p><p>주의: 주기는 초기 패턴에 따라 달라요. 1111은 한 번 이동해도 같아요.</p></div>

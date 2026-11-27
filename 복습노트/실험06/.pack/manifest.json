@@ -1624,8 +1624,8 @@
   "explanation_checks": {
     "source_visual": "pass",
     "content": "self_review",
-    "independent": "not_run",
-    "browser": "pass"
+    "browser": "pass",
+    "independent": "not_run"
   },
   "figure_manifest": "figures/redraw-manifest.json",
   "quiz_practice_version": 1,

@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>되먹임 연결과 순환 상태 수를 답해요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">마지막 Q를 그대로 되먹여요</p><p>one-hot으로 시작하면 1 하나가 매 엣지에 한 칸씩 돌아요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>Q0…Q3=1000에서 시작해요.</p><p><a href="{{NOTE_HREF}}#t-counters">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>마지막 Q를 첫 직렬 입력에 연결해요. 1000→0100→0010→0001→1000이므로 one-hot으로 초기화한 n단 링은 n상태를 순환해요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>0000을 넣으면 다음도 0000이라 같은 주기를 돌지 않아요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>n상태를 쓰려면 one-hot 초기화 조건을 밝혀요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>1이 출발 위치로 돌아오는 데 필요한 엣지를 세어요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 마지막 Q를 그대로 되먹여요</p><p data-summary="recall">one-hot으로 시작하면 1 하나가 매 엣지에 한 칸씩 돌아요.</p><p>첫 실행: Q0…Q3=1000에서 시작해요.</p><p>결론: 마지막 Q를 첫 직렬 입력에 연결해요. 1000→0100→0010→0001→1000이므로 one-hot으로 초기화한 n단 링은 n상태를 순환해요.</p><p>검산: 0000을 넣으면 다음도 0000이라 같은 주기를 돌지 않아요.</p><p>주의: n상태를 쓰려면 one-hot 초기화 조건을 밝혀요.</p></div>

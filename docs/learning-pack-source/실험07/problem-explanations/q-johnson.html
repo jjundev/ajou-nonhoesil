@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>존슨 카운터의 되먹임과 주기를 설명해요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">마지막 Q의 보수를 되먹여요</p><p>꼬리바꿈 때문에 0에서 1이 채워진 뒤 0이 다시 채워져요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>0000에서 첫 입력 NOT Q3=1을 적어요.</p><p><a href="{{NOTE_HREF}}#t-counters">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>맨 끝 Q를 반전해 첫 입력에 연결해요. 4단은 0000→1000→1100→1110→1111→0111→0011→0001→0000이고 정상 초기화한 n단의 주기는 2n상태예요.</p></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>1111에서 다음 상태는 0111이에요. 여기서부터 마지막의 1이 모두 빠지면 0000으로 돌아와요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>2n은 두 배예요. 정상 주기 밖의 초기 상태에는 2n을 적용할 수 없어요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>0000에서 시작해 되돌아올 때까지 이동 횟수를 세어요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 마지막 Q의 보수를 되먹여요</p><p data-summary="recall">꼬리바꿈 때문에 0에서 1이 채워진 뒤 0이 다시 채워져요.</p><p>첫 실행: 0000에서 첫 입력 NOT Q3=1을 적어요.</p><p>결론: 맨 끝 Q를 반전해 첫 입력에 연결해요. 4단은 0000→1000→1100→1110→1111→0111→0011→0001→0000이고 정상 초기화한 n단의 주기는 2n상태예요.</p><p>검산: 1111에서 다음 상태는 0111이에요. 여기서부터 마지막의 1이 모두 빠지면 0000으로 돌아와요.</p><p>주의: 2n은 두 배예요. 정상 주기 밖의 초기 상태에는 2n을 적용할 수 없어요.</p></div>

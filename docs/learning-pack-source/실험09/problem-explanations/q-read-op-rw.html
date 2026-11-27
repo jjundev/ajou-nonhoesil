@@ -1,0 +1,8 @@
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>1bit RAM을 읽는 R/W 값을 정해요.</p></div>
+<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">읽기는 출력 AND를 열어요</p><p>Sel=1일 때 출력에 Q를 통과시키려면 R/W도 1이어야 해요.</p></div>
+<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>Output = Sel·(R/W)·Q를 적어요.</p><p><a href="{{NOTE_HREF}}#t-1bit">필요한 개념으로 돌아가요</a></p></div>
+<div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>R/W=1이에요. Sel=1이면 Output=Q이고, (R/W)′=0이라 S=R=0이 되어 Q가 유지돼요.</p><figure class="figure"><img src=".pack/figures/solutions/ram1-read.png" width="520" alt="읽기 때 각 선의 값"></figure></div>
+<div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>Q=1에서 R/W=0을 넣으면 Output=0이어서 읽기 조건을 만족하지 못해요.</p></div>
+<div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>제공 답안 일부의 “Read = 1, Write = 1”은 표기가 모호해요. 여기서는 회로가 요구하는 R/W 값 1을 적어요.</p></div>
+<div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>출력 AND와 쓰기 쪽 AND를 각각 확인해요.</li></ol></div>
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 읽기는 출력 AND를 열어요</p><p data-summary="recall">Sel=1일 때 출력에 Q를 통과시키려면 R/W도 1이어야 해요.</p><p>첫 실행: Output = Sel·(R/W)·Q를 적어요.</p><p>Sel=1, R/W=1이면 Output=Q이고 쓰기 경로는 닫혀요.</p><p>Q=1에서 R/W=0을 넣으면 Output=0이어서 읽기 조건을 만족하지 못해요.</p><p>제공 답안 일부의 “Read = 1, Write = 1”은 표기가 모호해요. 여기서는 회로가 요구하는 R/W 값 1을 적어요.</p></div>
