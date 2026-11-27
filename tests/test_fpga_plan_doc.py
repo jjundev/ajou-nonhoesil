@@ -318,3 +318,13 @@ def test_block_figure_draws_ticks_and_reset():
 
 def test_schedule_has_report():
     assert "12/23" in section("조원 역할 분담")
+
+
+def test_dummy_digits_explained():
+    # 허수(A5)로 열리는 "비밀번호+숫자" 입력을 평가에서 버그로 읽지 않게 E1과 예상 문제점에 적는다
+    e1 = _row(REQ, "E1")[2]
+    assert '"12345"' in e1 and '"9999"' in e1 and "A5" in e1
+    text = section(PROB)
+    assert "허수" in text and "마지막 여섯 숫자" in text
+    assert len(tables(text)[0].rows) >= 10
+    assert "허수 A5 먼저 안내" in section("조원 역할 분담")
